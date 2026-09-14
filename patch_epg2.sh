@@ -1,0 +1,318 @@
+cat << 'INNER_EOF' > app/src/main/java/com/example/ui/screens/TvStreamingScreen.kt.patch
+--- app/src/main/java/com/example/ui/screens/TvStreamingScreen.kt
++++ app/src/main/java/com/example/ui/screens/TvStreamingScreen.kt
+@@ -919,169 +919,136 @@
+ 
+ @Composable
+ private fun EpgGuideSection(
+     channel: TvChannelEntity,
+     channels: List<TvChannelEntity>,
+     onSelectChannel: (String) -> Unit,
+     onToggleReminder: (TvChannelEntity) -> Unit
+ ) {
+     Column(modifier = Modifier.padding(16.dp)) {
+         Text(
+             text = "Electronic Program Guide (EPG)",
+             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+             color = MaterialTheme.colorScheme.onBackground
+         )
+         Text(
+             text = "Full broadcast timetable across Townsquare Central Television.",
+             style = MaterialTheme.typography.bodySmall,
+             color = MaterialTheme.colorScheme.onSurfaceVariant
+         )
+ 
+-        Spacer(modifier = Modifier.height(12.dp))
+-
+-        // Horizontal Channel Filter for Guide
+-        LazyRow(
+-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+-            contentPadding = PaddingValues(vertical = 4.dp)
+-        ) {
+-            items(channels) { ch ->
+-                val isSelected = (ch.id == channel.id)
+-                val color = Color(ch.themeColorHex)
+-                Surface(
+-                    color = if (isSelected) color.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surface,
+-                    shape = RoundedCornerShape(8.dp),
+-                    modifier = Modifier
+-                        .border(
+-                            width = 1.dp,
+-                            color = if (isSelected) color else MaterialTheme.colorScheme.outlineVariant,
+-                            shape = RoundedCornerShape(8.dp)
+-                        )
+-                        .clickable { onSelectChannel(ch.id) }
+-                ) {
+-                    Row(
+-                        verticalAlignment = Alignment.CenterVertically,
+-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+-                    ) {
+-                        Text(text = ch.iconEmoji, fontSize = 12.sp)
+-                        Spacer(modifier = Modifier.width(6.dp))
+-                        Text(
+-                            text = "CH ${ch.channelNumber} • ${ch.name}",
+-                            style = MaterialTheme.typography.labelSmall.copy(
+-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+-                            ),
+-                            color = if (isSelected) color else MaterialTheme.colorScheme.onSurface
+-                        )
+-                    }
+-                }
+-            }
+-        }
+-
+         Spacer(modifier = Modifier.height(16.dp))
+ 
+-        // Program Schedule for Selected Channel
+-        val scheduleList = getSampleScheduleForChannel(channel.channelNumber)
+-        scheduleList.forEach { item ->
+-            Card(
+-                colors = CardDefaults.cardColors(
+-                    containerColor = if (item.isLiveNow) Color(channel.themeColorHex).copy(alpha = 0.12f) else MaterialTheme.colorScheme.surface
+-                ),
+-                shape = RoundedCornerShape(12.dp),
+-                modifier = Modifier
+-                    .fillMaxWidth()
+-                    .padding(vertical = 4.dp)
+-                    .border(
+-                        width = if (item.isLiveNow) 1.5.dp else 1.dp,
+-                        color = if (item.isLiveNow) Color(channel.themeColorHex) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+-                        shape = RoundedCornerShape(12.dp)
+-                    )
+-            ) {
+-                Row(
+-                    modifier = Modifier
+-                        .fillMaxWidth()
+-                        .padding(12.dp),
+-                    horizontalArrangement = Arrangement.SpaceBetween,
+-                    verticalAlignment = Alignment.CenterVertically
+-                ) {
+-                    Column(
+-                        horizontalAlignment = Alignment.CenterHorizontally,
+-                        modifier = Modifier.width(70.dp)
+-                    ) {
+-                        Text(
+-                            text = item.timeSlot,
+-                            style = MaterialTheme.typography.labelSmall.copy(
+-                                fontWeight = FontWeight.Bold,
+-                                fontSize = 11.sp
+-                            ),
+-                            color = if (item.isLiveNow) Color(channel.themeColorHex) else MaterialTheme.colorScheme.onSurface
+-                        )
+-                        if (item.isLiveNow) {
+-                            Surface(
+-                                color = Color(0xFFFF3B30),
+-                                shape = RoundedCornerShape(4.dp),
+-                                modifier = Modifier.padding(top = 4.dp)
+-                            ) {
+-                                Text(
+-                                    text = "LIVE",
+-                                    style = MaterialTheme.typography.labelSmall.copy(
+-                                        fontWeight = FontWeight.Black,
+-                                        fontSize = 9.sp
+-                                    ),
+-                                    color = Color.White,
+-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+-                                )
+-                            }
+-                        }
+-                    }
+-
+-                    Spacer(modifier = Modifier.width(16.dp))
+-
+-                    Column(modifier = Modifier.weight(1f)) {
+-                        Text(
+-                            text = item.title,
+-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+-                            color = MaterialTheme.colorScheme.onSurface
+-                        )
+-                        if (item.description.isNotEmpty()) {
+-                            Spacer(modifier = Modifier.height(4.dp))
+-                            Text(
+-                                text = item.description,
+-                                style = MaterialTheme.typography.bodySmall,
+-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+-                                maxLines = 2,
+-                                overflow = TextOverflow.Ellipsis
+-                            )
+-                        }
+-                        Spacer(modifier = Modifier.height(6.dp))
+-                        Row(verticalAlignment = Alignment.CenterVertically) {
+-                            Surface(
+-                                color = MaterialTheme.colorScheme.surfaceVariant,
+-                                shape = RoundedCornerShape(4.dp)
+-                            ) {
+-                                Text(
+-                                    text = item.category,
+-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+-                                )
+-                            }
+-                            if (item.isPrimeTime) {
+-                                Spacer(modifier = Modifier.width(6.dp))
+-                                Icon(
+-                                    imageVector = Icons.Default.Star,
+-                                    contentDescription = null,
+-                                    tint = NeonCyan,
+-                                    modifier = Modifier.size(12.dp)
+-                                )
+-                            }
+-                        }
+-                    }
+-
+-                    IconButton(onClick = { onToggleReminder(channel) }) {
+-                        Icon(
+-                            imageVector = Icons.Default.NotificationsNone,
+-                            contentDescription = "Set Reminder",
+-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+-                        )
+-                    }
+-                }
+-            }
+-        }
++        val verticalScroll = rememberScrollState()
++        val horizontalScroll = rememberScrollState()
++        
++        Box(
++            modifier = Modifier
++                .fillMaxWidth()
++                .height(400.dp)
++                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
++                .border(1.dp, DarkBorder, RoundedCornerShape(12.dp))
++                .clip(RoundedCornerShape(12.dp))
++        ) {
++            Row(modifier = Modifier.verticalScroll(verticalScroll)) {
++                // Fixed Channels Column
++                Column(
++                    modifier = Modifier
++                        .width(110.dp)
++                        .background(DarkBg)
++                ) {
++                    Box(
++                        modifier = Modifier
++                            .fillMaxWidth()
++                            .height(40.dp)
++                            .background(MaterialTheme.colorScheme.surfaceVariant)
++                            .border(0.5.dp, DarkBorder),
++                        contentAlignment = Alignment.Center
++                    ) {
++                         Text("CHANNEL", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
++                    }
++
++                    channels.forEach { ch ->
++                        Box(
++                            modifier = Modifier
++                                .fillMaxWidth()
++                                .height(80.dp)
++                                .border(0.5.dp, DarkBorder)
++                                .clickable { onSelectChannel(ch.id) }
++                                .padding(8.dp),
++                            contentAlignment = Alignment.CenterStart
++                        ) {
++                            Column {
++                                Text(text = ch.iconEmoji, fontSize = 16.sp)
++                                Text(
++                                    text = "CH ${ch.channelNumber}",
++                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
++                                    color = Color(ch.themeColorHex)
++                                )
++                                Text(
++                                    text = ch.name,
++                                    style = MaterialTheme.typography.labelSmall,
++                                    color = MaterialTheme.colorScheme.onSurface,
++                                    maxLines = 1,
++                                    overflow = TextOverflow.Ellipsis
++                                )
++                            }
++                        }
++                    }
++                }
++
++                // Horizontally Scrollable Timeline + Grid
++                Column(modifier = Modifier.horizontalScroll(horizontalScroll)) {
++                    // Timeline
++                    Row(modifier = Modifier.height(40.dp)) {
++                        for (hour in 6..24) {
++                            Box(
++                                modifier = Modifier
++                                    .width(240.dp) // 1 hour = 240dp (4dp / min)
++                                    .fillMaxHeight()
++                                    .background(MaterialTheme.colorScheme.surfaceVariant)
++                                    .border(0.5.dp, DarkBorder),
++                                contentAlignment = Alignment.CenterStart
++                            ) {
++                                Text(
++                                    text = String.format("%02d:00", hour),
++                                    style = MaterialTheme.typography.labelSmall,
++                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
++                                    modifier = Modifier.padding(start = 8.dp)
++                                )
++                            }
++                        }
++                    }
++
++                    // Program Rows
++                    channels.forEach { ch ->
++                        Row(modifier = Modifier.height(80.dp).border(0.5.dp, DarkBorder)) {
++                            val schedule = getSampleScheduleForChannel(ch.channelNumber)
++                            
++                            if (schedule.isNotEmpty()) {
++                                // Calculate initial spacer if the first show doesn't start at 06:00
++                                val firstStart = parseStartTimeMinutes(schedule.first().timeSlot)
++                                val offsetMins = (firstStart - 360).coerceAtLeast(0)
++                                if (offsetMins > 0) {
++                                    Spacer(modifier = Modifier.width((offsetMins * 4).dp))
++                                }
++                            }
++
++                            schedule.forEach { item ->
++                                val width = (item.durationMinutes * 4).dp
++                                Box(
++                                    modifier = Modifier
++                                        .width(width)
++                                        .fillMaxHeight()
++                                        .border(0.5.dp, DarkBorder)
++                                        .background(if (item.isLiveNow) Color(ch.themeColorHex).copy(alpha = 0.2f) else Color.Transparent)
++                                        .padding(4.dp)
++                                ) {
++                                    Column {
++                                        Text(
++                                            text = item.title,
++                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
++                                            color = if (item.isLiveNow) Color(ch.themeColorHex) else MaterialTheme.colorScheme.onSurface,
++                                            maxLines = 1,
++                                            overflow = TextOverflow.Ellipsis
++                                        )
++                                        Spacer(modifier = Modifier.height(2.dp))
++                                        Text(
++                                            text = item.timeSlot,
++                                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
++                                            color = MaterialTheme.colorScheme.onSurfaceVariant
++                                        )
++                                        if (item.isLiveNow) {
++                                            Spacer(modifier = Modifier.height(2.dp))
++                                            Surface(
++                                                color = Color.Red,
++                                                shape = RoundedCornerShape(2.dp)
++                                            ) {
++                                                Text(
++                                                    text = "LIVE",
++                                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp, fontWeight = FontWeight.Black),
++                                                    color = Color.White,
++                                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
++                                                )
++                                            }
++                                        }
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++        }
+     }
+ }
+INNER_EOF
+patch -p0 < app/src/main/java/com/example/ui/screens/TvStreamingScreen.kt.patch

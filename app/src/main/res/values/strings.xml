@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Townsquare</string>
+    <string name="widget_radio_name">Radio Tuner</string>
+    <string name="widget_radio_description">Townsquare FM radio tuner and live transport controls on your home screen.</string>
+    <string name="widget_brief_name">Morning Dispatch</string>
+    <string name="widget_brief_description">Townsquare daily civic headlines and morning audio brief on your home screen.</string>
+    <string name="widget_facsimile_name">Facsimile Broadsheet</string>
+    <string name="widget_facsimile_description">Retro hourly thermal wire dispatch and civic bulletins printed direct to your home screen.</string>
+</resources>

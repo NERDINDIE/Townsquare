@@ -1,0 +1,6 @@
+{
+  "name": "Townsquare",
+  "description": "Townsquare: Editorial media superapp featuring interactive radio tuner dial, Android Auto broadcast support, customizable home screen widgets, comprehensive settings suite, and rich newsroom channel profile pages.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

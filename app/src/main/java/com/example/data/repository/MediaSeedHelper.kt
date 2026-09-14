@@ -1,0 +1,308 @@
+package com.example.data.repository
+
+import com.example.data.model.DraftType
+import com.example.data.model.LiveNewsblogEntity
+import com.example.data.model.NewsblogCategory
+import com.example.data.model.NewsblogUrgency
+import com.example.data.model.NotepadDraftEntity
+import com.example.data.model.TargetJournalSection
+import com.example.data.model.VisualCategory
+import com.example.data.model.VisualPostEntity
+
+object MediaSeedHelper {
+
+    fun getInitialNewsblogEntries(): List<LiveNewsblogEntity> {
+        val now = System.currentTimeMillis()
+        return listOf(
+            LiveNewsblogEntity(
+                id = 1,
+                headline = "🔴 LIVE WIRE: City Council Passes Historic Clean Energy & Pedestrian Way Mandate",
+                body = "In an emergency midnight vote after 6 hours of deliberations, the Townsquare Municipal Council voted 9-1 to approve the 2030 Pedestrianization Corridor and Rooftop Solar Retrofit Ordinance. All commercial rooftops over 5,000 sq ft will receive 60% installation tax credits.",
+                authorName = "Clara Vance",
+                authorRole = "Chief Civic Correspondent",
+                categoryTag = "COUNCIL",
+                urgencyLevel = "CRITICAL",
+                timestampFormatted = "23:18 EDT",
+                timestampMillis = now - 120000,
+                isPinned = true,
+                keyTakeaway = "All central avenue vehicle traffic restricted from 18:00 to 06:00 to enable open night markets and pedestrian strolls starting next month.",
+                quote = "This ordinance cements Townsquare as a beacon of sustainable, human-scale urbanism.",
+                quoteSpeaker = "Mayor Elena Rostova",
+                location = "Town Hall • Chamber Room 4",
+                likesCount = 84,
+                isLiked = true,
+                isBookmarked = true,
+                audioSnippetTitle = "Mayor's Midnight Declaration (1m 15s)",
+                audioSnippetDurationSec = 75,
+                verifiedSourcesCount = 5
+            ),
+            LiveNewsblogEntity(
+                id = 2,
+                headline = "⚡ Transit Alert: Line 3 Autonomous Light Rail Expands 24-Hour Night Owl Service",
+                body = "The Department of Rapid Transit has announced that following high passenger ridership, the Cross-Bay Tram line will run every 8 minutes throughout the night with onboard security staff and free bicycle transport pods.",
+                authorName = "Marcus O'Reilly",
+                authorRole = "Transit Wire Desk",
+                categoryTag = "TRANSIT",
+                urgencyLevel = "HIGH",
+                timestampFormatted = "22:45 EDT",
+                timestampMillis = now - 2100000,
+                isPinned = false,
+                keyTakeaway = "Night owl services commence Friday night with 100% renewable electric power.",
+                quote = "Reliable night transit ensures service workers and evening creatives get home safely without expensive car fares.",
+                quoteSpeaker = "Transit Commissioner Wells",
+                location = "Central Depot Hub",
+                likesCount = 49,
+                isLiked = false,
+                isBookmarked = false,
+                audioSnippetTitle = "Transit Dispatch (45s)",
+                audioSnippetDurationSec = 45,
+                verifiedSourcesCount = 4
+            ),
+            LiveNewsblogEntity(
+                id = 3,
+                headline = "🎭 Symphony In The Park Announces Surprise Midnight Chamber Recital at Glass Pavilion",
+                body = "The Townsquare Philharmonic string quartet will stage an unannounced twilight performance of Philip Glass and Debussy at the Botanical Glasshouse. Admission is free with open lawn blankets provided by the Parks Guild.",
+                authorName = "Aria Chen",
+                authorRole = "Culture & Stage Reporter",
+                categoryTag = "CULTURE",
+                urgencyLevel = "STANDARD",
+                timestampFormatted = "22:10 EDT",
+                timestampMillis = now - 4200000,
+                isPinned = false,
+                keyTakeaway = "Lawn blankets, spiced cider, and hot cocoa distributed by volunteer greeters at the North Gate.",
+                quote = "Music brings the city to life in moments of quiet wonder under the stars.",
+                quoteSpeaker = "Maestro Julian Frost",
+                location = "Botanical Gardens • North Gate",
+                likesCount = 63,
+                isLiked = true,
+                isBookmarked = false,
+                audioSnippetTitle = "Rehearsal Snippet (Debussy Nocturne)",
+                audioSnippetDurationSec = 90,
+                verifiedSourcesCount = 3
+            ),
+            LiveNewsblogEntity(
+                id = 4,
+                headline = "⛈️ Atmospheric Watch: Crisp Autumn Cold Front Expected Tomorrow Morning",
+                body = "Meteorological radar indicates a high-pressure maritime front pushing temperatures down to 14°C (57°F) with light mountain mist over the northern ridge by sunrise. Ideal conditions for morning joggers and farmers market vendors.",
+                authorName = "Dr. Neil Thorne",
+                authorRole = "Atmospheric Science Guild",
+                categoryTag = "WEATHER",
+                urgencyLevel = "STANDARD",
+                timestampFormatted = "21:30 EDT",
+                timestampMillis = now - 6600000,
+                isPinned = false,
+                keyTakeaway = "Clear crisp skies with zero rainfall expected through the weekend festival.",
+                quote = "Expect peak autumn foliage clarity across the valley lookout towers.",
+                quoteSpeaker = "Meteorologist Thorne",
+                location = "Civic Weather Station",
+                likesCount = 31,
+                isLiked = false,
+                isBookmarked = false,
+                audioSnippetTitle = "Weather Audio Forecast (30s)",
+                audioSnippetDurationSec = 30,
+                verifiedSourcesCount = 2
+            ),
+            LiveNewsblogEntity(
+                id = 5,
+                headline = "☕ Historic Old Town Coffee Guild Celebrates 50th Year with Complimentary Morning Roast",
+                body = "Four generations of roasters at the Portside Warehouse district invite all civic residents for free artisan pour-overs and fresh almond croissants from 07:00 to 11:00 AM this Saturday.",
+                authorName = "Mateo Silva",
+                authorRole = "Neighborhood Correspondent",
+                categoryTag = "CIVIC",
+                urgencyLevel = "STANDARD",
+                timestampFormatted = "20:55 EDT",
+                timestampMillis = now - 8700000,
+                isPinned = false,
+                keyTakeaway = "First 200 visitors receive commemorative ceramic mugs crafted by local pottery artists.",
+                quote = "The aroma of roasted Ethiopian Yirgacheffe has fueled this neighborhood since 1976.",
+                quoteSpeaker = "Lucia Moretti, Guild Founder",
+                location = "Portside Roastery Alley",
+                likesCount = 92,
+                isLiked = false,
+                isBookmarked = true,
+                audioSnippetTitle = "Interview with Founder Lucia (1m)",
+                audioSnippetDurationSec = 60,
+                verifiedSourcesCount = 3
+            )
+        )
+    }
+
+    fun getInitialNotepadDrafts(): List<NotepadDraftEntity> {
+        val now = System.currentTimeMillis()
+        return listOf(
+            NotepadDraftEntity(
+                id = 1,
+                title = "💡 Idea: Investigation into Rooftop Apiaries & Urban Honey Co-ops",
+                bodyText = "Explore the burgeoning network of 45 rooftop beehives across downtown high-rises. Interview master beekeeper Sarah Sterling on pollination yields, biodiversity impact, and the artisanal wildflower honey auction at the Central Farmers Market.",
+                draftType = DraftType.ARTICLE_DRAFT.name,
+                tags = "Ecology,UrbanAg,Investigation,JournalLead",
+                accentColorHex = 0xFFFFD60A,
+                audioMemoDurationSec = 45,
+                audioTranscript = "Voice Note: Sarah mentioned honey yield doubled this summer due to native wildflower corridors on 5th avenue balconies. Make sure to capture high-res macro photos of the honeycomb frames.",
+                attachedPhotoUrl = "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800&auto=format&fit=crop&q=80",
+                attachedPhotoCaption = "Master beekeeper inspecting golden comb frames at 14th St Rooftop Sanctuary.",
+                quoteAttribution = "\"When bees thrive in the city core, it is the purest indicator that our air and gardens are healthy.\"",
+                targetJournalSection = TargetJournalSection.LEAD_STORY.name,
+                checklistItems = "Interview Sarah Sterling at sunrise\nRecord audio snippet of hive hum\nCollect harvest data from 6 co-op rooftops\nFormat draft into Classic Broadsheet lead",
+                isStarred = true,
+                isConvertedToJournal = false,
+                createdTimestamp = now - 3600000,
+                updatedTimestamp = now - 600000
+            ),
+            NotepadDraftEntity(
+                id = 2,
+                title = "🎙️ Voice Memo: Conversation with Architect Maya Lin on Public Benches",
+                bodyText = "Audio notes from afternoon espresso at Plaza Cafe. Discussion on ergonomic timber bench designs that encourage conversation rather than isolated sitting. Key concept: 'Social Architecture for Public Commons'.",
+                draftType = DraftType.VOICE_MEMO.name,
+                tags = "Architecture,CivicDesign,AudioNotes",
+                accentColorHex = 0xFFFF375F,
+                audioMemoDurationSec = 82,
+                audioTranscript = "Maya Lin: 'A great city isn't judged by its tallest towers, but by how comfortably two strangers can sit and converse in public without feeling hurried.'",
+                attachedPhotoUrl = "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&auto=format&fit=crop&q=80",
+                attachedPhotoCaption = "Curved oak timber seating pods installed at Central Library courtyard.",
+                quoteAttribution = "Maya Lin, Civic Architect & Urban Planner",
+                targetJournalSection = TargetJournalSection.SECOND_FEATURE.name,
+                checklistItems = "Transcribe remaining 3 minutes of voice memo\nDraft sidebar on European plaza seating metrics\nPropose as 2nd feature for Friday Gazette",
+                isStarred = true,
+                isConvertedToJournal = false,
+                createdTimestamp = now - 7200000,
+                updatedTimestamp = now - 1800000
+            ),
+            NotepadDraftEntity(
+                id = 3,
+                title = "📷 Photo Story: Midnight at the Historic Printing Guild",
+                bodyText = "Visual documentary series documenting the vintage Heidelberg letterpress machines still operating in the basement of the Townsquare Chronicle building. The smell of linseed ink, heavy cast iron gears, and hot metal typesetting.",
+                draftType = DraftType.PHOTO_STORY.name,
+                tags = "Photography,PrintMedia,Heritage,Scrapbook",
+                accentColorHex = 0xFF30D158,
+                audioMemoDurationSec = 0,
+                audioTranscript = "",
+                attachedPhotoUrl = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&auto=format&fit=crop&q=80",
+                attachedPhotoCaption = "Heavy iron rotary press rolling the final evening print run of Vol. 28.",
+                quoteAttribution = "\"Ink on rag paper carries a tactile weight that no digital screen can ever emulate.\"",
+                targetJournalSection = TargetJournalSection.PHOTO_ESSAY.name,
+                checklistItems = "Select 5 best black & white negatives\nWrite 80-word captions for each press technician\nAssemble centerfold layout for Flipbook",
+                isStarred = false,
+                isConvertedToJournal = false,
+                createdTimestamp = now - 14400000,
+                updatedTimestamp = now - 7200000
+            )
+        )
+    }
+
+    fun getInitialVisualPosts(): List<VisualPostEntity> {
+        val now = System.currentTimeMillis()
+        return listOf(
+            VisualPostEntity(
+                id = 1,
+                title = "Golden Hour Over the Central Suspension Bridge & Riverwalk",
+                caption = "Warm autumn light illuminates the steel cables and pedestrian promenade as river ferries glide toward South Port.",
+                photographerName = "Julian Hayes",
+                photographerHandle = "@julian_lens",
+                category = "Civic Architecture",
+                imageResUrl = "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1200&auto=format&fit=crop&q=80",
+                aspectRatio = 1.45f,
+                locationTaken = "Grand Suspension Bridge • Pier 4",
+                cameraMeta = "Sony A7R V • FE 24-70mm f/2.8 GM II • 35mm • f/8 • 1/320s • ISO 100",
+                storyContext = "Captured during the autumn equinox alignment where sunset rays reflect directly along the water corridor.",
+                multiPhotoUrls = "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1200&auto=format&fit=crop&q=80,https://images.unsplash.com/photo-1477959858617-67f30bc75b82?w=1200&auto=format&fit=crop&q=80",
+                tags = "Architecture,GoldenHour,Bridge,Cityscape",
+                likesCount = 384,
+                commentsCount = 29,
+                viewsCount = 5420,
+                isLiked = true,
+                isBookmarked = true,
+                timestampFormatted = "45 mins ago",
+                timestampMillis = now - 2700000
+            ),
+            VisualPostEntity(
+                id = 2,
+                title = "Midnight Revels at the Lantern Festival Promenade",
+                caption = "Over two thousand handmade paper lanterns illuminate the canal district for the annual autumn solstice gala.",
+                photographerName = "Kira Tanaka",
+                photographerHandle = "@tanakakira_photo",
+                category = "Street Life",
+                imageResUrl = "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80",
+                aspectRatio = 1.25f,
+                locationTaken = "Canal Way District",
+                cameraMeta = "Leica M11 • Noctilux 50mm f/0.95 • f/1.2 • 1/125s • ISO 800",
+                storyContext = "Families release biodegradable wishing lanterns while chamber musicians perform acoustic folk serenades from canal barges.",
+                multiPhotoUrls = "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&auto=format&fit=crop&q=80,https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&auto=format&fit=crop&q=80",
+                tags = "Festival,Night,StreetPhotography,Lanterns",
+                likesCount = 512,
+                commentsCount = 44,
+                viewsCount = 8900,
+                isLiked = true,
+                isBookmarked = false,
+                timestampFormatted = "2 hours ago",
+                timestampMillis = now - 7200000
+            ),
+            VisualPostEntity(
+                id = 3,
+                title = "Portraits of Townsquare: Master Horologist Laurent in his Studio",
+                caption = "Working with brass gears and hand-ground sapphire crystals, Laurent has maintained the city's 14 public clocktowers for 42 years.",
+                photographerName = "Elena Vance",
+                photographerHandle = "@elenavance",
+                category = "Portraits & Faces",
+                imageResUrl = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1200&auto=format&fit=crop&q=80",
+                aspectRatio = 0.85f,
+                locationTaken = "Clockmaker's Workshop • Rue Saint-Martin",
+                cameraMeta = "Fujifilm GFX 100 II • GF 110mm f/2 R LM WR • f/2.8 • 1/200s • ISO 400",
+                storyContext = "Part of the ongoing 'Artisans of the Commonwealth' photojournalism chronicle for the Townsquare Chronicle.",
+                multiPhotoUrls = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1200&auto=format&fit=crop&q=80",
+                tags = "Portrait,Horology,Craft,Artisan",
+                likesCount = 296,
+                commentsCount = 19,
+                viewsCount = 4120,
+                isLiked = false,
+                isBookmarked = true,
+                timestampFormatted = "4 hours ago",
+                timestampMillis = now - 14400000
+            ),
+            VisualPostEntity(
+                id = 4,
+                title = "Morning Mist Engulfs the Municipal Botanical Glasshouse",
+                caption = "A rare thermal inversion creates ethereal vapor clouds around the 19th-century cast iron glass dome at dawn.",
+                photographerName = "Marcus Finch",
+                photographerHandle = "@marcusfinch",
+                category = "Documentary Essay",
+                imageResUrl = "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&auto=format&fit=crop&q=80",
+                aspectRatio = 1.55f,
+                locationTaken = "Botanical Conservatory Gardens",
+                cameraMeta = "Hasselblad X2D 100C • XCD 38mm f/2.5 V • f/5.6 • 1/160s • ISO 64",
+                storyContext = "The glasshouse protects over 3,000 endangered alpine and temperate plant species cultivated by university researchers.",
+                multiPhotoUrls = "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&auto=format&fit=crop&q=80",
+                tags = "Nature,Mist,Architecture,Botanical",
+                likesCount = 445,
+                commentsCount = 33,
+                viewsCount = 6730,
+                isLiked = false,
+                isBookmarked = false,
+                timestampFormatted = "6 hours ago",
+                timestampMillis = now - 21600000
+            ),
+            VisualPostEntity(
+                id = 5,
+                title = "Neon Reflections Along the Vinyl & Bookshop Arcade",
+                caption = "Wet pavement mirrors warm tungsten signage and neon cyan marquees as music lovers browse rare vinyl imports.",
+                photographerName = "Sora Kuroda",
+                photographerHandle = "@sorakuroda",
+                category = "Culture & Nightlife",
+                imageResUrl = "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&auto=format&fit=crop&q=80",
+                aspectRatio = 1.33f,
+                locationTaken = "Arcade Lane • East Arts Quarter",
+                cameraMeta = "Nikon Z8 • NIKKOR Z 50mm f/1.2 S • f/1.4 • 1/100s • ISO 1600",
+                storyContext = "The historic arcade hosts 28 independent bookstores, vinyl stalls, and printmaker galleries open late every Thursday.",
+                multiPhotoUrls = "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&auto=format&fit=crop&q=80",
+                tags = "Neon,Nightlife,Vinyl,Books,Street",
+                likesCount = 620,
+                commentsCount = 57,
+                viewsCount = 11200,
+                isLiked = true,
+                isBookmarked = true,
+                timestampFormatted = "8 hours ago",
+                timestampMillis = now - 28800000
+            )
+        )
+    }
+}
