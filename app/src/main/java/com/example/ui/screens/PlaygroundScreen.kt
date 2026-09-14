@@ -30,7 +30,8 @@ data class ChildProfile(val name: String, val school: String, val grade: String)
 
 @Composable
 fun PlaygroundScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSwitchProfile: (String) -> Unit = {}
 ) {
     val profiles = listOf(
         ChildProfile("Leo", "Oak Creek Elementary", "4th Grade"),
@@ -118,6 +119,14 @@ fun PlaygroundScreen(
                                 }
                             )
                         }
+                        HorizontalDivider(color = DarkBorder)
+                        DropdownMenuItem(
+                            text = { Text("Switch to Townsquare", color = MaterialTheme.colorScheme.primary) },
+                            onClick = {
+                                showProfileDropdown = false
+                                onSwitchProfile("TOWNSQUARE")
+                            }
+                        )
                     }
                 }
             }

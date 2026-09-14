@@ -91,6 +91,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Person
 import com.example.ui.screens.OpeningBroadsheetFlow
 import com.example.ui.screens.BroadsheetOpeningScreen
 import com.example.ui.screens.AudioHubScreen
@@ -154,7 +155,7 @@ fun TownsquareApp(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val tabTitles = listOf("Feed", "Browser", "Wire", "Gallery", "TV", "Newsstand", "Journal", "Audio", "Spaces", "Funnies", "Partners", "Discovery", "Playground")
+    val tabTitles = listOf("Feed", "Browser", "Wire", "Gallery", "TV", "Newsstand", "Journal", "Audio", "Spaces", "Funnies", "Partners", "Discovery", "Community", "Playground")
     val tabIcons = listOf(
         Icons.AutoMirrored.Filled.Feed,
         Icons.Default.Public,
@@ -168,6 +169,7 @@ fun TownsquareApp(
         Icons.Default.Tv,
         Icons.Default.Newspaper,
         Icons.Default.Explore,
+        Icons.Default.Person,
         Icons.Default.Build
     )
 
@@ -709,9 +711,16 @@ fun TownsquareApp(
                         )
                     }
                     12 -> {
-                        com.example.ui.screens.PlaygroundScreen()
+                        com.example.ui.screens.CommunityScreen(
+                            onOpenSidebar = { viewModel.openSidebar() }
+                        )
                     }
                     13 -> {
+                        com.example.ui.screens.PlaygroundScreen(
+                            onSwitchProfile = { viewModel.selectProfile(it) }
+                        )
+                    }
+                    14 -> {
                         EngagementDashboardScreen(viewModel)
                     }
                 }
