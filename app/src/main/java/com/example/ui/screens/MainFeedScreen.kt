@@ -49,6 +49,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.ScrollableTabRow
@@ -58,6 +59,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -79,6 +81,7 @@ import com.example.data.model.LocalBulletinEntity
 import com.example.data.model.MediaChannelEntity
 import com.example.data.model.MediaItemEntity
 import com.example.data.model.MediaType
+import com.example.ui.components.Headline
 import com.example.ui.components.LocalBulletinsSection
 import com.example.ui.components.MediaCardItem
 import com.example.ui.components.MorningBriefCard
@@ -135,6 +138,8 @@ fun MainFeedScreen(
     modifier: Modifier = Modifier
 ) {
     var searchVisible by remember { mutableStateOf(false) }
+    var selectedHeadline by remember { mutableStateOf<Headline?>(null) }
+    val sheetState = rememberModalBottomSheetState()
 
     Column(
         modifier = modifier
@@ -317,11 +322,12 @@ fun MainFeedScreen(
 
         NewsTicker(
             headlines = listOf(
-                "Civic News: New Promenade opening tomorrow morning",
-                "Weather Alert: Offshore squall expected at 9 PM",
-                "Marketplace: Vintage audio equipment auction ending soon",
-                "Community: Old Town clocktower renovation begins"
-            )
+                Headline("Civic News", "New Promenade opening tomorrow morning", "Civic Press"),
+                Headline("Weather Alert", "Offshore squall expected at 9 PM", "Harbor Station"),
+                Headline("Marketplace", "Vintage audio equipment auction ending soon", "Townsquare Market"),
+                Headline("Community", "Old Town clocktower renovation begins", "Town Council")
+            ),
+            onHeadlineClick = { selectedHeadline = it }
         )
 
         // Curation Feed Toggles
@@ -665,6 +671,21 @@ fun MainFeedScreen(
                 // Bottom spacer so content is not cut off by mini player & nav
                 item {
                     Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+        }
+        
+        if (selectedHeadline != null) {
+            ModalBottomSheet(
+                onDismissRequest = { selectedHeadline = null },
+                sheetState = sheetState
+            ) {
+                Column(modifier = Modifier.padding(16.dp).padding(bottom = 32.dp)) {
+                    Text(selectedHeadline!!.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Source: ${selectedHeadline!!.source}", style = MaterialTheme.typography.labelSmall, color = NeonCyan)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(selectedHeadline!!.text, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }

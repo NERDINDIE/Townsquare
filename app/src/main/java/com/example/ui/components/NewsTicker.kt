@@ -2,6 +2,7 @@ package com.example.ui.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -11,28 +12,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.NeonCyan
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+
+data class Headline(val title: String, val text: String, val source: String)
 
 @Composable
 fun NewsTicker(
-    headlines: List<String>,
+    headlines: List<Headline>,
+    onHeadlineClick: (Headline) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (headlines.isEmpty()) return
 
-    val tickerText = headlines.joinToString(" • ")
-    var offset by remember { mutableFloatStateOf(0f) }
+    val scrollState = remember { Animatable(0f) }
     
-    // Simulate real-time updates
-    var currentHeadlines by remember { mutableStateOf(headlines) }
+    // Simplistic infinite scroll: animate to a large negative number
     LaunchedEffect(Unit) {
         while(isActive) {
-            delay(30000L)
-            currentHeadlines = currentHeadlines.shuffled()
+            scrollState.animateTo(
+                targetValue = -2000f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(20000, easing = LinearEasing),
+                    repeatMode = RepeatMode.Restart
+                )
+            )
+            scrollState.snapTo(1000f)
         }
     }
 
@@ -45,15 +53,22 @@ fun NewsTicker(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            Text(
-                text = tickerText,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
-                ),
-                color = NeonCyan,
-                modifier = Modifier.offset(x = offset.dp)
-            )
+            Row(
+                modifier = Modifier.offset { IntOffset(scrollState.value.toInt(), 0) },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                headlines.forEach { headline ->
+                    Text(
+                        text = headline.title + " • ",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        ),
+                        color = NeonCyan,
+                        modifier = Modifier.clickable { onHeadlineClick(headline) }
+                    )
+                }
+            }
         }
     }
 }

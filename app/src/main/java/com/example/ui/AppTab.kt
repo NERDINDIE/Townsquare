@@ -26,4 +26,5 @@ object NavDestination {
     const val PLUS_EXTENSIONS = 16
     const val PLUS_FINANCE = 17
     const val PLUS_CATALOGS = 18
+    const val PLUS_STATE = 19
 }

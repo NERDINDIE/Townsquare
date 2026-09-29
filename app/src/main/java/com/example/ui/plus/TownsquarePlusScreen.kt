@@ -30,10 +30,11 @@ import com.example.ui.plus.mail.TownsquareMailboxApp
 import com.example.ui.plus.maps.TownsquareMapsApp
 import com.example.ui.plus.marketplace.TownsquareMarketplaceApp
 import com.example.ui.plus.phone.TownsquarePhoneApp
+import com.example.ui.plus.state.TownsquareStateApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE
 }
 
 @Composable
@@ -76,6 +77,9 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.CATALOGS -> {
                 TownsquareCatalogsApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.STATE -> {
+                TownsquareStateApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -266,17 +270,17 @@ fun TownsquarePlusScreen(
                             )
                         }
 
-                        // 7. Catalogs Launcher Card
+                        // 8. State Launcher Card
                         item {
                             SuperappModuleCard(
-                                title = "Townsquare Catalogs",
-                                subtitle = "E-Paper Trove • 24/7 Linear Ad TV",
-                                description = "Browse an e-paper trove of partner store catalogs and watch our 24/7 linear ad channel for the best Marketplace deals.",
-                                icon = Icons.Default.CollectionsBookmark,
-                                iconColor = WarmAmber,
-                                badgeText = "CATALOGS",
-                                onClick = { activeSubApp = PlusModularApp.CATALOGS },
-                                testTag = "open_catalogs_app_card"
+                                title = "Townsquare State",
+                                subtitle = "Civil Services • Bills • Taxes • Voting",
+                                description = "Manage your civil services, pay utility bills, file taxes, and cast your vote in live local elections.",
+                                icon = Icons.Default.AccountBalance,
+                                iconColor = Color(0xFF6200EE),
+                                badgeText = "STATE",
+                                onClick = { activeSubApp = PlusModularApp.STATE },
+                                testTag = "open_state_app_card"
                             )
                         }
 
