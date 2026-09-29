@@ -53,7 +53,11 @@ fun TownsquareMailboxApp(
         Pair(MailFolder.SENT, "Sent"),
         Pair(MailFolder.DRAFTS, "Drafts"),
         Pair(MailFolder.ARCHIVE, "Archive"),
-        Pair(MailFolder.TRASH, "Trash")
+        Pair(MailFolder.TRASH, "Trash"),
+        Pair(MailFolder.ENVELOPES, "Envelopes ✉️"),
+        Pair(MailFolder.POSTCARDS, "Postcards 🏞️"),
+        Pair(MailFolder.DATING_DMS, "Dating DMs 💌"),
+        Pair(MailFolder.STAMPS, "Collectible Stamps 🏆")
     )
 
     fun sendEmail() {

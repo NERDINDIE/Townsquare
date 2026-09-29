@@ -32,10 +32,11 @@ import com.example.ui.plus.marketplace.TownsquareMarketplaceApp
 import com.example.ui.plus.phone.TownsquarePhoneApp
 import com.example.ui.plus.state.TownsquareStateApp
 import com.example.ui.plus.arcade.TownsquareArcadeApp
+import com.example.ui.plus.health.TownsquareHealthApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH
 }
 
 @Composable
@@ -84,6 +85,9 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.ARCADE -> {
                 TownsquareArcadeApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.HEALTH -> {
+                TownsquareHealthApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -299,6 +303,20 @@ fun TownsquarePlusScreen(
                                 badgeText = "NEW GAMES",
                                 onClick = { activeSubApp = PlusModularApp.ARCADE },
                                 testTag = "open_arcade_app_card"
+                            )
+                        }
+
+                        // 10. Health & Screen Time Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Health",
+                                subtitle = "Screen Time • Step Counter • FOMO Shields",
+                                description = "Log steps, track screen usage across dispatches, configure FOMO shields to silence non-urgent dings, and practice breathing mindfulness.",
+                                icon = Icons.Default.Favorite,
+                                iconColor = Color(0xFFFF5252),
+                                badgeText = "FITNESS & MIND",
+                                onClick = { activeSubApp = PlusModularApp.HEALTH },
+                                testTag = "open_health_app_card"
                             )
                         }
 

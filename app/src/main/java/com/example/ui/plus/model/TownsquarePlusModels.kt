@@ -45,7 +45,7 @@ data class VoicemailItem(
 // ==========================================
 
 enum class MailFolder {
-    INBOX, STARRED, SENT, DRAFTS, ARCHIVE, TRASH
+    INBOX, STARRED, SENT, DRAFTS, ARCHIVE, TRASH, ENVELOPES, POSTCARDS, DATING_DMS, STAMPS
 }
 
 data class MailAttachment(
@@ -134,7 +134,9 @@ enum class MarketCategory(val label: String, val iconEmoji: String) {
     BOOKS("Press & Literature", "📚"),
     HOME("Studio & Living", "🪴"),
     FASHION("Apparel & Vintage", "🧥"),
-    ARTISANAL("Handcrafted & Local", "🏺")
+    ARTISANAL("Handcrafted & Local", "🏺"),
+    FOOD("Food Delivery", "🍔"),
+    VEHICLES("Car Renting", "🚗")
 }
 
 enum class ItemCondition(val label: String) {
@@ -366,6 +368,136 @@ Elena""",
                 MailAttachment("Maritime_Trade_RoughDraft.pdf", "4.1 MB", "pdf")
             ),
             avatarColorHex = 0xFF9D4EDD
+        ),
+        // --- 1. ENVELOPES ---
+        EmailItem(
+            senderName = "Mayor's Civic Office ✉️",
+            senderEmail = "registry@townsquare.gov",
+            subject = "✉️ [SEALED ENVELOPE] Grand Clocktower Reopening Invitation",
+            snippet = "A sealed official invitation to the Grand Clocktower and Archives reopening ceremony...",
+            body = """DEAR CITIZEN,
+
+You are officially invited to the Grand Reopening Ceremony of the Townsquare Clocktower and Historical Archives. 
+
+Your verified seat on the VIP gallery has been securely reserved under your digital civil ledger biometric ID. 
+
+Please present this sealed digital envelope at the South Archway entrance on Thursday at 10:00 AM.
+
+With Honor,
+Mayoralty Protocol Guild""",
+            timestamp = "Today",
+            folder = MailFolder.ENVELOPES,
+            isUnread = true,
+            isStarred = true,
+            avatarColorHex = 0xFFFFD700
+        ),
+        // --- 2. POSTCARDS ---
+        EmailItem(
+            senderName = "Claire Fontaine 🏞️",
+            senderEmail = "claire@townsquare.media",
+            subject = "🏞️ [POSTCARD] Greetings from the Botanical Greenhouses!",
+            snippet = "A digital souvenir postcard capturing the early morning golden mist over the willow canal walk...",
+            body = """HELLO FROM THE CANAL PROMENADE!
+
+Wandering through the lush orchid pavilions this morning. The air is warm, the willow branches are dipping into the clear locks, and I immediately thought of your radio playlist on Sonic Waveform! 
+
+Attaching an analog souvenir snap. Hope your workday goes beautifully. Let's grab an espresso soon at Lantern Lane!
+
+Love,
+Claire""",
+            timestamp = "Yesterday",
+            folder = MailFolder.POSTCARDS,
+            isUnread = false,
+            isStarred = true,
+            hasAttachments = true,
+            attachments = listOf(
+                MailAttachment("Botanical_GoldenMist_Postcard.jpg", "1.8 MB", "image")
+            ),
+            avatarColorHex = 0xFFE71D36
+        ),
+        // --- 3. DATING DMS ---
+        EmailItem(
+            senderName = "Claire Fontaine ❤️",
+            senderEmail = "claire.dating@townsquare.social",
+            subject = "💌 [DATING DM] Loved your retro playlist! Coffee?",
+            snippet = "Hey! Saw your profile linked in the Sonic Guild space. I'd love to chat more about synthwave over a cardamon croissant...",
+            body = """Hey there! ❤️
+
+I was browsing the Sonic Waveform channel and saw you liked 'Neon Horizon Beats' and 'Autumn Wind Sonata'. It's so rare to find another citizen who appreciates Dieter Rams era Braun transistors and ambient piano!
+
+If you're free this evening, I'd love to meet up at Lantern Lane Espresso or grab an artisanal sourdough pizza. Let me know if you're interested!
+
+Yours,
+Claire (0.2 miles away)""",
+            timestamp = "12:44 PM",
+            folder = MailFolder.DATING_DMS,
+            isUnread = true,
+            isStarred = true,
+            avatarColorHex = 0xFFFF5252
+        ),
+        EmailItem(
+            senderName = "Julian Frost ❤️",
+            senderEmail = "julian.dating@townsquare.social",
+            subject = "💌 [DATING DM] Space Invaders Match Challenge",
+            snippet = "Hey! Your Block Breaker high score is amazing. How about a friendly challenge at the retro cabinet arcade tonight?",
+            body = """Hey Citizen! 🕹️
+
+I saw your rank climbing up the local high-score leaderboard on the Townsquare Arcade subapp. Your paddle velocity on Block Breaker is insane!
+
+How about we grab some local food and meet up for a friendly Space Invaders tournament at the cabinet kiosk tonight? Loser pays for the pizza! 😉
+
+Cheers,
+Julian (0.5 miles away)""",
+            timestamp = "Yesterday",
+            folder = MailFolder.DATING_DMS,
+            isUnread = false,
+            isStarred = false,
+            avatarColorHex = 0xFF1E88E5
+        ),
+        // --- 4. COLLECTIBLE STAMPS ---
+        EmailItem(
+            senderName = "Philatelic Bureau 🏆",
+            senderEmail = "stamps@townsquare.gov",
+            subject = "🏆 [COLLECTIBLE STAMP] 1928 Clocktower Centennial (Common)",
+            snippet = "STAMP INDEX #082 - Serial: CC-7439. Collected during Grand Archives launch.",
+            body = """CONGRATULATIONS COLLECTOR!
+
+You have successfully claimed the '1928 Clocktower Centennial' Digital Stamp into your municipal collection.
+
+Stamp Specifications:
+• Rarity  : COMMON (Index #082)
+• Series  : Municipal Heritage 2026
+• Valuation: 0.5 Civic Credits
+• Serial  : CC-7439-8812
+
+Stored securely in your encrypted mailbox vault.""",
+            timestamp = "Sep 24",
+            folder = MailFolder.STAMPS,
+            isUnread = false,
+            isStarred = true,
+            avatarColorHex = 0xFF30D158
+        ),
+        EmailItem(
+            senderName = "Philatelic Bureau 🏆",
+            senderEmail = "stamps@townsquare.gov",
+            subject = "🏆 [COLLECTIBLE STAMP] 1974 Alfa Romeo Commemorative (Rare)",
+            snippet = "STAMP INDEX #014 - Serial: AR-1974. Collected during Classic Road Renting trial.",
+            body = """CONGRATULATIONS COLLECTOR!
+
+You have successfully claimed the '1974 Alfa Romeo Commemorative' Digital Stamp into your municipal collection.
+
+Stamp Specifications:
+• Rarity  : RARE (Index #014)
+• Series  : Automotive Classics 2026
+• Valuation: 5.0 Civic Credits
+• Serial  : AR-1974-9556
+
+Stored securely in your encrypted mailbox vault.""",
+            timestamp = "Today",
+            folder = MailFolder.STAMPS,
+            isUnread = true,
+            isStarred = true,
+            avatarColorHex = 0xFFFF9F1C
         )
     )
 
@@ -513,6 +645,58 @@ Elena""",
     )
 
     fun generateInitialMarketplaceListings(): List<MarketplaceListing> = listOf(
+        MarketplaceListing(
+            title = "🍕 Artisanal Sourdough Wood-Fired Pizza",
+            price = 16.00,
+            originalPrice = 20.00,
+            category = MarketCategory.FOOD,
+            condition = ItemCondition.BRAND_NEW,
+            description = "Cooked to order in our stone-hearth oven. Organic sourdough base, freshly stretched buffalo mozzarella, garden basil, and premium extra virgin olive oil. Hot delivery via local bicycle courier in under 30 minutes.",
+            sellerName = "Old Quarter Pizza Co-Op",
+            sellerRating = 4.98,
+            sellerLocation = "Cobblestone Alley • 0.2 miles",
+            imageUrl = "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
+            isSaved = true
+        ),
+        MarketplaceListing(
+            title = "☕ Lantern Lane Morning Breakfast Box",
+            price = 12.50,
+            originalPrice = null,
+            category = MarketCategory.FOOD,
+            condition = ItemCondition.BRAND_NEW,
+            description = "A complete breakfast: bottle of signature specialty pour-over cold brew coffee, fresh-baked flaky butter croissant, soft-boiled organic egg, and locally churned orange marmalade.",
+            sellerName = "Lantern Lane Espresso",
+            sellerRating = 4.88,
+            sellerLocation = "Ivy Courtyard • 0.1 miles",
+            imageUrl = "https://images.unsplash.com/photo-151339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+            isSaved = false
+        ),
+        MarketplaceListing(
+            title = "🚗 Vintage 1974 Alfa Romeo Spider Convertible",
+            price = 95.00,
+            originalPrice = 120.00,
+            category = MarketCategory.VEHICLES,
+            condition = ItemCondition.RESTORED,
+            description = "Turn heads renting this iconic classic convertible for a scenic autumn drive around the Townsquare bay. Meticulously serviced, includes local insurance and full tank of premium fuel.",
+            sellerName = "Classic Road Rental",
+            sellerRating = 4.96,
+            sellerLocation = "Waterfront Pier 14 • 1.4 miles",
+            imageUrl = "https://images.unsplash.com/photo-1525609004556-c46c7d6cf0a3?auto=format&fit=crop&w=800&q=80",
+            isSaved = true
+        ),
+        MarketplaceListing(
+            title = "⚡ Tesla Model 3 Long Range Civic Shuttle",
+            price = 45.00,
+            originalPrice = null,
+            category = MarketCategory.VEHICLES,
+            condition = ItemCondition.BRAND_NEW,
+            description = "Rent a silent, zero-emissions electric sedan for clean city-wide transit. Fully charged (320mi range), includes contactless app unlock and municipal parking pass.",
+            sellerName = "Civic Auto-Share",
+            sellerRating = 4.91,
+            sellerLocation = "Central Garage • 0.5 miles",
+            imageUrl = "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80",
+            isSaved = false
+        ),
         MarketplaceListing(
             title = "Vintage 1974 Braun Transistor AM/FM Radio",
             price = 145.00,
