@@ -82,6 +82,7 @@ import com.example.data.model.MediaType
 import com.example.ui.components.LocalBulletinsSection
 import com.example.ui.components.MediaCardItem
 import com.example.ui.components.MorningBriefCard
+import com.example.ui.components.NewsTicker
 import com.example.ui.components.TownsquareTopBar
 import com.example.ui.theme.*
 
@@ -313,6 +314,15 @@ fun MainFeedScreen(
             )
             Spacer(modifier = Modifier.height(6.dp))
         }
+
+        NewsTicker(
+            headlines = listOf(
+                "Civic News: New Promenade opening tomorrow morning",
+                "Weather Alert: Offshore squall expected at 9 PM",
+                "Marketplace: Vintage audio equipment auction ending soon",
+                "Community: Old Town clocktower renovation begins"
+            )
+        )
 
         // Curation Feed Toggles
         androidx.compose.material3.TabRow(
