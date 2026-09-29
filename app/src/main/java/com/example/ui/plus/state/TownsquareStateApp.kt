@@ -1,12 +1,14 @@
 package com.example.ui.plus.state
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -47,6 +50,85 @@ data class CivilDocument(
     val expiryDate: String
 )
 
+enum class CitizenRole(
+    val title: String,
+    val cardName: String,
+    val label: String,
+    val primaryColor: Color,
+    val secondaryColor: Color,
+    val cardNo: String,
+    val status: String,
+    val description: String,
+    val emoji: String
+) {
+    CITIZEN(
+        "Citizen",
+        "Alexander Vance",
+        "FULL ACTIVE RESIDENT",
+        Color(0xFF00E5FF),
+        Color(0xFF003544),
+        "TS-8274-118A",
+        "Verified • Active",
+        "Grants standard access to district public facilities, local marketplaces, and live FM node feeds.",
+        "👤"
+    ),
+    OFFICIAL(
+        "Official",
+        "Hon. Alexander Vance",
+        "MUNICIPAL LEGISLATOR",
+        Color(0xFFFFB300),
+        Color(0xFF2D1E00),
+        "GOV-003-882X",
+        "Legislator • Active",
+        "Authorizes cryptographic dispatch signatures, legislative veto logs, and secure civil database inquiries.",
+        "🏛️"
+    ),
+    RESPONDER(
+        "Responder",
+        "Capt. Alex Vance",
+        "FIRST RESPONDENT SQUAD",
+        Color(0xFFFF3B30),
+        Color(0xFF3D0800),
+        "EMS-911-304K",
+        "First Responder • Active",
+        "Authorizes zone restriction bypass, emergency siren dispatch, and first respondent co-ordination.",
+        "🚨"
+    ),
+    PRESS(
+        "Press",
+        "Alex Vance, Press",
+        "OFFICIAL CHRONICLER",
+        Color(0xFFD500F9),
+        Color(0xFF32003D),
+        "PRS-442-990B",
+        "Editorial Badge • Active",
+        "Permits unhindered district press pass coverage, direct editorial dispatches, and emergency cordon entry.",
+        "📰"
+    ),
+    MERCHANT(
+        "Merchant",
+        "Alex Vance, Merchant",
+        "REGISTERED DISTRICT KIOSK",
+        Color(0xFF30D158),
+        Color(0xFF063B14),
+        "MER-771-002M",
+        "Vendor Kiosk • Active",
+        "Permits instant listing on Townsquare Marketplace, local food delivery orders, and community kiosk storefront management.",
+        "🏪"
+    ),
+    CREATOR(
+        "Creator",
+        "Alex Vance, Creator",
+        "AUDIO & MEDIA PRODUCER",
+        Color(0xFFFF9F1C),
+        Color(0xFF381F00),
+        "CRT-504-889C",
+        "Studio Pass • Active",
+        "Grants broadcasting rights on Sonic Waveform FM radio, live audio stream node publishing, and editorial column syndication.",
+        "🎨"
+    )
+}
+
 data class ElectionOption(
     val id: String,
     val name: String,
@@ -60,6 +142,7 @@ data class ElectionOption(
 @Composable
 fun TownsquareStateApp(onBack: () -> Unit) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Services, 1: Bills & Taxes, 2: Vote & Live Tally
+    var activeRole by remember { mutableStateOf(CitizenRole.CITIZEN) }
     
     // Live Bills State
     var bills by remember {
@@ -176,53 +259,253 @@ fun TownsquareStateApp(onBack: () -> Unit) {
                 0 -> {
                     // Civil Documents Screen
                     item {
-                        Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = DarkSurface,
-                            border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.4f)),
-                            modifier = Modifier.fillMaxWidth()
+                        // Role chips selectors
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                            items(CitizenRole.entries.toTypedArray()) { role ->
+                                val isSelected = activeRole == role
+                                Surface(
+                                    shape = RoundedCornerShape(20.dp),
+                                    color = if (isSelected) role.primaryColor else DarkSurface,
+                                    border = BorderStroke(1.dp, if (isSelected) role.primaryColor else Color.Gray.copy(alpha = 0.3f)),
+                                    modifier = Modifier.clickable { activeRole = role }
                                 ) {
-                                    Column {
-                                        Text("CITIZEN CARD ID", fontSize = 11.sp, color = NeonCyan, fontWeight = FontWeight.Black)
-                                        Text("Alexander Vance", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(text = role.emoji, fontSize = 11.sp)
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = role.title,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isSelected) Color.Black else Color.White
+                                        )
                                     }
-                                    Icon(Icons.Default.Badge, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(36.dp))
-                                }
-                                
-                                Spacer(modifier = Modifier.height(12.dp))
-                                HorizontalDivider(color = Color.Gray.copy(alpha = 0.2f))
-                                Spacer(modifier = Modifier.height(12.dp))
-                                
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    Column {
-                                        Text("CARD NO", fontSize = 10.sp, color = Color.Gray)
-                                        Text("TS-8274-118A", fontSize = 13.sp, fontFamily = FontFamily.Monospace, color = Color.White)
-                                    }
-                                    Column(horizontalAlignment = Alignment.End) {
-                                        Text("CITIZENSHIP STATUS", fontSize = 10.sp, color = Color.Gray)
-                                        Text("FULL ACTIVE RESIDENT", fontSize = 13.sp, color = Color(0xFF30D158), fontWeight = FontWeight.Bold)
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(12.dp))
-                                
-                                Button(
-                                    onClick = { /* Simulated NFC share */ },
-                                    colors = ButtonDefaults.buttonColors(containerColor = NeonCyan.copy(alpha = 0.15f)),
-                                    border = BorderStroke(1.dp, NeonCyan),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(Icons.Default.QrCode, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Verify Digital Identity", color = NeonCyan)
                                 }
                             }
+                        }
+                    }
+
+                    item {
+                        // Holographic 3D credit card-like identity card
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color.Black,
+                            border = BorderStroke(
+                                1.5.dp,
+                                Brush.sweepGradient(
+                                    listOf(
+                                        activeRole.primaryColor,
+                                        Color.White,
+                                        activeRole.primaryColor,
+                                        Color.Gray,
+                                        activeRole.primaryColor
+                                    )
+                                )
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("role_id_3d_card")
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        Brush.linearGradient(
+                                            listOf(
+                                                activeRole.secondaryColor,
+                                                activeRole.secondaryColor.copy(alpha = 0.7f),
+                                                Color(0xFF020408)
+                                            )
+                                        )
+                                    )
+                                    .padding(20.dp)
+                            ) {
+                                // Background watermark logo
+                                Column(
+                                    modifier = Modifier
+                                        .align(Alignment.CenterEnd)
+                                        .offset(x = 10.dp, y = 5.dp)
+                                ) {
+                                    Text(
+                                        text = activeRole.emoji,
+                                        fontSize = 120.sp,
+                                        color = Color.White.copy(alpha = 0.05f)
+                                    )
+                                }
+
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    // Card Header
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Top
+                                    ) {
+                                        Column {
+                                            Text(
+                                                text = "TOWNSQUARE CIVIL LEDGER",
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    fontWeight = FontWeight.Black,
+                                                    letterSpacing = 1.sp
+                                                ),
+                                                color = activeRole.primaryColor
+                                            )
+                                            Text(
+                                                text = activeRole.label,
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White.copy(alpha = 0.6f)
+                                            )
+                                        }
+
+                                        // Wireless NFC waves icon
+                                        Icon(
+                                            imageVector = Icons.Default.Wifi,
+                                            contentDescription = "Contactless NFC enabled",
+                                            tint = Color.White.copy(alpha = 0.6f),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(28.dp))
+
+                                    // Gold metallic Smart Chip and Signature line
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        // Metallic Golden Brass Chip with microscopic grid line drawings
+                                        Surface(
+                                            shape = RoundedCornerShape(6.dp),
+                                            color = Color(0xFFFFD700),
+                                            border = BorderStroke(0.5.dp, Color(0xFFB8860B)),
+                                            modifier = Modifier.size(36.dp, 28.dp)
+                                        ) {
+                                            Box(modifier = Modifier.fillMaxSize()) {
+                                                Canvas(modifier = Modifier.fillMaxSize()) {
+                                                    // Drawing Smart chip internal connectors
+                                                    drawLine(Color(0xFF8B7500), Offset(size.width * 0.33f, 0f), Offset(size.width * 0.33f, size.height), strokeWidth = 1f)
+                                                    drawLine(Color(0xFF8B7500), Offset(size.width * 0.66f, 0f), Offset(size.width * 0.66f, size.height), strokeWidth = 1f)
+                                                    drawLine(Color(0xFF8B7500), Offset(0f, size.height * 0.5f), Offset(size.width, size.height * 0.5f), strokeWidth = 1f)
+                                                }
+                                            }
+                                        }
+
+                                        // Translucent holographic badge overlay
+                                        Surface(
+                                            shape = RoundedCornerShape(4.dp),
+                                            color = activeRole.primaryColor.copy(alpha = 0.15f),
+                                            border = BorderStroke(0.5.dp, activeRole.primaryColor)
+                                        ) {
+                                            Text(
+                                                text = activeRole.status.uppercase(),
+                                                fontSize = 8.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = activeRole.primaryColor,
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(24.dp))
+
+                                    // Card Holder Details
+                                    Text(
+                                        text = activeRole.cardName,
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Bottom
+                                    ) {
+                                        Column {
+                                            Text("CARD NUMBER", fontSize = 8.sp, color = Color.Gray)
+                                            Text(
+                                                text = activeRole.cardNo,
+                                                fontSize = 13.sp,
+                                                fontFamily = FontFamily.Monospace,
+                                                fontWeight = FontWeight.Bold,
+                                                color = activeRole.primaryColor
+                                            )
+                                        }
+
+                                        // Barcode
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(1.dp),
+                                            modifier = Modifier
+                                                .background(Color.White, RoundedCornerShape(2.dp))
+                                                .padding(horizontal = 4.dp, vertical = 2.dp)
+                                        ) {
+                                            val barcodeLines = listOf(3, 1, 4, 1, 5, 9, 2, 6, 5)
+                                            barcodeLines.forEach { width ->
+                                                Spacer(
+                                                    modifier = Modifier
+                                                        .width(width.dp)
+                                                        .height(14.dp)
+                                                        .background(Color.Black)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        // Privilege details card
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = DarkSurfaceElevated,
+                            border = BorderStroke(1.dp, DarkBorder),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = activeRole.primaryColor, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "${activeRole.title.uppercase()} SECURITY PRIVILEGES",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = activeRole.primaryColor
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = activeRole.description,
+                                    fontSize = 11.sp,
+                                    color = Color.LightGray,
+                                    lineHeight = 15.sp
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Button(
+                            onClick = { /* Simulated NFC share */ },
+                            colors = ButtonDefaults.buttonColors(containerColor = activeRole.primaryColor.copy(alpha = 0.15f)),
+                            border = BorderStroke(1.dp, activeRole.primaryColor),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.QrCode, contentDescription = null, tint = activeRole.primaryColor, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Verify Digital Identity", color = activeRole.primaryColor)
                         }
                     }
 

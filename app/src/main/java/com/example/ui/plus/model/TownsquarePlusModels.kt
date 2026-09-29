@@ -45,7 +45,7 @@ data class VoicemailItem(
 // ==========================================
 
 enum class MailFolder {
-    INBOX, STARRED, SENT, DRAFTS, ARCHIVE, TRASH, ENVELOPES, POSTCARDS, DATING_DMS, STAMPS
+    INBOX, STARRED, SENT, DRAFTS, ARCHIVE, TRASH, ENVELOPES, POSTCARDS, DATING_DMS, STAMPS, AI_CHATBOTS
 }
 
 data class MailAttachment(

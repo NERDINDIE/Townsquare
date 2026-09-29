@@ -33,10 +33,13 @@ import com.example.ui.plus.phone.TownsquarePhoneApp
 import com.example.ui.plus.state.TownsquareStateApp
 import com.example.ui.plus.arcade.TownsquareArcadeApp
 import com.example.ui.plus.health.TownsquareHealthApp
+import com.example.ui.plus.books.TownsquareBookwormApp
+import com.example.ui.plus.lingo.TownsquareLingoApp
+import com.example.ui.plus.planner.TownsquarePlannerApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH, BOOKS, LINGO, PLANNER
 }
 
 @Composable
@@ -88,6 +91,15 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.HEALTH -> {
                 TownsquareHealthApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.BOOKS -> {
+                TownsquareBookwormApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.LINGO -> {
+                TownsquareLingoApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.PLANNER -> {
+                TownsquarePlannerApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -317,6 +329,48 @@ fun TownsquarePlusScreen(
                                 badgeText = "FITNESS & MIND",
                                 onClick = { activeSubApp = PlusModularApp.HEALTH },
                                 testTag = "open_health_app_card"
+                            )
+                        }
+
+                        // 11. Bookworm Book Tracker Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Bookworm",
+                                subtitle = "Book Tracker • Reading Streak • Literature Club",
+                                description = "Track your reading shelves, record page progress, set annual reading goals, and connect with Bookworm literature news.",
+                                icon = Icons.Default.MenuBook,
+                                iconColor = WarmAmber,
+                                badgeText = "BOOK TRACKER",
+                                onClick = { activeSubApp = PlusModularApp.BOOKS },
+                                testTag = "open_bookworm_app_card"
+                            )
+                        }
+
+                        // 12. Lingo Polyglot Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Lingo Polyglot",
+                                subtitle = "Dictionary • Real-Time Translator • AI Language Tutor",
+                                description = "Lookup words with pronunciations and etymology, translate phrases across 7 languages in real-time, and practice spoken dialogue scenarios with an AI tutor.",
+                                icon = Icons.Default.Translate,
+                                iconColor = NeonCyan,
+                                badgeText = "POLYGLOT",
+                                onClick = { activeSubApp = PlusModularApp.LINGO },
+                                testTag = "open_lingo_app_card"
+                            )
+                        }
+
+                        // 13. Planner & Calendar Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Planner & Tasks",
+                                subtitle = "Calendar • Hourly Schedule • Task Manager",
+                                description = "Interactive day and month calendar, hourly appointment scheduler, and prioritized task manager with category tags.",
+                                icon = Icons.Default.CalendarMonth,
+                                iconColor = Color(0xFFFF9F1C),
+                                badgeText = "CALENDAR",
+                                onClick = { activeSubApp = PlusModularApp.PLANNER },
+                                testTag = "open_planner_app_card"
                             )
                         }
 

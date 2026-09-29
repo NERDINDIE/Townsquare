@@ -238,5 +238,114 @@ fun IdentitySettings(
                 }
             }
         }
+
+        // Third-Party Account Connections Card
+        Surface(
+            shape = RoundedCornerShape(14.dp),
+            color = DarkSurfaceElevated,
+            border = BorderStroke(1.dp, DarkBorder),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("🔗", fontSize = 16.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Connected Third-Party Accounts",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = NeonCyan
+                    ) {
+                        Text(
+                            text = "OAUTH 2.0",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF003544),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                var connectedMap by remember {
+                    mutableStateOf(
+                        mapOf(
+                            "Google Workspace & Calendar" to Pair("google@townsquare.media", true),
+                            "Spotify / Waves Audio" to Pair("spotify_user_882", true),
+                            "Goodreads / Bookworm" to Pair("goodreads_bookworm", true),
+                            "GitHub Developer Sync" to Pair("@townsquare-dev", true),
+                            "Discord Community Guilds" to Pair("Citizen#8274", false),
+                            "Fitbit Health & Steps" to Pair("fitbit_active", false)
+                        )
+                    )
+                }
+
+                connectedMap.forEach { (provider, info) ->
+                    val isConnected = info.second
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color.Black.copy(alpha = 0.2f),
+                        border = BorderStroke(1.dp, if (isConnected) NeonCyan.copy(alpha = 0.4f) else Color(0xFF334155)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 3.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = provider,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = if (isConnected) "Connected: ${info.first}" else "Not Connected",
+                                    fontSize = 10.sp,
+                                    color = if (isConnected) Color(0xFF30D158) else Color.Gray
+                                )
+                            }
+
+                            Button(
+                                onClick = {
+                                    connectedMap = connectedMap.toMutableMap().apply {
+                                        put(provider, Pair(info.first, !isConnected))
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isConnected) Color(0xFFFF5252).copy(alpha = 0.15f) else NeonCyan.copy(alpha = 0.15f)
+                                ),
+                                border = BorderStroke(1.dp, if (isConnected) Color(0xFFFF5252) else NeonCyan),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.height(28.dp)
+                            ) {
+                                Text(
+                                    text = if (isConnected) "Disconnect" else "Connect",
+                                    fontSize = 10.sp,
+                                    color = if (isConnected) Color(0xFFFF5252) else NeonCyan,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

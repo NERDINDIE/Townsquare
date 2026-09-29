@@ -116,6 +116,9 @@ import com.example.ui.viewmodel.MediaSuperappViewModel
 import com.example.util.ShareHelper
 import kotlinx.coroutines.launch
 
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+
 class MainActivity : ComponentActivity() {
     companion object {
         var isTvPlaying: Boolean = false
@@ -128,7 +131,15 @@ class MainActivity : ComponentActivity() {
             val viewModel: MediaSuperappViewModel = viewModel()
             val themeConfig by viewModel.currentTheme.collectAsState()
             TownsquareTheme(themeConfig = themeConfig) {
-                TownsquareApp(viewModel = viewModel)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .navigationBarsPadding(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    TownsquareApp(viewModel = viewModel)
+                }
             }
         }
     }

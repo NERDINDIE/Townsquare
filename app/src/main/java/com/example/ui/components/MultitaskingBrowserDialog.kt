@@ -58,6 +58,7 @@ data class BookmarkItem(
 
 val DEFAULT_BOOKMARKS = listOf(
     BookmarkItem("Townsquare Wire", "https://news.google.com", "📰"),
+    BookmarkItem("Townsquare BBS", "bbs://townsquare.local", "📟"),
     BookmarkItem("Civic Wikipedia", "https://wikipedia.org", "🌐"),
     BookmarkItem("Weather Pulse", "https://weather.com", "🌤️"),
     BookmarkItem("Public Archives", "https://archive.org", "📚"),

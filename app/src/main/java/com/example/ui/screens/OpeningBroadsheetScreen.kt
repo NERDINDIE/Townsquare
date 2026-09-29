@@ -35,6 +35,9 @@ import coil.compose.AsyncImage
 import com.example.data.model.JournalEditionEntity
 import com.example.data.model.LocalBulletinEntity
 import com.example.data.model.MediaItemEntity
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import com.example.ui.plus.extensions.welcome.*
 import com.example.ui.theme.DarkBorder
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
@@ -124,6 +127,8 @@ fun WordmarkSplashScreen(
                     )
                 )
             )
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .clickable { onFinished() }
             .testTag("wordmark_splash_screen"),
         contentAlignment = Alignment.Center
@@ -256,8 +261,18 @@ fun WordmarkSplashScreen(
     }
 }
 
+enum class WelcomeSkinType(val label: String, val emoji: String) {
+    BROADSHEET("Broadsheet Press", "📰"),
+    TABLOID("Red Tabloid", "🔥"),
+    MAGAZINE("Glossy Magazine", "🖼️"),
+    DASHBOARD("Ops Dashboard", "📊"),
+    KEITAI("Keitai i-Mode", "📲"),
+    MANUSCRIPT("Gutenberg Codex", "📜"),
+    Y2K_DESKTOP("Y2K Desktop", "💻")
+}
+
 /**
- * Broadsheet / Magazine Style Front-Page Screen populated dynamically with real app content.
+ * Front-Page Screen supporting modular Welcome Extension Skins.
  */
 @Composable
 fun BroadsheetOpeningScreen(
@@ -266,404 +281,75 @@ fun BroadsheetOpeningScreen(
     bulletins: List<LocalBulletinEntity>,
     onEnterHomepage: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
-    val dateFormat = remember { SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.US) }
-    val currentDateStr = remember { dateFormat.format(Date()).uppercase(Locale.US) }
+    var selectedSkin by remember { mutableStateOf(WelcomeSkinType.BROADSHEET) }
 
-    val leadItem = feedItems.firstOrNull() ?: MediaItemEntity(
-        id = 1,
-        type = "NEWSPAPER_MAGAZINE",
-        title = "Civic Renewal & Modern Press Wire Takes Center Stage",
-        subtitle = "A comprehensive look into digital dispatches and local community journalism",
-        authorName = "Editorial Desk",
-        channelId = "townsquare",
-        channelName = "Townsquare Gazette",
-        bodyText = "Welcome to today's edition of the Townsquare Gazette. Featuring real-time dispatches, audio broadcasts, visual gallery collections, and civic news directly from local creators across the municipality.",
-        readTimeMinutes = 4
-    )
-
-    val secondaryItems = feedItems.drop(1).take(2)
-    val featuredJournal = journalEditions.firstOrNull()
-
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0F172A))
+            .background(Color(0xFF070B12))
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .testTag("broadsheet_opening_screen")
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(bottom = 90.dp)
-        ) {
-            // 1. TOP BROADSHEET MASTHEAD BANNER
-            Surface(
-                color = Color(0xFF0B0F17),
-                border = BorderStroke(1.dp, Color(0xFF1E293B)),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 14.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Top Date & Edition Bar
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = currentDateStr,
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                            color = WarmAmber
-                        )
-                        Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = WarmAmber.copy(alpha = 0.15f),
-                            border = BorderStroke(0.5.dp, WarmAmber.copy(alpha = 0.5f))
-                        ) {
-                            Text(
-                                text = "MORNING EDITION • VOL. CVII",
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
-                                color = WarmAmber,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
-                        }
-                        Text(
-                            text = "72°F SUNNY",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = NeonCyan
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    HorizontalDivider(color = Color(0xFF334155), thickness = 1.dp)
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Ornate Masthead Title
-                    Text(
-                        text = "THE TOWNSQUARE CHRONICLE",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontFamily = FontFamily.Serif,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 2.sp
-                        ),
-                        color = Color.White,
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = "“ALL THE DISPATCHES, JOURNALS, AUDIO & CIVIC NEWS FIT TO PRINT”",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontFamily = FontFamily.Serif,
-                            letterSpacing = 1.2.sp,
-                            fontWeight = FontWeight.Medium
-                        ),
-                        color = Color(0xFF94A3B8),
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    HorizontalDivider(color = Color(0xFF334155), thickness = 2.dp)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 2. LEAD STORY FEATURE (FRONT PAGE COVER ARTICLE)
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                border = BorderStroke(1.dp, WarmAmber.copy(alpha = 0.4f)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = WarmAmber,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        ) {
-                            Text(
-                                text = "🔥 LEAD DISPATCH • ${leadItem.channelName.uppercase()}",
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = Color.Black,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                            )
-                        }
-                        Text(
-                            text = "${leadItem.readTimeMinutes} MIN READ",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.LightGray
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = leadItem.title,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontFamily = FontFamily.Serif,
-                            fontWeight = FontWeight.Bold,
-                            lineHeight = 28.sp
-                        ),
-                        color = Color.White
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Text(
-                        text = "By ${leadItem.authorName} • Townsquare Editorial Staff",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = WarmAmber
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Lead image preview if present
-                    if (leadItem.mediaUrl.isNotBlank()) {
-                        AsyncImage(
-                            model = leadItem.mediaUrl,
-                            contentDescription = leadItem.title,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                    } else {
-                        // Styled Editorial Frame Box
-                        Surface(
-                            shape = RoundedCornerShape(10.dp),
-                            color = Color(0xFF0F172A),
-                            border = BorderStroke(1.dp, Color(0xFF334155)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Newspaper,
-                                    contentDescription = null,
-                                    tint = WarmAmber,
-                                    modifier = Modifier.size(36.dp)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column {
-                                    Text(
-                                        text = "SPECIAL FRONT PAGE REPORT",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = WarmAmber
-                                    )
-                                    Text(
-                                        text = if (leadItem.subtitle.isNotBlank()) leadItem.subtitle else "Latest breaking civic news and multimedia updates.",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF94A3B8)
-                                    )
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-
-                    // Body Excerpt with Drop-Cap design
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        val firstChar = leadItem.bodyText.firstOrNull()?.toString() ?: "W"
-                        val remainingText = leadItem.bodyText.drop(1).take(220) + "..."
-
-                        Text(
-                            text = firstChar,
-                            style = MaterialTheme.typography.displaySmall.copy(
-                                fontFamily = FontFamily.Serif,
-                                fontWeight = FontWeight.Black
-                            ),
-                            color = WarmAmber,
-                            modifier = Modifier.padding(end = 6.dp)
-                        )
-                        Text(
-                            text = remainingText,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontFamily = FontFamily.Serif,
-                                lineHeight = 20.sp
-                            ),
-                            color = Color(0xFFE2E8F0)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 3. SECONDARY COLUMNS DISPATCHES (NEWSGRID)
-            if (secondaryItems.isNotEmpty()) {
-                Text(
-                    text = "TODAY'S FRONT-PAGE DISPATCHES",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.5.sp
-                    ),
-                    color = WarmAmber,
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    secondaryItems.forEach { item ->
-                        Card(
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
-                            border = BorderStroke(1.dp, Color(0xFF334155)),
-                            modifier = Modifier
-                                .weight(1f)
-                        ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                Text(
-                                    text = item.channelName.uppercase(),
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
-                                    color = NeonCyan
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = item.title,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontFamily = FontFamily.Serif,
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    color = Color.White,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Spacer(modifier = Modifier.height(6.dp))
-                                Text(
-                                    text = item.bodyText,
-                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                    color = Color(0xFF94A3B8),
-                                    maxLines = 3,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 4. EDITOR'S DESK NOTE / FEATURED JOURNAL
-            Card(
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF141D2B)),
-                border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.3f)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .background(NeonCyan.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.FormatQuote,
-                            contentDescription = null,
-                            tint = NeonCyan,
-                            modifier = Modifier.size(26.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column {
-                        Text(
-                            text = "EDITOR'S NOTE",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                            color = NeonCyan
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = if (!featuredJournal?.editorialNotes.isNullOrBlank()) "“${featuredJournal?.editorialNotes}”" else "“Welcome to Townsquare. Swipe through live radio, local journals, breaking press wires, and community video streams.”",
-                            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Serif),
-                            color = Color(0xFFCBD5E1)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-
-        // 5. FLOATING BOTTOM ACTION BAR TO ENTER HOMEPAGE
+        // TOP WELCOME SKIN EXTENSION SWITCHER BAR
         Surface(
-            color = Color(0xFF0B0F17).copy(alpha = 0.95f),
+            color = Color(0xFF0B132B),
             border = BorderStroke(1.dp, Color(0xFF1E293B)),
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "TOWNSQUARE EDITION READY",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = WarmAmber
-                    )
-                    Text(
-                        text = "Tap to enter the full newsroom & media app",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.LightGray
-                    )
-                }
+                Text(
+                    text = "🎨 Welcome Skin:",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WarmAmber
+                )
 
-                Button(
-                    onClick = { onEnterHomepage() },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = WarmAmber,
-                        contentColor = Color.Black
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.testTag("enter_homepage_button")
+                Spacer(modifier = Modifier.width(8.dp))
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        text = "ENTER HOMEPAGE",
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Enter Homepage",
-                        modifier = Modifier.size(18.dp)
-                    )
+                    items(WelcomeSkinType.entries) { skin ->
+                        val isSel = selectedSkin == skin
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isSel) WarmAmber else Color(0xFF1E293B),
+                            border = BorderStroke(1.dp, if (isSel) WarmAmber else Color(0xFF334155)),
+                            modifier = Modifier.clickable { selectedSkin = skin }
+                        ) {
+                            Text(
+                                text = "${skin.emoji} ${skin.label}",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSel) Color(0xFF261800) else Color.White,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
+            }
+        }
+
+        // RENDER SELECTED WELCOME EXTENSION SKIN
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            when (selectedSkin) {
+                WelcomeSkinType.BROADSHEET -> BroadsheetWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
+                WelcomeSkinType.TABLOID -> TabloidWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
+                WelcomeSkinType.MAGAZINE -> MagazineWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
+                WelcomeSkinType.DASHBOARD -> DashboardWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
+                WelcomeSkinType.KEITAI -> KeitaiWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
+                WelcomeSkinType.MANUSCRIPT -> ManuscriptWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
+                WelcomeSkinType.Y2K_DESKTOP -> Y2KDesktopWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
             }
         }
     }
 }
+

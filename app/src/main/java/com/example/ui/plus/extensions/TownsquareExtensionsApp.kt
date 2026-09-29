@@ -8,10 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Extension
-import androidx.compose.material.icons.filled.Gamepad
-import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,13 +29,15 @@ fun TownsquareExtensionsApp(onBack: () -> Unit) {
     var isFandomTimesActive by remember { mutableStateOf(false) }
     var isCliDosActive by remember { mutableStateOf(false) }
     var isMetroWin8Active by remember { mutableStateOf(false) }
+    var isAndroid10Active by remember { mutableStateOf(false) }
 
     // Intercept back button to exit active skin instead of closing Extensions entirely
-    BackHandler(enabled = isGeekLiveActive || isFandomTimesActive || isCliDosActive || isMetroWin8Active) {
+    BackHandler(enabled = isGeekLiveActive || isFandomTimesActive || isCliDosActive || isMetroWin8Active || isAndroid10Active) {
         isGeekLiveActive = false
         isFandomTimesActive = false
         isCliDosActive = false
         isMetroWin8Active = false
+        isAndroid10Active = false
     }
 
     Column(modifier = Modifier.fillMaxSize().background(DarkBg)) {
@@ -49,6 +48,7 @@ fun TownsquareExtensionsApp(onBack: () -> Unit) {
                            else if (isFandomTimesActive) "The Fandom Times Live" 
                            else if (isCliDosActive) "MS-DOS Terminal v2.86" 
                            else if (isMetroWin8Active) "Windows 8 Metro Start" 
+                           else if (isAndroid10Active) "Android 1.0 G1 Retro"
                            else "Extensions Builder",
                     color = Color.White
                 )
@@ -75,13 +75,14 @@ fun TownsquareExtensionsApp(onBack: () -> Unit) {
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkSurface),
             actions = {
-                if (isGeekLiveActive || isFandomTimesActive || isCliDosActive || isMetroWin8Active) {
+                if (isGeekLiveActive || isFandomTimesActive || isCliDosActive || isMetroWin8Active || isAndroid10Active) {
                     IconButton(
                         onClick = {
                             isGeekLiveActive = false
                             isFandomTimesActive = false
                             isCliDosActive = false
                             isMetroWin8Active = false
+                            isAndroid10Active = false
                         }
                     ) {
                         Icon(
@@ -103,6 +104,8 @@ fun TownsquareExtensionsApp(onBack: () -> Unit) {
                 CliDosSkin(modifier = Modifier.fillMaxSize())
             } else if (isMetroWin8Active) {
                 MetroWin8Skin(modifier = Modifier.fillMaxSize())
+            } else if (isAndroid10Active) {
+                Android10Skin(modifier = Modifier.fillMaxSize())
             } else {
                 Column(
                     modifier = Modifier
@@ -234,6 +237,35 @@ fun TownsquareExtensionsApp(onBack: () -> Unit) {
                             Column {
                                 Text("Windows 8 Metro Start Screen", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 16.sp)
                                 Text("Flat live tile start screen. Interactive panels display active audio, mail alerts, and click overlays with complete diagnostic logs.", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 5. Android 1.0 G1 Retro Skin
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { isAndroid10Active = true }
+                            .testTag("android_10_extension_card"),
+                        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Extension,
+                                contentDescription = null,
+                                tint = Color(0xFFA4C639),
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text("Android 1.0 G1 Retro Skin", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 16.sp)
+                                Text("Nostalgic 2008 Android G1 interface with green status bar, pull-down notifications shade, analog clock widget, and physical trackball controller.", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                             }
                         }
                     }

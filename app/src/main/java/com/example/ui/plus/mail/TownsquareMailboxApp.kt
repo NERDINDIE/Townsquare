@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.plus.model.*
 import com.example.ui.theme.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +59,8 @@ fun TownsquareMailboxApp(
         Pair(MailFolder.ENVELOPES, "Envelopes ✉️"),
         Pair(MailFolder.POSTCARDS, "Postcards 🏞️"),
         Pair(MailFolder.DATING_DMS, "Dating DMs 💌"),
-        Pair(MailFolder.STAMPS, "Collectible Stamps 🏆")
+        Pair(MailFolder.STAMPS, "Collectible Stamps 🏆"),
+        Pair(MailFolder.AI_CHATBOTS, "AI Chatbots 🤖")
     )
 
     fun sendEmail() {
@@ -262,7 +265,10 @@ fun TownsquareMailboxApp(
                 }
 
                 // Search Bar
-                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+                if (currentFolder == MailFolder.AI_CHATBOTS) {
+                    MailboxAiChatbotsSection()
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
@@ -462,6 +468,7 @@ fun TownsquareMailboxApp(
                     }
                 }
             }
+        }
 
             // Floating Compose Button
             FloatingActionButton(
@@ -785,6 +792,222 @@ private fun EmailDetailView(
                     }
                 }
             }
+        }
+    }
+}
+
+// -------------------------------------------------------------
+// AI CHATBOTS SECTION COMPONENT
+// -------------------------------------------------------------
+@Composable
+private fun MailboxAiChatbotsSection() {
+    var selectedBotId by remember { mutableStateOf("civic") }
+    var userInput by remember { mutableStateOf("") }
+    var isGenerating by remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val botProfiles = remember {
+        listOf(
+            Triple("civic", "🏛️ Civic Navigator Bot", "Municipal permits, elections, civil LEDGER identity cards."),
+            Triple("editorial", "📰 Editorial Wire Bot", "News dispatches, press guidelines, and editorial queries."),
+            Triple("concierge", "🤝 Townsquare Concierge Bot", "Marketplace items, travel spots, radio stations, and arcade high scores.")
+        )
+    }
+
+    var chatHistory by remember {
+        mutableStateOf(
+            mapOf(
+                "civic" to listOf(
+                    Pair(false, "Greetings Citizen! I am your AI Civic Navigator Bot. How can I assist you with district permits, election voting status, or civil identity badges today?")
+                ),
+                "editorial" to listOf(
+                    Pair(false, "Welcome to the Editorial Wire Desk! Ask me about breaking dispatches, journalism guidelines, or submission rules.")
+                ),
+                "concierge" to listOf(
+                    Pair(false, "Hello! I am your Townsquare AI Concierge. Ask me for recommendations on local artisan items, travel spots, or high scores!")
+                )
+            )
+        )
+    }
+
+    val activeHistory = chatHistory[selectedBotId] ?: emptyList()
+    val activeBot = botProfiles.find { it.first == selectedBotId } ?: botProfiles.first()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        // Bot Selector Carousel
+        Text("SELECT AI CHATBOT ASSISTANT", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = NeonCyan, letterSpacing = 1.sp)
+        Spacer(modifier = Modifier.height(6.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(botProfiles) { bot ->
+                val isSelected = selectedBotId == bot.first
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = if (isSelected) NeonCyan else DarkSurface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) NeonCyan else DarkBorder),
+                    modifier = Modifier.clickable { selectedBotId = bot.first }
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                        Text(
+                            text = bot.second,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = if (isSelected) Color(0xFF003544) else Color.White
+                        )
+                        Text(
+                            text = bot.third,
+                            fontSize = 10.sp,
+                            color = if (isSelected) Color(0xFF003544).copy(alpha = 0.8f) else Color.Gray,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Chat Conversation Window
+        Surface(
+            shape = RoundedCornerShape(14.dp),
+            color = DarkSurface,
+            border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(activeHistory) { message ->
+                    val isUser = message.first
+                    val text = message.second
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(
+                                topStart = 12.dp,
+                                topEnd = 12.dp,
+                                bottomStart = if (isUser) 12.dp else 2.dp,
+                                bottomEnd = if (isUser) 2.dp else 12.dp
+                            ),
+                            color = if (isUser) WarmAmber else DarkSurfaceElevated,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isUser) WarmAmber else NeonCyan.copy(alpha = 0.3f)),
+                            modifier = Modifier.widthIn(max = 280.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(10.dp)) {
+                                Text(
+                                    text = if (isUser) "You" else activeBot.second,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isUser) Color(0xFF261800) else NeonCyan
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = text,
+                                    fontSize = 12.sp,
+                                    color = if (isUser) Color(0xFF261800) else Color.White,
+                                    lineHeight = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (isGenerating) {
+                    item {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp), color = NeonCyan, strokeWidth = 2.dp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Gemini AI is crafting response...", fontSize = 11.sp, color = Color.Gray)
+                        }
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Prompt Input Field
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedTextField(
+                value = userInput,
+                onValueChange = { userInput = it },
+                placeholder = { Text("Ask ${activeBot.second}...", fontSize = 12.sp, color = DarkTextMuted) },
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = DarkSurface,
+                    unfocusedContainerColor = DarkSurface,
+                    focusedBorderColor = NeonCyan,
+                    unfocusedBorderColor = DarkBorder,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                ),
+                modifier = Modifier.weight(1f)
+            )
+
+            Button(
+                onClick = {
+                    if (userInput.isNotBlank() && !isGenerating) {
+                        val prompt = userInput
+                        userInput = ""
+                        val currentList = chatHistory[selectedBotId] ?: emptyList()
+                        val updatedList = currentList + Pair(true, prompt)
+                        chatHistory = chatHistory + (selectedBotId to updatedList)
+
+                        isGenerating = true
+                        coroutineScope.launch {
+                            kotlinx.coroutines.delay(1000L)
+                            val botReply = generateBotResponse(selectedBotId, prompt)
+                            val finalHistory = chatHistory[selectedBotId] ?: emptyList()
+                            chatHistory = chatHistory + (selectedBotId to (finalHistory + Pair(false, botReply)))
+                            isGenerating = false
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = Color(0xFF003544)),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.height(52.dp)
+            ) {
+                Icon(Icons.Default.AutoAwesome, contentDescription = "Send", modifier = Modifier.size(18.dp))
+            }
+        }
+    }
+}
+
+private fun generateBotResponse(botId: String, prompt: String): String {
+    val lower = prompt.lowercase()
+    return when (botId) {
+        "civic" -> when {
+            "permit" in lower || "passport" in lower -> "Your civil documents and permits are securely indexed on the State Portal. You can request new green parking permits or passport renewals directly under Civil Documents!"
+            "election" in lower || "vote" in lower -> "The live municipal election tally is actively streaming. Current turnout is 86% across all subdistricts."
+            "id" in lower || "role" in lower -> "Townsquare supports 6 digital identity roles (Citizen, Official, Responder, Press, Merchant, Creator), complete with 3D metallic credit card badges and NFC verification."
+            else -> "As the Civic Navigator AI Bot, I confirm your municipal status is verified and active. How else may I assist your resident journey?"
+        }
+        "editorial" -> when {
+            "dispatch" in lower || "news" in lower -> "The latest headline: Waterfront Promenade Ribbon Cutting ceremony is scheduled for 10:00 AM. Embargoed press kits are in your Mailbox Inbox!"
+            "submit" in lower || "article" in lower -> "You can publish your dispatches using the Extensions Builder or by submitting columns directly to editor@townsquare.media."
+            else -> "The Editorial Wire Desk has received your inquiry. Our press channels (The Fandom Times, Aura, Anime Shinbun) maintain full independent journalistic integrity."
+        }
+        else -> when {
+            "pizza" in lower || "food" in lower || "buy" in lower -> "Check out the Townsquare Marketplace for 2-hour delivery of Wood-Fired Sourdough Pizza and Vintage 1974 Alfa Romeo classic car rentals!"
+            "game" in lower || "arcade" in lower || "score" in lower -> "Launch the Arcade subapp in Townsquare Plus to play Space Invaders and Block Breaker, track achievements, and climb the local leaderboard!"
+            "music" in lower || "radio" in lower -> "Tune into Sonic Waveform FM in the Audio Hub for live synthesizer broadcasts and classical sonatas!"
+            else -> "Your Townsquare Concierge AI is at your service! Explore our Marketplace, Travel Magazine, or Arcade games anytime."
         }
     }
 }

@@ -578,6 +578,50 @@ This week's highlights:
                 followersCount = 8450,
                 morningBriefHighlight = "The new Townsquare Space Game cabinet tournament is officially live in the Plus app!",
                 iconEmoji = "🎮"
+            ),
+            MediaChannelEntity(
+                id = "channel_aura",
+                name = "🧘 Aura • Mindfulness & Well-being",
+                description = "Dedicated to spirituality, meditation, sound baths, holistic wellness, and mental health wisdom.",
+                category = "Spirituality & Health",
+                bannerColorHex = 0xFF38BDF8,
+                isFollowed = true,
+                followersCount = 19200,
+                morningBriefHighlight = "Morning mindfulness exercises and soundscapes are now streaming on Aura.",
+                iconEmoji = "🧘"
+            ),
+            MediaChannelEntity(
+                id = "channel_anime",
+                name = "⛩️ Anime Shinbun (アニメ新聞)",
+                description = "Dispatches on Japanese pop culture, anime retrospectives, manga reviews, and Tokyo arcade culture.",
+                category = "Pop Culture & Anime",
+                bannerColorHex = 0xFFFF3B30,
+                isFollowed = true,
+                followersCount = 28400,
+                morningBriefHighlight = "Fall anime season preview and classic Kyoto Animation retrospectives live on Shinbun.",
+                iconEmoji = "⛩️"
+            ),
+            MediaChannelEntity(
+                id = "channel_bookworm",
+                name = "📚 Bookworm • Literature & Press",
+                description = "Antiquarian book reviews, rare print editions, author interviews, literary dispatches, and reading club highlights.",
+                category = "Literature & Books",
+                bannerColorHex = 0xFFFF9F1C,
+                isFollowed = true,
+                followersCount = 22100,
+                morningBriefHighlight = "Autumn book club selections and rare letterpress printing retrospectives live on Bookworm.",
+                iconEmoji = "📚"
+            ),
+            MediaChannelEntity(
+                id = "channel_waves",
+                name = "🌊 Waves • Global Music & Frequencies",
+                description = "Music news, vinyl pressings, festival lineups, indie record label dispatches, synth gear reviews, and live acoustic sessions.",
+                category = "Music & Audio",
+                bannerColorHex = 0xFF00E5FF,
+                isFollowed = true,
+                followersCount = 31200,
+                morningBriefHighlight = "Autumn vinyl releases and analog synthesizer festival announcements live on Waves.",
+                iconEmoji = "🌊"
             )
         )
         mediaDao.insertChannels(channels)
@@ -763,6 +807,138 @@ This week's highlights:
                 commentsCount = 45,
                 isLiked = true,
                 tags = "#arcade #superapp #leaderboard #tournament"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "🧘 The Architecture of Stillness: Daily Practices for Mental Clarity",
+                subtitle = "Spirituality & Mental Health Dispatch",
+                authorName = "Maya Lin",
+                authorHandle = "@mayalin_zen",
+                channelId = "channel_aura",
+                channelName = "🧘 Aura • Mindfulness & Well-being",
+                bodyText = "In a world of constant notification buzz, cultivating inner stillness is a vital civil discipline. Explore guided breathwork techniques, morning meditation rituals, and the restorative science of ambient sound baths.",
+                timestamp = now - 3600000L * 2,
+                likesCount = 245,
+                isBookmarked = true,
+                tags = "#aura #mindfulness #mentalhealth #meditation #wellness"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "⛩️ Fall 2026 Anime Season: The Curation Guide",
+                subtitle = "Japanese Pop Culture Review",
+                authorName = "Kenji Sato",
+                authorHandle = "@kenjisato_anime",
+                channelId = "channel_anime",
+                channelName = "⛩️ Anime Shinbun (アニメ新聞)",
+                bodyText = "From cyberpunk cityscape thrillers to soothing slice-of-life tea house chronicles, here is our definitive preview of this autumn's most anticipated animated series.",
+                timestamp = now - 3600000L * 3,
+                likesCount = 412,
+                isBookmarked = true,
+                tags = "#anime #japan #popculture #shinbun #otaku"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "📚 The Resurgence of Physical Letterpress & Antiquarian Press",
+                subtitle = "Bookworm Literature Dispatch • Vol. 18",
+                authorName = "Julian Vance",
+                authorHandle = "@julianvance_books",
+                channelId = "channel_bookworm",
+                channelName = "📚 Bookworm • Literature & Press",
+                bodyText = "Why young readers are returning to linen-bound hardcovers, hand-set movable lead type, and tactile reading experiences. Features interviews with local bookbinders in the Old Quarter Guild.",
+                timestamp = now - 3600000L * 1,
+                likesCount = 388,
+                isBookmarked = true,
+                tags = "#bookworm #literature #books #reading #letterpress"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "🐷 Manor Farm Renamed 'Animal Farm' Following Historic Rebellion; Seven Commandments Codified",
+                subtitle = "Willingdon Gazette & Animal Farm Dispatch • Live Literature Wire",
+                authorName = "Benjamin the Donkey",
+                authorHandle = "@animal_farm_gazette",
+                channelId = "channel_bookworm",
+                channelName = "📚 Bookworm • Literature & Press",
+                bodyText = """WILLINGDON — Following the sudden expulsion of Mr. Jones, leadership under Comrade Napoleon and Snowball has officially proclaimed Animal Farm. 
+
+The Seven Commandments ("1. Whatever goes upon two legs is an enemy. 2. Whatever goes upon four legs, or has wings, is a friend. ... 7. All animals are equal.") have been painted in bold white lettering on the main barn wall. 
+
+Plans for a central electrical windmill were vigorously debated in Sunday assemblies, while Squealer assured all comrades that milk and apple rations are strictly required for pig brainpower.""",
+                timestamp = now - 3600000L * 2,
+                likesCount = 890,
+                isBookmarked = true,
+                tags = "#animalfarm #orwell #literature #classics #bookworm #dispatch"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "🛡️ Heorot Mead-Hall Cleared of Night Terror; Geatish Hero Beowulf Claims Arm Trophy",
+                subtitle = "Hrothgar's Royal Court Chronicle • Live Literature Wire",
+                authorName = "Unferth the Skald",
+                authorHandle = "@heorot_chronicle",
+                channelId = "channel_bookworm",
+                channelName = "📚 Bookworm • Literature & Press",
+                bodyText = """DANELAW — After twelve long winters of nightly slaughter by the shadow-stalker Grendel, King Hrothgar's magnificent hall of Heorot rejoices tonight! 
+
+Beowulf, son of Ecgtheow, engaged the fiend in bare-handed combat without sword or shield, tearing Grendel's shoulder and claw clean from the socket. The gory trophy now hangs proudly beneath the gilded rafters of Heorot. 
+
+Queen Wealhtheow presented the hero with a golden torque, though warriors warn that Grendel's mother lurks in the dark, murky fenland mere...""",
+                timestamp = now - 3600000L * 4,
+                likesCount = 1240,
+                isBookmarked = true,
+                tags = "#beowulf #epic #literature #classics #bookworm #heorot #geats"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "📺 Oceania Ministry of Plenty Announces Chocolate Ration Raised to 20g; Front Shifts Across Superstates",
+                subtitle = "Ministry of Truth Newspeak Bulletin • Live Literature Wire",
+                authorName = "Winston Smith",
+                authorHandle = "@tele_scr_1984",
+                channelId = "channel_bookworm",
+                channelName = "📚 Bookworm • Literature & Press",
+                bodyText = """LONDON, AIRSTRIP ONE — Big Brother addressed the citizens during Two Minutes Hate today. The Ministry of Plenty announced a triumphant economic victory: the weekly chocolate ration has been raised to twenty grams (demonstrating the overwhelming superiority of Ingsoc planning over last week's 30g). 
+
+Meanwhile, official dispatches confirm that Oceanian forces in Malaya have routed Eastasia—who has always been Oceania's enemy and with whom we have always been at war. 
+
+Diplomatic cables from Eurasia's capital Moscow and Eastasia's capital Peking report simultaneous global mobilization along the equatorial front line.""",
+                timestamp = now - 3600000L * 6,
+                likesCount = 1984,
+                isBookmarked = true,
+                tags = "#1984 #orwell #ingsoc #oceania #eurasia #eastasia #literature #bookworm"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "🎩 Netherfield Park Leased to Single Gentleman of Large Fortune; Longbourn Society Abuzz",
+                subtitle = "Hertfordshire Gazette & Society Column • Live Literature Wire",
+                authorName = "Mrs. Bennet",
+                authorHandle = "@hertfordshire_society",
+                channelId = "channel_bookworm",
+                channelName = "📚 Bookworm • Literature & Press",
+                bodyText = """LONGBOURN — It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife! 
+
+Mr. Charles Bingley, a charming gentleman of £5,000 a year from the North of England, has officially taken Netherfield Park. Local society eagerly anticipates the upcoming Meryton Assembly Ball. 
+
+However, scandal brews around his taciturn companion, Mr. Fitzwilliam Darcy of Pemberley (£10,000 a year), who reportedly snubbed Miss Elizabeth Bennet at the dance, calling her "tolerable, but not handsome enough to tempt me." """,
+                timestamp = now - 3600000L * 8,
+                likesCount = 742,
+                isBookmarked = true,
+                tags = "#prideandprejudice #janeausten #literature #classics #pemberley #bookworm"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "🎧 Analog Synthesizer Revival & 180g Vinyl Pressing Demand Hits Record Highs",
+                subtitle = "Waves Music Dispatch • Vol. 42",
+                authorName = "Aria Scott",
+                authorHandle = "@ariascott_waves",
+                channelId = "channel_waves",
+                channelName = "🌊 Waves • Global Music & Frequencies",
+                bodyText = """Independent record labels report sold-out vinyl pressings across ambient, lo-fi, and synthwave genres. 
+
+Audio engineers in Bristol and Kyoto are combining discrete analog voltage circuits with modern MIDI controllers, sparking a global movement for tactile music production. 
+
+Highlights include an exclusive breakdown of upcoming autumn music festival lineups and 24-bit lossless streaming integrations.""",
+                timestamp = now - 3600000L * 2,
+                likesCount = 1120,
+                isBookmarked = true,
+                tags = "#waves #music #vinyl #synth #ambient #soundscapes"
             ),
 
             // 1. Social Post

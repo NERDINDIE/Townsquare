@@ -726,6 +726,10 @@ private fun getLeadCuratorForChannel(channelId: String): String {
         "channel_sonic" -> "DJ Kieran Scott • Waveform Transmission"
         "channel_the_ticket" -> "Aria Chen • Cultural Arts Guild"
         "channel_arcade" -> "Leo Vance • Retro Systems & Interactive Media"
+        "channel_aura" -> "Maya Lin • Mindfulness & Holistic Health"
+        "channel_anime" -> "Kenji Sato • Pop Culture & Anime Shinbun"
+        "channel_bookworm" -> "Julian Vance • Literature & Antiquarian Guild"
+        "channel_waves" -> "Aria Scott • Waves Music Bureau & Frequency Lab"
         else -> "Townsquare Editorial Collective"
     }
 }
