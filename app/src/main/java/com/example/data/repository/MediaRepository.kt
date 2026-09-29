@@ -556,6 +556,28 @@ This week's highlights:
                 followersCount = 37100,
                 morningBriefHighlight = "Live atmospheric radio stations report record listener engagement for morning focus blocks.",
                 iconEmoji = "📻"
+            ),
+            MediaChannelEntity(
+                id = "channel_the_ticket",
+                name = "🎟️ The Ticket",
+                description = "Your local gateway to cultural events, theater, live gigs, and followable neighborhood artists.",
+                category = "Arts & Culture",
+                bannerColorHex = 0xFFFF5252,
+                isFollowed = true,
+                followersCount = 15800,
+                morningBriefHighlight = "Symphony under the stars tickets are now live in the superapp feed. Get yours today!",
+                iconEmoji = "🎟️"
+            ),
+            MediaChannelEntity(
+                id = "channel_arcade",
+                name = "🎮 Arcade Gaming",
+                description = "Local competitive high-scores, retro cabinet tournaments, indie games, and interactive speedrun chronicles.",
+                category = "Gaming & Tech",
+                bannerColorHex = 0xFF33FF33,
+                isFollowed = true,
+                followersCount = 8450,
+                morningBriefHighlight = "The new Townsquare Space Game cabinet tournament is officially live in the Plus app!",
+                iconEmoji = "🎮"
             )
         )
         mediaDao.insertChannels(channels)
@@ -599,6 +621,150 @@ This week's highlights:
 
         val now = System.currentTimeMillis()
         val items = listOf(
+            // --- SONGS ---
+            MediaItemEntity(
+                type = MediaType.SONG.name,
+                title = "Neon Horizon Beats",
+                subtitle = "Late Night Synthesizer Jam • 85 BPM",
+                authorName = "DJ Sora",
+                authorHandle = "@djsora",
+                channelId = "channel_sonic",
+                channelName = "📻 Sonic Waveform",
+                bodyText = "Unwind with retro-futuristic synthwave chords, analog tape delays, and a steady rhythmic groove designed for deep design sessions.",
+                durationSeconds = 195,
+                mediaUrl = "https://audio.townsquare.local/neon_horizon.mp3",
+                timestamp = now - 600000L,
+                likesCount = 84,
+                isBookmarked = false,
+                tags = "#synthwave #lofi #beats #focus"
+            ),
+            MediaItemEntity(
+                type = MediaType.SONG.name,
+                title = "Autumn Wind Sonata",
+                subtitle = "Acoustic Grand Piano & Ambient Strings",
+                authorName = "Maestro Julian Frost",
+                authorHandle = "@julian_frost",
+                channelId = "channel_sonic",
+                channelName = "📻 Sonic Waveform",
+                bodyText = "A warm, slow-tempo acoustic masterpiece capturing the early morning fog of Townsquare's botanical gardens.",
+                durationSeconds = 240,
+                mediaUrl = "https://audio.townsquare.local/autumn_wind.mp3",
+                timestamp = now - 900000L,
+                likesCount = 112,
+                isBookmarked = true,
+                tags = "#piano #classical #ambient #calm"
+            ),
+
+            // --- PLAYLISTS ---
+            MediaItemEntity(
+                type = MediaType.PLAYLIST.name,
+                title = "Lo-Fi Workday Focus",
+                subtitle = "Generative vinyl beats compiled by Sonic Guild",
+                authorName = "Townsquare Curators",
+                authorHandle = "@townsquare_curators",
+                channelId = "channel_sonic",
+                channelName = "📻 Sonic Waveform",
+                bodyText = "A 45-minute continuous flow of warm, atmospheric grooves, jazz loops, and ambient street hums to keep your mind sharp.",
+                durationSeconds = 2700,
+                mediaUrl = "https://audio.townsquare.local/lofi_focus.mp3",
+                timestamp = now - 1200000L,
+                likesCount = 248,
+                isBookmarked = true,
+                tags = "#lofi #playlist #focus #study"
+            ),
+            MediaItemEntity(
+                type = MediaType.PLAYLIST.name,
+                title = "Symphony Under the Stars Special",
+                subtitle = "Historical live recordings from the Glass Pavilion",
+                authorName = "Philharmonic Orchestra",
+                authorHandle = "@philharmonic",
+                channelId = "channel_sonic",
+                channelName = "📻 Sonic Waveform",
+                bodyText = "Revisit past performances of Debussy, Glass, and Chopin recorded live during the annual twilight series.",
+                durationSeconds = 3600,
+                mediaUrl = "https://audio.townsquare.local/symphony_special.mp3",
+                timestamp = now - 1800000L,
+                likesCount = 315,
+                isBookmarked = false,
+                tags = "#symphony #playlist #classical #live"
+            ),
+
+            // --- THE TICKET EVENTS ---
+            MediaItemEntity(
+                type = MediaType.NEWSLETTER.name,
+                title = "🎭 Shakespeare in the Courtyard: Hamlet",
+                subtitle = "Augustine Theater Guild • Open Air Stage",
+                authorName = "Aria Chen",
+                authorHandle = "@ariachen",
+                channelId = "channel_the_ticket",
+                channelName = "🎟️ The Ticket",
+                bodyText = "Join the Townsquare Augustine Theater Guild for a modern-dress, open-air production of Shakespeare's classic tragedy under the historical stone arches.",
+                timestamp = now + 86400000L * 3,
+                issueEdition = "Date: Friday, Oct 2, 2026 • 20:00",
+                likesCount = 84,
+                isBookmarked = false,
+                tags = "#ticket #event #theater #hamlet #arts"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSLETTER.name,
+                title = "🎻 Symphony in the Park: Twilight Concert",
+                subtitle = "Townsquare Philharmonic • Botanical Glasshouse",
+                authorName = "Maestro Julian Frost",
+                authorHandle = "@julian_frost",
+                channelId = "channel_the_ticket",
+                channelName = "🎟️ The Ticket",
+                bodyText = "The full Philharmonic string ensemble performs classical masterworks by Debussy and Chopin at sunset. Admission is free, blanket rentals available.",
+                timestamp = now + 86400000L * 5,
+                issueEdition = "Date: Sunday, Oct 4, 2026 • 18:30",
+                likesCount = 142,
+                isBookmarked = true,
+                tags = "#ticket #event #orchestra #classical #music"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSLETTER.name,
+                title = "🎨 Modern Art Vernissage & Gallery Stroll",
+                subtitle = "East Arts Quarter • Collective Guild",
+                authorName = "Elena Vance",
+                authorHandle = "@elenavance",
+                channelId = "channel_the_ticket",
+                channelName = "🎟️ The Ticket",
+                bodyText = "Discover new physical canvases, digital print layouts, and hand-molded clay structures from 15 independent local artists.",
+                timestamp = now + 86400000L * 7,
+                issueEdition = "Date: Tuesday, Oct 6, 2026 • 19:00",
+                likesCount = 96,
+                isBookmarked = false,
+                tags = "#ticket #event #art #vernissage #stroll"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "👾 Pixel Odyssey: The Dawn of Local Indie Game Design",
+                subtitle = "Spotlight on Retro-Modern Wave Fronts • Vol. 12",
+                authorName = "Leo Vance",
+                authorHandle = "@leovance_dev",
+                channelId = "channel_arcade",
+                channelName = "🎮 Arcade Gaming",
+                bodyText = "How a small group of municipal developers constructed a full, responsive retro game library. Read about the physics calculations, dynamic pixel grids, and local game engines running directly on-device.",
+                timestamp = now - 3600000L * 4,
+                likesCount = 189,
+                isBookmarked = false,
+                tags = "#gaming #arcade #indiedev #pixels"
+            ),
+            MediaItemEntity(
+                type = MediaType.SOCIAL_POST.name,
+                title = "",
+                subtitle = "Townsquare Retro Cup Is Active!",
+                authorName = "Arcade Guild",
+                authorHandle = "@arcade_guild",
+                channelId = "channel_arcade",
+                channelName = "🎮 Arcade Gaming",
+                bodyText = "🚨 TOURNAMENT ALERT: The Townsquare Space Invaders and Block Breaker leaderboard has officially reset! Launch the 'Arcade' app in Townsquare Plus to test your skills, secure achievements, and see if you can top the local high-score board. May the highest FPS win!",
+                timestamp = now - 3600000L,
+                likesCount = 312,
+                commentsCount = 45,
+                isLiked = true,
+                tags = "#arcade #superapp #leaderboard #tournament"
+            ),
+
             // 1. Social Post
             MediaItemEntity(
                 type = MediaType.SOCIAL_POST.name,

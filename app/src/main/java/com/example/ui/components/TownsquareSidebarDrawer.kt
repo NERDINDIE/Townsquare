@@ -100,6 +100,7 @@ import com.example.data.model.AppSettings
 import com.example.data.model.AudioStreamingQuality
 import com.example.data.model.ReadingFontSize
 import com.example.data.model.VoiceNarrationPreset
+import com.example.ui.components.settings.*
 
 data class SidebarNavItem(
     val index: Int,
@@ -1557,293 +1558,68 @@ fun TownsquareSidebarDrawer(
                                         }
                                     }
 
-                                    // 1. Appearance & Themes
-                                    Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = DarkSurfaceElevated,
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(imageVector = Icons.Default.Palette, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Text("Appearance & Theme", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                            }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            val themePresets = com.example.ui.theme.PresetThemes
-                                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                                themePresets.forEach { theme ->
-                                                    val isSelected = currentTheme?.id == theme.id
-                                                    Surface(
-                                                        shape = RoundedCornerShape(8.dp),
-                                                        color = if (isSelected) NeonCyan.copy(alpha = 0.2f) else Color.Transparent,
-                                                        border = if (isSelected) androidx.compose.foundation.BorderStroke(1.dp, NeonCyan) else null,
-                                                        modifier = Modifier.fillMaxWidth().clickable { onSelectTheme(theme) }
-                                                    ) {
-                                                        Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                                                            Box(modifier = Modifier.size(12.dp).background(theme.primary, CircleShape))
-                                                            Spacer(modifier = Modifier.width(8.dp))
-                                                            Text(theme.name, style = MaterialTheme.typography.bodySmall, color = if (isSelected) NeonCyan else MaterialTheme.colorScheme.onSurface)
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text("Dynamic Material You", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = isDynamicTheme,
-                                                    onCheckedChange = { onSetDynamicThemeEnabled(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text("High Contrast Mode", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.highContrastDisplay ?: false,
-                                                    onCheckedChange = { onUpdateHighContrast(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                        }
-                                    }
+                                    // 1. Appearance & Themes (Modular)
+                                    AppearanceSettings(
+                                        currentTheme = currentTheme,
+                                        isDynamicTheme = isDynamicTheme,
+                                        highContrastEnabled = settings?.highContrastDisplay ?: false,
+                                        onSelectTheme = onSelectTheme,
+                                        onSetDynamicThemeEnabled = onSetDynamicThemeEnabled,
+                                        onUpdateHighContrast = onUpdateHighContrast
+                                    )
 
-                                    // 2. Reading & Typography
-                                    Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = DarkSurfaceElevated,
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(imageVector = Icons.Default.TextFields, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Text("Reading Font Size", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                            }
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                                ReadingFontSize.entries.forEach { size ->
-                                                    val isSelected = (settings?.readingFontSize ?: ReadingFontSize.STANDARD) == size
-                                                    Surface(
-                                                        shape = RoundedCornerShape(8.dp),
-                                                        color = if (isSelected) NeonCyan else Color.Transparent,
-                                                        border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) NeonCyan else DarkBorder),
-                                                        modifier = Modifier.weight(1f).clickable { onUpdateFontSize(size) }
-                                                    ) {
-                                                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 6.dp)) {
-                                                            Text(size.label, style = MaterialTheme.typography.labelSmall, color = if (isSelected) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface)
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
+                                    // 2. Reading & Typography (Modular)
+                                    ReadingSettings(
+                                        selectedFontSize = settings?.readingFontSize ?: ReadingFontSize.STANDARD,
+                                        onUpdateFontSize = onUpdateFontSize
+                                    )
 
-                                    // 3. Audio & Broadcast Tuning
-                                    Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = DarkSurfaceElevated,
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(imageVector = Icons.Default.GraphicEq, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Text("Audio Quality", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                            }
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                AudioStreamingQuality.entries.forEach { quality ->
-                                                    val isSelected = (settings?.audioStreamingQuality ?: AudioStreamingQuality.BALANCED) == quality
-                                                    Surface(
-                                                        shape = RoundedCornerShape(8.dp),
-                                                        color = if (isSelected) NeonCyan.copy(alpha = 0.2f) else Color.Transparent,
-                                                        border = if (isSelected) androidx.compose.foundation.BorderStroke(1.dp, NeonCyan) else null,
-                                                        modifier = Modifier.fillMaxWidth().clickable { onUpdateAudioQuality(quality) }
-                                                    ) {
-                                                        Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                                                            Text(quality.label, style = MaterialTheme.typography.bodySmall, color = if (isSelected) NeonCyan else MaterialTheme.colorScheme.onSurface)
-                                                            Text(quality.bitrate, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(6.dp))
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Radio Dial Haptic", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.dialHapticFeedback ?: true,
-                                                    onCheckedChange = { onUpdateDialHaptic(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Auto-Tune Next Station", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.autoTuneLastStation ?: true,
-                                                    onCheckedChange = { onUpdateAutoTune(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                        }
-                                    }
+                                    // 3. Audio & Broadcast Tuning (Modular)
+                                    AudioSettings(
+                                        selectedQuality = settings?.audioStreamingQuality ?: AudioStreamingQuality.BALANCED,
+                                        dialHapticEnabled = settings?.dialHapticFeedback ?: true,
+                                        autoTuneEnabled = settings?.autoTuneLastStation ?: true,
+                                        onUpdateAudioQuality = onUpdateAudioQuality,
+                                        onUpdateDialHaptic = onUpdateDialHaptic,
+                                        onUpdateAutoTune = onUpdateAutoTune
+                                    )
 
-                                    // 4. AI & Smart Features
-                                    Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = DarkSurfaceElevated,
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(imageVector = Icons.Default.AutoAwesome, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Text("AI & Smart Media Engine", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                            }
-                                            Spacer(modifier = Modifier.height(6.dp))
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Enable AI Features", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.enableAiFeatures ?: true,
-                                                    onCheckedChange = { onUpdateEnableAiFeatures(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Live AI Fact-Checking", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.enableAiFactChecking ?: true,
-                                                    onCheckedChange = { onUpdateEnableAiFactChecking(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("AI Voice Narration", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.enableAiVoiceNarration ?: true,
-                                                    onCheckedChange = { onUpdateEnableAiVoiceNarration(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("AI Article Summaries", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.enableAiSmartSummaries ?: true,
-                                                    onCheckedChange = { onUpdateEnableAiSmartSummaries(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                        }
-                                    }
+                                    // 4. AI & Smart Features (Modular)
+                                    AISmartSettings(
+                                        enableAiFeatures = settings?.enableAiFeatures ?: true,
+                                        enableFactChecking = settings?.enableAiFactChecking ?: true,
+                                        enableVoiceNarration = settings?.enableAiVoiceNarration ?: true,
+                                        enableSmartSummaries = settings?.enableAiSmartSummaries ?: true,
+                                        onUpdateEnableAiFeatures = onUpdateEnableAiFeatures,
+                                        onUpdateEnableFactChecking = onUpdateEnableAiFactChecking,
+                                        onUpdateEnableVoiceNarration = onUpdateEnableAiVoiceNarration,
+                                        onUpdateEnableSmartSummaries = onUpdateEnableAiSmartSummaries
+                                    )
 
-                                    // 5. Voice Narration TTS
-                                    Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = DarkSurfaceElevated,
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Icon(imageVector = Icons.Default.RecordVoiceOver, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                Text("Voice Narration Tuning", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                            }
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            Text("Voice Persona", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                VoiceNarrationPreset.entries.forEach { preset ->
-                                                    val isSelected = (settings?.defaultVoiceNarrationPreset ?: VoiceNarrationPreset.NEWS_ANCHOR) == preset
-                                                    Surface(
-                                                        shape = RoundedCornerShape(8.dp),
-                                                        color = if (isSelected) NeonCyan.copy(alpha = 0.2f) else Color.Transparent,
-                                                        border = if (isSelected) androidx.compose.foundation.BorderStroke(1.dp, NeonCyan) else null,
-                                                        modifier = Modifier.fillMaxWidth().clickable { onUpdateVoicePreset(preset) }
-                                                    ) {
-                                                        Row(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                                                            Text(preset.label, style = MaterialTheme.typography.bodySmall, color = if (isSelected) NeonCyan else MaterialTheme.colorScheme.onSurface)
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                                Text("Speech Speed", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                Text(String.format("%.2fx", settings?.voiceNarrationSpeed ?: 1.0f), style = MaterialTheme.typography.labelSmall, color = NeonCyan)
-                                            }
-                                            Slider(
-                                                value = settings?.voiceNarrationSpeed ?: 1.0f,
-                                                onValueChange = { onUpdateVoiceSpeed(it) },
-                                                valueRange = 0.75f..1.5f,
-                                                colors = SliderDefaults.colors(thumbColor = NeonCyan, activeTrackColor = NeonCyan)
-                                            )
-                                        }
-                                    }
+                                    // 5. Voice Narration TTS (Modular)
+                                    VoiceSettings(
+                                        selectedPreset = settings?.defaultVoiceNarrationPreset ?: VoiceNarrationPreset.NEWS_ANCHOR,
+                                        speechSpeed = settings?.voiceNarrationSpeed ?: 1.0f,
+                                        onUpdateVoicePreset = onUpdateVoicePreset,
+                                        onUpdateVoiceSpeed = onUpdateVoiceSpeed
+                                    )
 
-                                    // 6. Offline, Storage & Alerts
-                                    Surface(
-                                        shape = RoundedCornerShape(14.dp),
-                                        color = DarkSurfaceElevated,
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Column(modifier = Modifier.padding(12.dp)) {
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Offline Mode", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = isOfflineMode,
-                                                    onCheckedChange = { onToggleOfflineMode() },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Auto-Cache Offline", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.autoCacheMorningEdition ?: true,
-                                                    onCheckedChange = { onUpdateAutoCache(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Breaking News Push Alerts", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.breakingNewsAlerts ?: true,
-                                                    onCheckedChange = { onUpdateBreakingNewsAlerts(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                                Text("Print Kiosk Stock Alerts", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-                                                Switch(
-                                                    checked = settings?.printKioskArrivalAlerts ?: true,
-                                                    onCheckedChange = { onUpdatePrintKioskAlerts(it) },
-                                                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF003544), checkedTrackColor = NeonCyan)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            OutlinedButton(
-                                                onClick = onClearMediaCache,
-                                                shape = RoundedCornerShape(10.dp),
-                                                modifier = Modifier.fillMaxWidth()
-                                            ) {
-                                                Icon(imageVector = Icons.Default.CleaningServices, contentDescription = null, modifier = Modifier.size(16.dp))
-                                                Spacer(modifier = Modifier.width(6.dp))
-                                                Text("Clear Media Cache", fontSize = 13.sp)
-                                            }
-                                        }
-                                    }
+                                    // 6. Identity & ID Management (Modular & NEW!)
+                                    IdentitySettings()
+
+                                    // 7. Offline, Storage & Alerts (Modular)
+                                    StorageAlertsSettings(
+                                        isOfflineMode = isOfflineMode,
+                                        autoCacheEnabled = settings?.autoCacheMorningEdition ?: true,
+                                        breakingNewsEnabled = settings?.breakingNewsAlerts ?: true,
+                                        printKioskEnabled = settings?.printKioskArrivalAlerts ?: true,
+                                        onToggleOfflineMode = onToggleOfflineMode,
+                                        onUpdateAutoCache = onUpdateAutoCache,
+                                        onUpdateBreakingNewsAlerts = onUpdateBreakingNewsAlerts,
+                                        onUpdatePrintKioskAlerts = onUpdatePrintKioskAlerts,
+                                        onClearMediaCache = onClearMediaCache
+                                    )
+
                                     Spacer(modifier = Modifier.height(24.dp))
                                 }
                             }

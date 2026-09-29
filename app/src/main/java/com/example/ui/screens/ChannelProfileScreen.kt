@@ -724,6 +724,8 @@ private fun getLeadCuratorForChannel(channelId: String): String {
         "channel_culture" -> "Sebastian Cruz • Arts & Architecture"
         "channel_market" -> "Arthur Chen • Economics Bureau"
         "channel_sonic" -> "DJ Kieran Scott • Waveform Transmission"
+        "channel_the_ticket" -> "Aria Chen • Cultural Arts Guild"
+        "channel_arcade" -> "Leo Vance • Retro Systems & Interactive Media"
         else -> "Townsquare Editorial Collective"
     }
 }

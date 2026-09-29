@@ -580,6 +580,173 @@ fun MainFeedScreen(
                     }
                 }
 
+                // --- THE TICKET: CULTURAL EVENT LISTINGS SECTION ---
+                item {
+                    val ticketEvents = items.filter { it.channelId == "channel_the_ticket" }
+                    if (ticketEvents.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "🎟️ The Ticket • Cultural Events",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
+                                Text(
+                                    text = "Book Seats",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = NeonCyan
+                                )
+                            }
+                            
+                            var bookedEventTitle by remember { mutableStateOf<String?>(null) }
+                            var followedArtists by remember { mutableStateOf(setOf<String>()) }
+                            
+                            if (bookedEventTitle != null) {
+                                androidx.compose.material3.AlertDialog(
+                                    onDismissRequest = { bookedEventTitle = null },
+                                    title = { Text("🎟️ Ticket Confirmed!", color = NeonCyan, fontWeight = FontWeight.Bold) },
+                                    text = {
+                                        Text(
+                                            text = "Your seat at '$bookedEventTitle' has been cryptographically secured.\n\nWe have saved your ticket to your secure civil documents under 'The Ticket'.",
+                                            color = Color.LightGray
+                                        )
+                                    },
+                                    confirmButton = {
+                                        androidx.compose.material3.Button(
+                                            onClick = { bookedEventTitle = null },
+                                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = NeonCyan)
+                                        ) {
+                                            Text("Awesome", color = Color.Black)
+                                        }
+                                    }
+                                )
+                            }
+                            
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(ticketEvents) { event ->
+                                    Card(
+                                        modifier = Modifier
+                                            .width(280.dp)
+                                            .testTag("ticket_event_card_${event.id}"),
+                                        colors = CardDefaults.cardColors(containerColor = DarkSurfaceElevated),
+                                        border = BorderStroke(1.dp, DarkBorder)
+                                    ) {
+                                        Column(modifier = Modifier.padding(14.dp)) {
+                                            Surface(
+                                                shape = RoundedCornerShape(4.dp),
+                                                color = Color(0xFFFF5252).copy(alpha = 0.15f)
+                                            ) {
+                                                Text(
+                                                    text = event.issueEdition.uppercase(),
+                                                    fontSize = 9.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color(0xFFFF5252),
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                            
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                            
+                                            Text(
+                                                text = event.title,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 14.sp,
+                                                color = Color.White,
+                                                maxLines = 1
+                                            )
+                                            Text(
+                                                text = event.subtitle,
+                                                fontSize = 11.sp,
+                                                color = Color.Gray,
+                                                maxLines = 1
+                                            )
+                                            
+                                            Spacer(modifier = Modifier.height(6.dp))
+                                            
+                                            Text(
+                                                text = event.bodyText,
+                                                fontSize = 11.sp,
+                                                color = Color.LightGray,
+                                                maxLines = 2,
+                                                lineHeight = 15.sp
+                                            )
+                                            
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            
+                                            // Featured artist follow row
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Stars,
+                                                        contentDescription = null,
+                                                        tint = NeonCyan,
+                                                        modifier = Modifier.size(12.dp)
+                                                    )
+                                                    Spacer(modifier = Modifier.width(4.dp))
+                                                    Text(
+                                                        text = event.authorName,
+                                                        fontSize = 11.sp,
+                                                        color = Color.White,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                                
+                                                val isFollowed = followedArtists.contains(event.authorName)
+                                                Surface(
+                                                    shape = RoundedCornerShape(4.dp),
+                                                    color = if (isFollowed) Color(0xFF30D158).copy(alpha = 0.2f) else NeonCyan.copy(alpha = 0.15f),
+                                                    border = BorderStroke(1.dp, if (isFollowed) Color(0xFF30D158) else NeonCyan),
+                                                    modifier = Modifier.clickable {
+                                                        followedArtists = if (isFollowed) {
+                                                            followedArtists - event.authorName
+                                                        } else {
+                                                            followedArtists + event.authorName
+                                                        }
+                                                    }
+                                                ) {
+                                                    Text(
+                                                        text = if (isFollowed) "Following ✓" else "+ Follow",
+                                                        fontSize = 10.sp,
+                                                        color = if (isFollowed) Color(0xFF30D158) else NeonCyan,
+                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
+                                            
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            
+                                            androidx.compose.material3.Button(
+                                                onClick = { bookedEventTitle = event.title },
+                                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5252)),
+                                                modifier = Modifier.fillMaxWidth().height(32.dp),
+                                                contentPadding = PaddingValues(0.dp)
+                                            ) {
+                                                Text("Get Tickets / RSVP", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // 4. Media Format Filter Tabs
                 item {
                     val mediaFormats = listOf(null to "All Formats") + MediaType.entries.map { it to it.badge }

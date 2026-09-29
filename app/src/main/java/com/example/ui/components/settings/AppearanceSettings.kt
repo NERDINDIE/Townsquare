@@ -1,0 +1,123 @@
+package com.example.ui.components.settings
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.example.ui.theme.DarkBorder
+import com.example.ui.theme.DarkSurfaceElevated
+import com.example.ui.theme.NeonCyan
+
+@Composable
+fun AppearanceSettings(
+    currentTheme: com.example.ui.theme.ThemeConfig?,
+    isDynamicTheme: Boolean,
+    highContrastEnabled: Boolean,
+    onSelectTheme: (com.example.ui.theme.ThemeConfig) -> Unit,
+    onSetDynamicThemeEnabled: (Boolean) -> Unit,
+    onUpdateHighContrast: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = DarkSurfaceElevated,
+        border = BorderStroke(1.dp, DarkBorder),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Palette,
+                    contentDescription = null,
+                    tint = NeonCyan,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Appearance & Theme",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            
+            val themePresets = com.example.ui.theme.PresetThemes
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                themePresets.forEach { theme ->
+                    val isSelected = currentTheme?.id == theme.id
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (isSelected) NeonCyan.copy(alpha = 0.2f) else Color.Transparent,
+                        border = if (isSelected) BorderStroke(1.dp, NeonCyan) else null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelectTheme(theme) }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(modifier = Modifier.size(12.dp).background(theme.primary, CircleShape))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = theme.name,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isSelected) NeonCyan else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Dynamic Material You",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Switch(
+                    checked = isDynamicTheme,
+                    onCheckedChange = { onSetDynamicThemeEnabled(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color(0xFF003544),
+                        checkedTrackColor = NeonCyan
+                    )
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "High Contrast Mode",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Switch(
+                    checked = highContrastEnabled,
+                    onCheckedChange = { onUpdateHighContrast(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color(0xFF003544),
+                        checkedTrackColor = NeonCyan
+                    )
+                )
+            }
+        }
+    }
+}

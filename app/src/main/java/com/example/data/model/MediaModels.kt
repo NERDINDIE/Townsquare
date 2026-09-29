@@ -8,7 +8,9 @@ enum class MediaType(val displayName: String, val badge: String) {
     NEWSPAPER_MAGAZINE("Press & Mags", "📰 Magazine"),
     NEWSLETTER("Newsletter", "✉️ Newsletter"),
     RADIO_STATION("Radio Live", "📻 Live Radio"),
-    PODCAST_EPISODE("Podcast", "🎙️ Podcast")
+    PODCAST_EPISODE("Podcast", "🎙️ Podcast"),
+    SONG("Songs", "🎵 Song"),
+    PLAYLIST("Playlists", "💿 Playlist")
 }
 
 @Entity(tableName = "media_items")

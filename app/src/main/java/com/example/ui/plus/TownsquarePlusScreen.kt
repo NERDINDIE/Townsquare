@@ -31,10 +31,11 @@ import com.example.ui.plus.maps.TownsquareMapsApp
 import com.example.ui.plus.marketplace.TownsquareMarketplaceApp
 import com.example.ui.plus.phone.TownsquarePhoneApp
 import com.example.ui.plus.state.TownsquareStateApp
+import com.example.ui.plus.arcade.TownsquareArcadeApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE
 }
 
 @Composable
@@ -80,6 +81,9 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.STATE -> {
                 TownsquareStateApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.ARCADE -> {
+                TownsquareArcadeApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -281,6 +285,20 @@ fun TownsquarePlusScreen(
                                 badgeText = "STATE",
                                 onClick = { activeSubApp = PlusModularApp.STATE },
                                 testTag = "open_state_app_card"
+                            )
+                        }
+
+                        // 9. Arcade Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Arcade",
+                                subtitle = "Play Games • Achievements • Live Leaderboard",
+                                description = "Play retro canvas games like Space Invaders and Block Breaker, track unlocked achievements, and see other local high scores.",
+                                icon = Icons.Default.Gamepad,
+                                iconColor = Color(0xFF33FF33),
+                                badgeText = "NEW GAMES",
+                                onClick = { activeSubApp = PlusModularApp.ARCADE },
+                                testTag = "open_arcade_app_card"
                             )
                         }
 

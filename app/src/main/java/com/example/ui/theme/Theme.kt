@@ -94,9 +94,11 @@ fun TownsquareTheme(
         )
     }
 
+    val typography = if (themeConfig.id == "cli_dos") CliDosTypography else Typography
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = typography,
         content = content
     )
 }

@@ -25,5 +25,8 @@ val PresetThemes = listOf(
     ThemeConfig("noon", "Noon Edition (12:00-12:59)", false, Color(0xFFFFB300), Color(0xFF00897B), Color(0xFFFAFAFA), Color(0xFFFFFFFF)),
     ThemeConfig("afternoon", "Afternoon Edition (13:00-15:59)", false, Color(0xFFD32F2F), Color(0xFFF57C00), Color(0xFFFFF3E0), Color(0xFFFFE0B2)),
     ThemeConfig("evening", "Evening Edition (16:00-19:59)", true, Color(0xFFFF4081), Color(0xFF7C4DFF), Color(0xFF2C1B4D), Color(0xFF3F2B96)),
-    ThemeConfig("night", "Night Edition (20:00-21:59)", true, Color(0xFF00E5FF), Color(0xFFD500F9), Color(0xFF0B132B), Color(0xFF1C2541))
+    ThemeConfig("night", "Night Edition (20:00-21:59)", true, Color(0xFF00E5FF), Color(0xFFD500F9), Color(0xFF0B132B), Color(0xFF1C2541)),
+    
+    // Custom CLI/DOS Extension requested by user
+    ThemeConfig("cli_dos", "CLI / MS-DOS Terminal", true, Color(0xFF33FF33), Color(0xFF00AA00), Color(0xFF000000), Color(0xFF0A140A))
 )

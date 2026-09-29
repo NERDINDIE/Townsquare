@@ -802,6 +802,8 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
                     MediaType.RADIO_STATION -> "img_radio_live"
                     MediaType.NEWSLETTER -> "img_morning_brief"
                     MediaType.SOCIAL_POST -> ""
+                    MediaType.SONG -> "img_radio_live"
+                    MediaType.PLAYLIST -> "img_podcast_cover"
                 },
                 timestamp = System.currentTimeMillis(),
                 readTimeMinutes = readTimeMinutes,

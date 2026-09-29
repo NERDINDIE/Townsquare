@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Headphones
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.QueueMusic
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -69,11 +72,13 @@ fun AudioHubScreen(
     onOpenSidebar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedAudioTab by remember { mutableIntStateOf(0) } // 0: Radio, 1: Podcasts
+    var selectedAudioTab by remember { mutableIntStateOf(0) } // 0: Radio, 1: Podcasts, 2: Songs, 3: Playlists
     var showAndroidAutoDialog by remember { mutableStateOf(false) }
 
     val radioStations = items.filter { it.type == MediaType.RADIO_STATION.name }
     val podcasts = items.filter { it.type == MediaType.PODCAST_EPISODE.name }
+    val songs = items.filter { it.type == MediaType.SONG.name }
+    val playlists = items.filter { it.type == MediaType.PLAYLIST.name }
 
     if (showAndroidAutoDialog) {
         AndroidAutoDrivingDialog(
@@ -122,7 +127,7 @@ fun AudioHubScreen(
         )
 
         // Tabs
-        TabRow(
+        ScrollableTabRow(
             selectedTabIndex = selectedAudioTab,
             containerColor = Color.Transparent,
             contentColor = NeonCyan,
@@ -144,7 +149,7 @@ fun AudioHubScreen(
                         Icon(imageVector = Icons.Default.Radio, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Live Radio (${radioStations.size})",
+                            text = "Radio (${radioStations.size})",
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = if (selectedAudioTab == 0) FontWeight.Bold else FontWeight.Normal
                             )
@@ -170,6 +175,42 @@ fun AudioHubScreen(
                     }
                 },
                 modifier = Modifier.testTag("podcast_tab")
+            )
+
+            Tab(
+                selected = selectedAudioTab == 2,
+                onClick = { selectedAudioTab = 2 },
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.MusicNote, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Songs (${songs.size})",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = if (selectedAudioTab == 2) FontWeight.Bold else FontWeight.Normal
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier.testTag("songs_tab")
+            )
+
+            Tab(
+                selected = selectedAudioTab == 3,
+                onClick = { selectedAudioTab = 3 },
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.QueueMusic, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Playlists (${playlists.size})",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = if (selectedAudioTab == 3) FontWeight.Bold else FontWeight.Normal
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier.testTag("playlists_tab")
             )
         }
 
@@ -230,8 +271,30 @@ fun AudioHubScreen(
                         onToggleBookmark = onToggleBookmark
                     )
                 }
-            } else {
+            } else if (selectedAudioTab == 1) {
                 items(podcasts, key = { it.id }) { item ->
+                    MediaCardItem(
+                        item = item,
+                        audioState = audioState,
+                        onOpenReader = onOpenReader,
+                        onPlayAudio = onPlayAudio,
+                        onToggleLike = onToggleLike,
+                        onToggleBookmark = onToggleBookmark
+                    )
+                }
+            } else if (selectedAudioTab == 2) {
+                items(songs, key = { it.id }) { item ->
+                    MediaCardItem(
+                        item = item,
+                        audioState = audioState,
+                        onOpenReader = onOpenReader,
+                        onPlayAudio = onPlayAudio,
+                        onToggleLike = onToggleLike,
+                        onToggleBookmark = onToggleBookmark
+                    )
+                }
+            } else {
+                items(playlists, key = { it.id }) { item ->
                     MediaCardItem(
                         item = item,
                         audioState = audioState,

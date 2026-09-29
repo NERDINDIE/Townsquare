@@ -28,19 +28,19 @@ fun NewsTicker(
 ) {
     if (headlines.isEmpty()) return
 
-    val scrollState = remember { Animatable(0f) }
+    val scrollState = remember { Animatable(350f) }
+    val repeatedHeadlines = remember(headlines) { List(15) { headlines }.flatten() }
     
-    // Simplistic infinite scroll: animate to a large negative number
-    LaunchedEffect(Unit) {
+    LaunchedEffect(headlines) {
         while(isActive) {
+            scrollState.snapTo(350f)
             scrollState.animateTo(
-                targetValue = -2000f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(20000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Restart
+                targetValue = -3500f,
+                animationSpec = tween(
+                    durationMillis = 45000,
+                    easing = LinearEasing
                 )
             )
-            scrollState.snapTo(1000f)
         }
     }
 
@@ -57,12 +57,13 @@ fun NewsTicker(
                 modifier = Modifier.offset { IntOffset(scrollState.value.toInt(), 0) },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                headlines.forEach { headline ->
+                repeatedHeadlines.forEach { headline ->
                     Text(
-                        text = headline.title + " • ",
+                        text = "${headline.title.uppercase()}: ${headline.text}   •   ",
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            fontSize = 13.sp,
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                         ),
                         color = NeonCyan,
                         modifier = Modifier.clickable { onHeadlineClick(headline) }

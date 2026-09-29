@@ -348,6 +348,8 @@ fun CreateContentDialog(
                             MediaType.NEWSLETTER -> "NEWSLETTER CONTENT"
                             MediaType.PODCAST_EPISODE -> "EPISODE NOTES & SUMMARY"
                             MediaType.RADIO_STATION -> "STATION DESCRIPTION & LINEUP"
+                            MediaType.SONG -> "SONG DETAILS & LYRICS"
+                            MediaType.PLAYLIST -> "PLAYLIST COMPILER NOTES"
                         },
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -364,6 +366,8 @@ fun CreateContentDialog(
                                     MediaType.NEWSLETTER -> "Draft your direct reader digest, observations, and links..."
                                     MediaType.PODCAST_EPISODE -> "Describe this episode, guest bios, key timestamps, and talking points..."
                                     MediaType.RADIO_STATION -> "Describe music genres, scheduled broadcast hours, host bios..."
+                                    MediaType.SONG -> "Write song details, artist credentials, lyrics or music links..."
+                                    MediaType.PLAYLIST -> "List tracks in this playlist, focus theme, compiler notes..."
                                 }
                             )
                         },
