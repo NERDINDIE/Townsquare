@@ -23,4 +23,7 @@ object NavDestination {
     const val ENGAGEMENT_DASHBOARD = 13
     const val BROWSER = 14
     const val TOWNSQUARE_PLUS = 15
+    const val PLUS_EXTENSIONS = 16
+    const val PLUS_FINANCE = 17
+    const val PLUS_CATALOGS = 18
 }

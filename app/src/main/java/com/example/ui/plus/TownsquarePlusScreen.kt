@@ -23,6 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.components.TownsquareTopBar
+import com.example.ui.plus.catalogs.TownsquareCatalogsApp
+import com.example.ui.plus.extensions.TownsquareExtensionsApp
+import com.example.ui.plus.finance.TownsquareFinanceApp
 import com.example.ui.plus.mail.TownsquareMailboxApp
 import com.example.ui.plus.maps.TownsquareMapsApp
 import com.example.ui.plus.marketplace.TownsquareMarketplaceApp
@@ -30,7 +33,7 @@ import com.example.ui.plus.phone.TownsquarePhoneApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS
 }
 
 @Composable
@@ -64,6 +67,15 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.MARKETPLACE -> {
                 TownsquareMarketplaceApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.EXTENSIONS -> {
+                TownsquareExtensionsApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.FINANCE -> {
+                TownsquareFinanceApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.CATALOGS -> {
+                TownsquareCatalogsApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -223,6 +235,48 @@ fun TownsquarePlusScreen(
                                 badgeText = "BUY & SELL",
                                 onClick = { activeSubApp = PlusModularApp.MARKETPLACE },
                                 testTag = "open_marketplace_app_card"
+                            )
+                        }
+
+                        // 5. Extensions Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Extensions",
+                                subtitle = "In-App Plugins • UI Builder • Personalization",
+                                description = "Build custom extensions, add new widgets to your Townsquare dashboard, and personalize your modular experience.",
+                                icon = Icons.Default.Extension,
+                                iconColor = NeonCyan,
+                                badgeText = "BUILDER",
+                                onClick = { activeSubApp = PlusModularApp.EXTENSIONS },
+                                testTag = "open_extensions_app_card"
+                            )
+                        }
+
+                        // 6. Finance Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Finance",
+                                subtitle = "Card Management • Spending • Wallet",
+                                description = "Manage your digital cards, monitor your spending habits, and secure your monetary means.",
+                                icon = Icons.Default.AccountBalanceWallet,
+                                iconColor = Color(0xFF30D158),
+                                badgeText = "FINANCE",
+                                onClick = { activeSubApp = PlusModularApp.FINANCE },
+                                testTag = "open_finance_app_card"
+                            )
+                        }
+
+                        // 7. Catalogs Launcher Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Catalogs",
+                                subtitle = "E-Paper Trove • 24/7 Linear Ad TV",
+                                description = "Browse an e-paper trove of partner store catalogs and watch our 24/7 linear ad channel for the best Marketplace deals.",
+                                icon = Icons.Default.CollectionsBookmark,
+                                iconColor = WarmAmber,
+                                badgeText = "CATALOGS",
+                                onClick = { activeSubApp = PlusModularApp.CATALOGS },
+                                testTag = "open_catalogs_app_card"
                             )
                         }
 
