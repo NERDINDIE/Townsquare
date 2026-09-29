@@ -480,6 +480,7 @@ fun BrowserScreen(
                     AndroidView(
                         factory = { context ->
                             WebView(context).apply {
+                                setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
                                 settings.apply {
                                     javaScriptEnabled = true
                                     domStorageEnabled = true

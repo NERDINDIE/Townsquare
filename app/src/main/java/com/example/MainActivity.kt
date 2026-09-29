@@ -65,6 +65,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.data.model.MediaChannelEntity
 import com.example.data.model.MediaItemEntity
 import com.example.ui.AppTab
+import com.example.ui.NavDestination
 import com.example.ui.components.ArticleReaderDialog
 import com.example.ui.components.CreateContentDialog
 import com.example.ui.components.CreateSpaceDialog
@@ -151,7 +152,11 @@ fun TownsquareApp(
         return
     }
 
-    var currentNavIndex by remember { mutableIntStateOf(0) }
+    var currentNavIndex by remember(selectedProfileType) {
+        mutableIntStateOf(
+            if (selectedProfileType == "PLAYGROUND") NavDestination.PLAYGROUND else NavDestination.FEED
+        )
+    }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -294,6 +299,9 @@ fun TownsquareApp(
     var isInboxOpen by remember { mutableStateOf(false) }
     var isEmergencyHubOpen by remember { mutableStateOf(false) }
     var isVoiceBuilderOpen by remember { mutableStateOf(false) }
+    var isBroadcastScheduleOpen by remember { mutableStateOf(false) }
+    var isFactCheckHubOpen by remember { mutableStateOf(false) }
+    var isDrivingModeOpen by remember { mutableStateOf(false) }
     var isModerationDashboardOpen by remember { mutableStateOf(false) }
     var isCreatorMonetizationOpen by remember { mutableStateOf(false) }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
@@ -336,7 +344,7 @@ fun TownsquareApp(
                     .padding(innerPadding)
             ) {
                 when (currentNavIndex) {
-                    0 -> {
+                    NavDestination.FEED -> {
                         MainFeedScreen(
                             items = feedItems,
                             channels = allChannels,
@@ -398,48 +406,17 @@ fun TownsquareApp(
                             onSelectChannel = { channelId ->
                                 activeChannelProfileId = channelId
                             },
-                            onNavigateToTv = { currentNavIndex = 4 },
+                            onNavigateToTv = { currentNavIndex = NavDestination.TV_STREAMING },
                             onOpenSidebar = { viewModel.openSidebar() },
                             onOpenWeather = { isWeatherForecastOpen = true },
                             onOpenInbox = { isInboxOpen = true },
                             onOpenEmergencyHub = { isEmergencyHubOpen = true },
                             onOpenBroadsheetCover = { isBroadsheetViewOpen = true },
+                            onOpenTownsquarePlus = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
                             unreadInboxCount = unreadInboxCount
                         )
                     }
-                    1 -> {
-                        BrowserScreen(
-                            tabs = browserTabs,
-                            activeTabId = activeBrowserTabId,
-                            onTabSelected = { activeBrowserTabId = it },
-                            onNewTab = { initialUrl ->
-                                val newTab = WebTabItem(
-                                    url = initialUrl ?: "https://news.google.com",
-                                    title = "New Tab"
-                                )
-                                browserTabs = browserTabs + newTab
-                                activeBrowserTabId = newTab.id
-                            },
-                            onCloseTab = { tabId ->
-                                val updatedTabs = browserTabs.filterNot { it.id == tabId }
-                                if (updatedTabs.isNotEmpty()) {
-                                    browserTabs = updatedTabs
-                                    if (activeBrowserTabId == tabId) {
-                                        activeBrowserTabId = updatedTabs.last().id
-                                    }
-                                } else {
-                                    val fallbackTab = WebTabItem()
-                                    browserTabs = listOf(fallbackTab)
-                                    activeBrowserTabId = fallbackTab.id
-                                }
-                            },
-                            onUpdateTab = { updatedTab ->
-                                browserTabs = browserTabs.map { if (it.id == updatedTab.id) updatedTab else it }
-                            },
-                            onOpenSidebar = { viewModel.openSidebar() }
-                        )
-                    }
-                    2 -> {
+                    NavDestination.NEWSBLOG -> {
                         NewsblogScreen(
                             entries = newsblogEntries,
                             selectedCategory = selectedNewsblogCategory,
@@ -472,7 +449,7 @@ fun TownsquareApp(
                             }
                         )
                     }
-                    3 -> {
+                    NavDestination.VISUAL_GALLERY -> {
                         VisualGalleryScreen(
                             posts = visualPosts,
                             selectedCategory = selectedVisualCategory,
@@ -502,7 +479,7 @@ fun TownsquareApp(
                             }
                         )
                     }
-                    4 -> {
+                    NavDestination.TV_STREAMING -> {
                         TvStreamingScreen(
                             channels = allTvChannels,
                             activeChannelId = activeTvChannelId,
@@ -552,7 +529,7 @@ fun TownsquareApp(
                             }
                         )
                     }
-                    5 -> {
+                    NavDestination.NEWSSTAND -> {
                         NewsstandScreen(
                             items = allItems,
                             journalEditions = journalEditions,
@@ -597,10 +574,10 @@ fun TownsquareApp(
                             onToggleKioskFavorite = { kiosk ->
                                 viewModel.toggleKioskFavorite(kiosk)
                             },
-                            onNavigateToJournal = { currentNavIndex = 6 }
+                            onNavigateToJournal = { currentNavIndex = NavDestination.JOURNAL }
                         )
                     }
-                    6 -> {
+                    NavDestination.JOURNAL -> {
                         JournalScreen(
                             journalEditions = journalEditions,
                             notepadDrafts = notepadDrafts,
@@ -635,7 +612,7 @@ fun TownsquareApp(
                             onOpenSidebar = { viewModel.openSidebar() }
                         )
                     }
-                    7 -> {
+                    NavDestination.AUDIO_HUB -> {
                         AudioHubScreen(
                             items = allItems,
                             audioState = audioState,
@@ -653,7 +630,7 @@ fun TownsquareApp(
                             onOpenSidebar = { viewModel.openSidebar() }
                         )
                     }
-                    8 -> {
+                    NavDestination.SPACES -> {
                         ProfileSpacesScreen(
                             userSpaces = userSpaces,
                             userCreatedItems = userCreatedItems,
@@ -676,7 +653,13 @@ fun TownsquareApp(
                             onSelectSpace = { spaceId -> activeMediaSpaceId = spaceId }
                         )
                     }
-                    9 -> {
+                    NavDestination.COMMUNITY -> {
+                        com.example.ui.screens.CommunityScreen(
+                            onOpenSidebar = { viewModel.openSidebar() },
+                            onBack = { currentNavIndex = NavDestination.FEED }
+                        )
+                    }
+                    NavDestination.FUNNIES -> {
                         com.example.ui.screens.SundayFunniesScreen(
                             comics = sundayFunniesComics,
                             selectedCategory = selectedFunniesCategory,
@@ -695,7 +678,7 @@ fun TownsquareApp(
                             }
                         )
                     }
-                    10 -> {
+                    NavDestination.PARTNERS -> {
                         PartnerPublicationsScreen(
                             partners = partnerPublications,
                             submittedApplications = partnerApplications,
@@ -703,25 +686,66 @@ fun TownsquareApp(
                             onOpenSidebar = { viewModel.openSidebar() }
                         )
                     }
-                    11 -> {
+                    NavDestination.DISCOVERY -> {
                         com.example.ui.screens.ChannelsScreen(
                             channels = allChannels,
                             onToggleFollowChannel = { viewModel.toggleFollowChannel(it) },
                             onSelectChannel = { activeChannelProfileId = it }
                         )
                     }
-                    12 -> {
-                        com.example.ui.screens.CommunityScreen(
+                    NavDestination.PLAYGROUND -> {
+                        com.example.ui.screens.PlaygroundScreen(
+                            onSwitchProfile = { target ->
+                                if (target == "CHOOSE") {
+                                    viewModel.selectProfile(null)
+                                } else {
+                                    viewModel.selectProfile(target)
+                                    currentNavIndex = if (target == "PLAYGROUND") NavDestination.PLAYGROUND else NavDestination.FEED
+                                }
+                            },
                             onOpenSidebar = { viewModel.openSidebar() }
                         )
                     }
-                    13 -> {
-                        com.example.ui.screens.PlaygroundScreen(
-                            onSwitchProfile = { viewModel.selectProfile(it) }
+                    NavDestination.ENGAGEMENT_DASHBOARD -> {
+                        EngagementDashboardScreen(viewModel)
+                    }
+                    NavDestination.BROWSER -> {
+                        BrowserScreen(
+                            tabs = browserTabs,
+                            activeTabId = activeBrowserTabId,
+                            onTabSelected = { activeBrowserTabId = it },
+                            onNewTab = { initialUrl ->
+                                val newTab = WebTabItem(
+                                    url = initialUrl ?: "https://news.google.com",
+                                    title = "New Tab"
+                                )
+                                browserTabs = browserTabs + newTab
+                                activeBrowserTabId = newTab.id
+                            },
+                            onCloseTab = { tabId ->
+                                val updatedTabs = browserTabs.filterNot { it.id == tabId }
+                                if (updatedTabs.isNotEmpty()) {
+                                    browserTabs = updatedTabs
+                                    if (activeBrowserTabId == tabId) {
+                                        activeBrowserTabId = updatedTabs.last().id
+                                    }
+                                } else {
+                                    val fallbackTab = WebTabItem()
+                                    browserTabs = listOf(fallbackTab)
+                                    activeBrowserTabId = fallbackTab.id
+                                }
+                            },
+                            onUpdateTab = { updatedTab ->
+                                browserTabs = browserTabs.map { if (it.id == updatedTab.id) updatedTab else it }
+                            },
+                            onOpenSidebar = { viewModel.openSidebar() }
                         )
                     }
-                    14 -> {
-                        EngagementDashboardScreen(viewModel)
+                    NavDestination.TOWNSQUARE_PLUS -> {
+                        com.example.ui.plus.TownsquarePlusScreen(
+                            onOpenSidebar = { viewModel.openSidebar() },
+                            onBackToFeed = { currentNavIndex = NavDestination.FEED }
+                        )
                     }
                 }
             }
@@ -746,12 +770,17 @@ fun TownsquareApp(
         onOpenTeletext = { isTeletextOpen = true },
         onOpenFacsimile = { viewModel.openFacsimileDialog() },
         onOpenBroadsheetCover = { isBroadsheetViewOpen = true },
-        onOpenMultitaskingBrowser = { currentNavIndex = 1 },
+        onOpenMultitaskingBrowser = { currentNavIndex = NavDestination.BROWSER },
         onOpenEmergencyHub = { isEmergencyHubOpen = true },
         onOpenWeather = { isWeatherForecastOpen = true },
         onOpenInbox = { isInboxOpen = true },
         onOpenModeration = { isModerationDashboardOpen = true },
         onOpenMonetization = { isCreatorMonetizationOpen = true },
+        onOpenBroadcastSchedule = { isBroadcastScheduleOpen = true },
+        onOpenFactCheckHub = { isFactCheckHubOpen = true },
+        onOpenVoiceBuilder = { isVoiceBuilderOpen = true },
+        onOpenDrivingMode = { isDrivingModeOpen = true },
+        onOpenProfileSwitcher = { viewModel.selectProfile(null) },
         unreadInboxCount = unreadInboxCount,
         draftsCount = notepadDrafts.size,
         settings = appSettings,
@@ -818,7 +847,7 @@ fun TownsquareApp(
         },
         onOpenBulletin = { bulletinId ->
             isInboxOpen = false
-            currentNavIndex = 0
+            currentNavIndex = NavDestination.FEED
         }
     )
 
@@ -1173,6 +1202,39 @@ fun TownsquareApp(
                     snackbarHostState.showSnackbar("Content reported for review")
                 }
             }
+        )
+    }
+
+    if (isBroadcastScheduleOpen) {
+        com.example.ui.components.BroadcastScheduleDialog(
+            isOpen = isBroadcastScheduleOpen,
+            onClose = { isBroadcastScheduleOpen = false },
+            onTuneChannel = { channelNum ->
+                viewModel.tuneChannelByNumber(channelNum)
+                currentNavIndex = NavDestination.TV_STREAMING
+            }
+        )
+    }
+
+    if (isFactCheckHubOpen) {
+        com.example.ui.components.FactCheckingHubDialog(
+            isOpen = isFactCheckHubOpen,
+            onClose = { isFactCheckHubOpen = false }
+        )
+    }
+
+    if (isDrivingModeOpen) {
+        val radioStations = remember(allItems) {
+            allItems.filter { it.type == com.example.data.model.MediaType.RADIO_STATION.name }
+        }
+        com.example.ui.components.AndroidAutoDrivingDialog(
+            stations = radioStations,
+            audioState = audioState,
+            onPlayStation = { viewModel.playAudio(it) },
+            onTogglePlayPause = { viewModel.togglePlayPause() },
+            onSeekNext = { viewModel.seekNextRadioStation(radioStations) },
+            onSeekPrev = { viewModel.seekPreviousRadioStation(radioStations) },
+            onDismiss = { isDrivingModeOpen = false }
         )
     }
 }

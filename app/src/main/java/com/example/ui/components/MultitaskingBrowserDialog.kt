@@ -413,6 +413,7 @@ fun MultitaskingBrowserDialog(
                         AndroidView(
                             factory = { context ->
                                 WebView(context).apply {
+                                    setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
                                     @SuppressLint("SetJavaScriptEnabled")
                                     settings.javaScriptEnabled = true
                                     settings.domStorageEnabled = true

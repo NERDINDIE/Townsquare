@@ -300,7 +300,7 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
     private val _selectedProfileType = MutableStateFlow<String?>(null)
     val selectedProfileType: StateFlow<String?> = _selectedProfileType.asStateFlow()
 
-    fun selectProfile(type: String) {
+    fun selectProfile(type: String?) {
         _selectedProfileType.value = type
     }
 

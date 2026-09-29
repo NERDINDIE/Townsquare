@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,17 +8,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChildCare
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoAlbum
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,8 +36,11 @@ data class ChildProfile(val name: String, val school: String, val grade: String)
 @Composable
 fun PlaygroundScreen(
     modifier: Modifier = Modifier,
-    onSwitchProfile: (String) -> Unit = {}
+    onSwitchProfile: (String) -> Unit = {},
+    onOpenSidebar: () -> Unit = {}
 ) {
+    BackHandler { onSwitchProfile("TOWNSQUARE") }
+
     val profiles = listOf(
         ChildProfile("Leo", "Oak Creek Elementary", "4th Grade"),
         ChildProfile("Mia", "Oak Creek Elementary", "2nd Grade")
@@ -52,81 +60,144 @@ fun PlaygroundScreen(
             modifier = Modifier.fillMaxWidth(),
             border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(
-                        shape = CircleShape,
-                        color = WarmAmber,
-                        modifier = Modifier.size(56.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(imageVector = Icons.Default.ChildCare, contentDescription = null, tint = Color(0xFF332A00), modifier = Modifier.size(32.dp))
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(
-                            text = "${activeProfile.name}'s Playground",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "${activeProfile.school} • ${activeProfile.grade}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = WarmAmber
-                        )
-                    }
-                }
-                
-                Box {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { showProfileDropdown = true }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = onOpenSidebar,
+                            modifier = Modifier.testTag("playground_sidebar_button")
                         ) {
+                            Icon(imageVector = Icons.Default.Menu, contentDescription = "Open Sidebar")
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Surface(
+                            shape = CircleShape,
+                            color = WarmAmber,
+                            modifier = Modifier.size(44.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(imageVector = Icons.Default.ChildCare, contentDescription = null, tint = Color(0xFF332A00), modifier = Modifier.size(26.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
                             Text(
-                                text = "Switch",
-                                style = MaterialTheme.typography.labelMedium,
+                                text = "${activeProfile.name}'s Playground",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Text(
+                                text = "${activeProfile.school} • ${activeProfile.grade}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = WarmAmber
+                            )
                         }
                     }
-                    DropdownMenu(
-                        expanded = showProfileDropdown,
-                        onDismissRequest = { showProfileDropdown = false },
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                    ) {
-                        profiles.forEachIndexed { index, profile ->
+                    
+                    Box {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { showProfileDropdown = true }
+                                .testTag("playground_profile_dropdown_trigger")
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(imageVector = Icons.Default.SwapHoriz, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Switch",
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null, modifier = Modifier.size(16.dp))
+                            }
+                        }
+                        DropdownMenu(
+                            expanded = showProfileDropdown,
+                            onDismissRequest = { showProfileDropdown = false },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            profiles.forEachIndexed { index, profile ->
+                                DropdownMenuItem(
+                                    text = { Text("Child: ${profile.name} (${profile.grade})", color = MaterialTheme.colorScheme.onSurface) },
+                                    onClick = {
+                                        selectedProfileIndex = index
+                                        showProfileDropdown = false
+                                    }
+                                )
+                            }
+                            HorizontalDivider(color = DarkBorder)
                             DropdownMenuItem(
-                                text = { Text("${profile.name} (${profile.grade})", color = MaterialTheme.colorScheme.onSurface) },
+                                text = { Text("🏛️ Switch to Townsquare Profile", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
                                 onClick = {
-                                    selectedProfileIndex = index
                                     showProfileDropdown = false
+                                    onSwitchProfile("TOWNSQUARE")
+                                },
+                                modifier = Modifier.testTag("switch_to_townsquare_menu_item")
+                            )
+                            DropdownMenuItem(
+                                text = { Text("👤 Change Profile / Log Out", color = MaterialTheme.colorScheme.secondary) },
+                                onClick = {
+                                    showProfileDropdown = false
+                                    onSwitchProfile("CHOOSE")
                                 }
                             )
                         }
-                        HorizontalDivider(color = DarkBorder)
-                        DropdownMenuItem(
-                            text = { Text("Switch to Townsquare", color = MaterialTheme.colorScheme.primary) },
-                            onClick = {
-                                showProfileDropdown = false
-                                onSwitchProfile("TOWNSQUARE")
-                            }
-                        )
+                    }
+                }
+
+                // Quick Switch Bar back to Townsquare
+                Surface(
+                    color = Color(0xFF1E2838),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSwitchProfile("TOWNSQUARE") }
+                        .testTag("playground_switch_to_townsquare_banner")
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null,
+                                tint = NeonCyan,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Return to regular Townsquare editorial profile",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                                color = Color.White
+                            )
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = NeonCyan
+                        ) {
+                            Text(
+                                text = "SWITCH",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 10.sp),
+                                color = Color(0xFF003544),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
                     }
                 }
             }

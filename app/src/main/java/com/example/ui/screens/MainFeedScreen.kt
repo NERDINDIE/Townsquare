@@ -36,7 +36,11 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Stars
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -79,9 +83,7 @@ import com.example.ui.components.LocalBulletinsSection
 import com.example.ui.components.MediaCardItem
 import com.example.ui.components.MorningBriefCard
 import com.example.ui.components.TownsquareTopBar
-import com.example.ui.theme.DarkBorder
-import com.example.ui.theme.NeonCyan
-import com.example.ui.theme.WarmAmber
+import com.example.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,6 +129,7 @@ fun MainFeedScreen(
     onOpenInbox: () -> Unit = {},
     onOpenEmergencyHub: () -> Unit = {},
     onOpenBroadsheetCover: () -> Unit = {},
+    onOpenTownsquarePlus: () -> Unit = {},
     unreadInboxCount: Int = 0,
     modifier: Modifier = Modifier
 ) {
@@ -147,6 +150,35 @@ fun MainFeedScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    // Townsquare Plus Superapp Suite Button
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = WarmAmber.copy(alpha = 0.2f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, WarmAmber),
+                        modifier = Modifier
+                            .clickable { onOpenTownsquarePlus() }
+                            .testTag("feed_open_plus_button")
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Stars,
+                                contentDescription = "Townsquare Plus",
+                                tint = WarmAmber,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = "PLUS",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Black,
+                                color = WarmAmber
+                            )
+                        }
+                    }
+
                     // Inbox Button with Unread Badge
                     IconButton(
                         onClick = onOpenInbox,
@@ -329,6 +361,129 @@ fun MainFeedScreen(
                         onPlayAudioBrief = onPlayAudioBrief,
                         modifier = Modifier.testTag("feed_morning_brief_card")
                     )
+                }
+
+                // Townsquare Plus Superapp Showcase Banner
+                item {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color(0xFF131A26),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, WarmAmber.copy(alpha = 0.5f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenTownsquarePlus() }
+                            .testTag("feed_townsquare_plus_card")
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = WarmAmber
+                                    ) {
+                                        Text(
+                                            text = "SUPERAPP SUITE",
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, fontSize = 9.sp),
+                                            color = Color(0xFF261800),
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Townsquare Plus",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = Color.White
+                                    )
+                                }
+                                Text(
+                                    text = "Open Suite →",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = WarmAmber
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Text(
+                                text = "Modular apps for modern civic life: Phone dialer & voicemail, Mailbox client, Interactive maps with personalized travel magazine, and Marketplace.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = DarkTextSecondary
+                            )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // 4 Mini-app pill shortcuts
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = DarkSurface,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "📱 Phone",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF30D158),
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                }
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = DarkSurface,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "✉️ Mail",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = WarmAmber,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                }
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = DarkSurface,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "🗺️ Maps",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MintTeal,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                }
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = DarkSurface,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "🛍️ Market",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = RadiantPurple,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // 2. Local Community Bulletins & Public Notices
