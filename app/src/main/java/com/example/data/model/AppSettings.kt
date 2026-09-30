@@ -37,5 +37,13 @@ data class AppSettings(
     val enableAiFeatures: Boolean = true,
     val enableAiFactChecking: Boolean = true,
     val enableAiVoiceNarration: Boolean = true,
-    val enableAiSmartSummaries: Boolean = true
+    val enableAiSmartSummaries: Boolean = true,
+    val activeAppSkinId: String? = null,
+    val activeWelcomeSkinId: String = "BROADSHEET",
+    val overrideBaseAppInterface: Boolean = false,
+    val enableRetroTerminalMode: Boolean = false,
+    val enableKeitai3GOverlay: Boolean = false,
+    val enableManuscriptParchmentTheme: Boolean = false,
+    val enableMetroTilesView: Boolean = false,
+    val enableGeekLiveTickerHeader: Boolean = false
 )

@@ -5,13 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.TextButton
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Feed
@@ -61,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.data.model.MediaChannelEntity
 import com.example.data.model.MediaItemEntity
@@ -113,6 +111,7 @@ import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.TownsquareTheme
 import com.example.ui.theme.WarmAmber
 import com.example.ui.viewmodel.MediaSuperappViewModel
+import com.example.ui.plus.extensions.*
 import com.example.util.ShareHelper
 import kotlinx.coroutines.launch
 
@@ -254,6 +253,7 @@ fun TownsquareApp(
     val narrationState by viewModel.narrationState.collectAsState()
     val isOfflineMode by viewModel.isOfflineMode.collectAsState()
     val appSettings by viewModel.appSettings.collectAsState()
+    val customExtensions by viewModel.customExtensions.collectAsState()
     val currentTheme by viewModel.currentTheme.collectAsState()
     val isDynamicTheme by viewModel.isDynamicTheme.collectAsState()
     val context = LocalContext.current
@@ -322,7 +322,74 @@ fun TownsquareApp(
     val isForYouFeed by viewModel.isForYouFeed.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
+        val isSkinOverrideActive = appSettings.overrideBaseAppInterface && appSettings.activeAppSkinId != null
+        if (isSkinOverrideActive) {
+            val skinId = appSettings.activeAppSkinId
+            Box(modifier = Modifier.fillMaxSize()) {
+                when (skinId) {
+                    "GEEK_LIVE" -> GeekLiveSkin(modifier = Modifier.fillMaxSize())
+                    "FANDOM_TIMES" -> FandomTimesSkin(modifier = Modifier.fillMaxSize())
+                    "CLI_DOS" -> CliDosSkin(modifier = Modifier.fillMaxSize())
+                    "METRO_WIN8" -> MetroWin8Skin(modifier = Modifier.fillMaxSize())
+                    "ANDROID_10" -> Android10Skin(modifier = Modifier.fillMaxSize())
+                    else -> {
+                        val customManifest = customExtensions.find { it.id == skinId }
+                        if (customManifest != null) {
+                            CustomExtensionLivePreview(
+                                manifest = customManifest,
+                                onClose = { viewModel.updateOverrideBaseAppInterface(false) }
+                            )
+                        } else {
+                            GeekLiveSkin(modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                }
+
+                // Top Floating Banner to Exit Skin Override or Open Settings
+                Surface(
+                    color = Color(0xEE0B132B),
+                    border = BorderStroke(1.dp, NeonCyan),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .statusBarsPadding()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "⚡ SKIN OVERRIDE ACTIVE: $skinId",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = NeonCyan
+                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            TextButton(
+                                onClick = {
+                                    sidebarInitialTab = 2
+                                    viewModel.openSidebar()
+                                }
+                            ) {
+                                Text("SETTINGS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = WarmAmber)
+                            }
+                            IconButton(onClick = { viewModel.updateOverrideBaseAppInterface(false) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Exit Skin Override",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {},
             snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -761,6 +828,7 @@ fun TownsquareApp(
                 }
             }
         }
+    }
 
     // Townsquare Sidebar Drawer Overlay
     TownsquareSidebarDrawer(
@@ -823,6 +891,15 @@ fun TownsquareApp(
         onUpdateEnableAiFactChecking = { viewModel.updateEnableAiFactChecking(it) },
         onUpdateEnableAiVoiceNarration = { viewModel.updateEnableAiVoiceNarration(it) },
         onUpdateEnableAiSmartSummaries = { viewModel.updateEnableAiSmartSummaries(it) },
+        customExtensions = customExtensions,
+        onUpdateActiveAppSkin = { viewModel.updateActiveAppSkinId(it) },
+        onUpdateActiveWelcomeSkin = { viewModel.updateActiveWelcomeSkinId(it) },
+        onUpdateOverrideBaseAppInterface = { viewModel.updateOverrideBaseAppInterface(it) },
+        onUpdateRetroTerminalMode = { viewModel.updateEnableRetroTerminalMode(it) },
+        onUpdateKeitai3GOverlay = { viewModel.updateEnableKeitai3GOverlay(it) },
+        onUpdateManuscriptParchmentTheme = { viewModel.updateEnableManuscriptParchmentTheme(it) },
+        onUpdateMetroTilesView = { viewModel.updateEnableMetroTilesView(it) },
+        onUpdateGeekLiveTickerHeader = { viewModel.updateEnableGeekLiveTickerHeader(it) },
         initialTab = sidebarInitialTab
     )
     }

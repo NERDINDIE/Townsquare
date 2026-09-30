@@ -72,8 +72,56 @@ class AppSettingsManager(context: Context) {
             enableAiFeatures = prefs.getBoolean("enable_ai_features", true),
             enableAiFactChecking = prefs.getBoolean("enable_ai_fact_checking", true),
             enableAiVoiceNarration = prefs.getBoolean("enable_ai_voice_narration", true),
-            enableAiSmartSummaries = prefs.getBoolean("enable_ai_smart_summaries", true)
+            enableAiSmartSummaries = prefs.getBoolean("enable_ai_smart_summaries", true),
+            activeAppSkinId = prefs.getString("active_app_skin_id", null),
+            activeWelcomeSkinId = prefs.getString("active_welcome_skin_id", "BROADSHEET") ?: "BROADSHEET",
+            overrideBaseAppInterface = prefs.getBoolean("override_base_app_interface", false),
+            enableRetroTerminalMode = prefs.getBoolean("enable_retro_terminal_mode", false),
+            enableKeitai3GOverlay = prefs.getBoolean("enable_keitai_3g_overlay", false),
+            enableManuscriptParchmentTheme = prefs.getBoolean("enable_manuscript_parchment_theme", false),
+            enableMetroTilesView = prefs.getBoolean("enable_metro_tiles_view", false),
+            enableGeekLiveTickerHeader = prefs.getBoolean("enable_geek_live_ticker_header", false)
         )
+    }
+
+    fun setActiveAppSkinId(skinId: String?) {
+        prefs.edit().putString("active_app_skin_id", skinId).apply()
+        _settings.update { it.copy(activeAppSkinId = skinId) }
+    }
+
+    fun setActiveWelcomeSkinId(skinId: String) {
+        prefs.edit().putString("active_welcome_skin_id", skinId).apply()
+        _settings.update { it.copy(activeWelcomeSkinId = skinId) }
+    }
+
+    fun setOverrideBaseAppInterface(override: Boolean) {
+        prefs.edit().putBoolean("override_base_app_interface", override).apply()
+        _settings.update { it.copy(overrideBaseAppInterface = override) }
+    }
+
+    fun setEnableRetroTerminalMode(enabled: Boolean) {
+        prefs.edit().putBoolean("enable_retro_terminal_mode", enabled).apply()
+        _settings.update { it.copy(enableRetroTerminalMode = enabled) }
+    }
+
+    fun setEnableKeitai3GOverlay(enabled: Boolean) {
+        prefs.edit().putBoolean("enable_keitai_3g_overlay", enabled).apply()
+        _settings.update { it.copy(enableKeitai3GOverlay = enabled) }
+    }
+
+    fun setEnableManuscriptParchmentTheme(enabled: Boolean) {
+        prefs.edit().putBoolean("enable_manuscript_parchment_theme", enabled).apply()
+        _settings.update { it.copy(enableManuscriptParchmentTheme = enabled) }
+    }
+
+    fun setEnableMetroTilesView(enabled: Boolean) {
+        prefs.edit().putBoolean("enable_metro_tiles_view", enabled).apply()
+        _settings.update { it.copy(enableMetroTilesView = enabled) }
+    }
+
+    fun setEnableGeekLiveTickerHeader(enabled: Boolean) {
+        prefs.edit().putBoolean("enable_geek_live_ticker_header", enabled).apply()
+        _settings.update { it.copy(enableGeekLiveTickerHeader = enabled) }
     }
 
     fun setEnableAiFeatures(enabled: Boolean) {

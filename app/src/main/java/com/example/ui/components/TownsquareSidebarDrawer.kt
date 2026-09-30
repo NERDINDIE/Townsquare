@@ -165,6 +165,15 @@ fun TownsquareSidebarDrawer(
     onUpdateEnableAiFactChecking: (Boolean) -> Unit = {},
     onUpdateEnableAiVoiceNarration: (Boolean) -> Unit = {},
     onUpdateEnableAiSmartSummaries: (Boolean) -> Unit = {},
+    customExtensions: List<com.example.data.model.CustomExtensionManifest> = emptyList(),
+    onUpdateActiveAppSkin: (String?) -> Unit = {},
+    onUpdateActiveWelcomeSkin: (String) -> Unit = {},
+    onUpdateOverrideBaseAppInterface: (Boolean) -> Unit = {},
+    onUpdateRetroTerminalMode: (Boolean) -> Unit = {},
+    onUpdateKeitai3GOverlay: (Boolean) -> Unit = {},
+    onUpdateManuscriptParchmentTheme: (Boolean) -> Unit = {},
+    onUpdateMetroTilesView: (Boolean) -> Unit = {},
+    onUpdateGeekLiveTickerHeader: (Boolean) -> Unit = {},
     initialTab: Int = 0,
     modifier: Modifier = Modifier
 ) {
@@ -1562,7 +1571,25 @@ fun TownsquareSidebarDrawer(
                                         }
                                     }
 
-                                    // 1. Appearance & Themes (Modular)
+                                    // 1. Skin Extensions & Overrides (Preinstalled & Custom)
+                                    SkinExtensionsSettings(
+                                        settings = settings,
+                                        customExtensions = customExtensions,
+                                        onUpdateActiveAppSkin = onUpdateActiveAppSkin,
+                                        onUpdateActiveWelcomeSkin = onUpdateActiveWelcomeSkin,
+                                        onUpdateOverrideBaseAppInterface = onUpdateOverrideBaseAppInterface,
+                                        onUpdateRetroTerminalMode = onUpdateRetroTerminalMode,
+                                        onUpdateKeitai3GOverlay = onUpdateKeitai3GOverlay,
+                                        onUpdateManuscriptParchmentTheme = onUpdateManuscriptParchmentTheme,
+                                        onUpdateMetroTilesView = onUpdateMetroTilesView,
+                                        onUpdateGeekLiveTickerHeader = onUpdateGeekLiveTickerHeader,
+                                        onOpenExtensionBuilderInPlus = {
+                                            onSelectIndex(NavDestination.TOWNSQUARE_PLUS)
+                                            onClose()
+                                        }
+                                    )
+
+                                    // 2. Appearance & Themes (Modular)
                                     AppearanceSettings(
                                         currentTheme = currentTheme,
                                         isDynamicTheme = isDynamicTheme,

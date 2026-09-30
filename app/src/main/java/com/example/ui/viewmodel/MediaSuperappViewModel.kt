@@ -1690,6 +1690,69 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
         settingsManager.setEnableAiSmartSummaries(enabled)
     }
 
+    // Skin Extension Settings & Custom Extensions Studio
+    private val _customExtensions = MutableStateFlow<List<com.example.data.model.CustomExtensionManifest>>(
+        listOf(
+            com.example.data.model.CustomExtensionManifest(
+                id = "cyber_pulse_2099",
+                name = "CyberPulse 2099",
+                author = "NeonStudio",
+                version = "1.2",
+                description = "Futuristic retrowave interface with neon cyan accents, wire audio ticker, and CRT scanlines.",
+                primaryColorHex = "#00D2FF",
+                secondaryColorHex = "#FF007F",
+                backgroundColorHex = "#080B10",
+                surfaceColorHex = "#121926",
+                fontStyle = "MONOSPACE",
+                layoutType = "TERMINAL",
+                enableSoundFx = true,
+                enableCrtScanlines = true,
+                enableTopTicker = true
+            )
+        )
+    )
+    val customExtensions: StateFlow<List<com.example.data.model.CustomExtensionManifest>> = _customExtensions.asStateFlow()
+
+    fun addCustomExtension(extension: com.example.data.model.CustomExtensionManifest) {
+        _customExtensions.value = _customExtensions.value + extension
+    }
+
+    fun removeCustomExtension(id: String) {
+        _customExtensions.value = _customExtensions.value.filterNot { it.id == id }
+    }
+
+    fun updateActiveAppSkinId(skinId: String?) {
+        settingsManager.setActiveAppSkinId(skinId)
+    }
+
+    fun updateActiveWelcomeSkinId(skinId: String) {
+        settingsManager.setActiveWelcomeSkinId(skinId)
+    }
+
+    fun updateOverrideBaseAppInterface(override: Boolean) {
+        settingsManager.setOverrideBaseAppInterface(override)
+    }
+
+    fun updateEnableRetroTerminalMode(enabled: Boolean) {
+        settingsManager.setEnableRetroTerminalMode(enabled)
+    }
+
+    fun updateEnableKeitai3GOverlay(enabled: Boolean) {
+        settingsManager.setEnableKeitai3GOverlay(enabled)
+    }
+
+    fun updateEnableManuscriptParchmentTheme(enabled: Boolean) {
+        settingsManager.setEnableManuscriptParchmentTheme(enabled)
+    }
+
+    fun updateEnableMetroTilesView(enabled: Boolean) {
+        settingsManager.setEnableMetroTilesView(enabled)
+    }
+
+    fun updateEnableGeekLiveTickerHeader(enabled: Boolean) {
+        settingsManager.setEnableGeekLiveTickerHeader(enabled)
+    }
+
     // Partner Syndicate Methods
     fun openPartnerApplicationDialog() {
         _isPartnerApplicationOpen.value = true
