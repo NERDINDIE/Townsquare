@@ -20,21 +20,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.ui.theme.DarkBorder
+import com.example.ui.screens.FandomHub
 import com.example.ui.theme.NeonCyan
+import com.example.ui.theme.WarmAmber
 
 @Composable
 fun CreateCommunityPostDialog(
     isOpen: Boolean,
+    fandoms: List<FandomHub> = emptyList(),
     onClose: () -> Unit,
-    onSubmit: (author: String, tag: String, content: String) -> Unit
+    onSubmit: (author: String, tag: String, fandomId: String?, content: String) -> Unit
 ) {
     if (!isOpen) return
 
     var author by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
-    val categories = listOf("Local News", "Events", "Discussion", "Recommendations", "Civic Notice", "Lost & Found")
+    val categories = listOf("Local News", "Events", "Discussion", "Retro Gaming", "Sci-Fi", "Anime & Cosplay", "Literature", "Classic Cinema", "Cartoons")
     var selectedCategory by remember { mutableStateOf(categories.first()) }
+    var selectedFandomId by remember { mutableStateOf<String?>(null) }
 
     Dialog(
         onDismissRequest = onClose,
@@ -106,9 +109,56 @@ fun CreateCommunityPostDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Fandom Hub Selection
+                if (fandoms.isNotEmpty()) {
+                    Text(
+                        text = "Publish to Fandom Hub (Optional)",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = WarmAmber
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        item {
+                            val isSel = selectedFandomId == null
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = if (isSel) WarmAmber else MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier.clickable { selectedFandomId = null }
+                            ) {
+                                Text(
+                                    text = "🌐 General Post",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal),
+                                    color = if (isSel) Color(0xFF261800) else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                )
+                            }
+                        }
+                        items(fandoms) { fandom ->
+                            val isSel = selectedFandomId == fandom.id
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = if (isSel) WarmAmber else MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier.clickable {
+                                    selectedFandomId = fandom.id
+                                    selectedCategory = fandom.categoryTag
+                                }
+                            ) {
+                                Text(
+                                    text = "${fandom.emoji} ${fandom.name}",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal),
+                                    color = if (isSel) Color(0xFF261800) else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
                 // Topic Tag selector
                 Text(
-                    text = "Select Category",
+                    text = "Select Category Tag",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -139,11 +189,11 @@ fun CreateCommunityPostDialog(
                 OutlinedTextField(
                     value = content,
                     onValueChange = { content = it },
-                    label = { Text("Post Message") },
-                    placeholder = { Text("What's happening in your neighborhood or town?") },
+                    label = { Text("Post Message / Fan Theory / Dispatch") },
+                    placeholder = { Text("Share your thoughts, fan art lore, theories, or local news...") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .height(120.dp)
                         .testTag("community_content_input"),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -162,7 +212,7 @@ fun CreateCommunityPostDialog(
                         onClick = {
                             if (content.isNotBlank()) {
                                 val finalAuthor = if (author.isNotBlank()) author.trim() else "Civic Citizen"
-                                onSubmit(finalAuthor, selectedCategory, content.trim())
+                                onSubmit(finalAuthor, selectedCategory, selectedFandomId, content.trim())
                                 onClose()
                             }
                         },

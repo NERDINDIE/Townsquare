@@ -1,6 +1,7 @@
 package com.example.ui.plus.marketplace
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,12 +35,39 @@ import coil.compose.AsyncImage
 import com.example.ui.plus.model.*
 import com.example.ui.theme.*
 
+data class CatalogItem(
+    val id: String,
+    val title: String,
+    val merchant: String,
+    val price: Double,
+    val originalPrice: Double? = null,
+    val category: String,
+    val description: String,
+    val imageUrl: String,
+    val isOfficialPressMerch: Boolean = false
+)
+
+data class CommercialAd(
+    val id: String,
+    val sponsorName: String,
+    val headline: String,
+    val offerCode: String? = null,
+    val category: String,
+    val bodyText: String,
+    val imageUrl: String,
+    val callToAction: String,
+    var isClaimed: Boolean = false
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TownsquareMarketplaceApp(
     onBack: () -> Unit,
+    initialTab: Int = 0,
     modifier: Modifier = Modifier
 ) {
+    var selectedTab by remember { mutableIntStateOf(initialTab) } // 0=P2P Market, 1=Store Catalogs, 2=Ad Channel Wire
+
     var listings by remember { mutableStateOf(TownsquarePlusSeed.generateInitialMarketplaceListings()) }
     var selectedCategory by remember { mutableStateOf(MarketCategory.ALL) }
     var searchQuery by remember { mutableStateOf("") }
@@ -58,6 +88,31 @@ fun TownsquareMarketplaceApp(
     var offerAmountText by remember { mutableStateOf("") }
     var offerConfirmedMessage by remember { mutableStateOf<String?>(null) }
 
+    // Catalog items
+    var catalogItems by remember {
+        mutableStateOf(
+            listOf(
+                CatalogItem("cat_1", "Townsquare Broadsheet Annual Subscription", "Townsquare Press Desk", 49.99, 60.00, "Subscriptions", "1-Year physical morning print delivery + full digital archive telex access.", "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80", true),
+                CatalogItem("cat_2", "Vintage AM/FM Vacuum Tube Receiver", "Old Quarter Radio Co.", 120.00, 145.00, "Vintage Electronics", "Restored 1950s desktop tube radio with warm acoustic resonance and illuminated analog dial.", "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=800&q=80", false),
+                CatalogItem("cat_3", "Townsquare Press Heavyweight Tote Bag", "Townsquare Store", 24.99, null, "Press Merch", "100% organic canvas tote bag with embroidered Townsquare wordmark & press badge.", "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80", true),
+                CatalogItem("cat_4", "2026 Civic Almanac & Regional Directory", "Municipal Printing House", 18.50, 22.00, "Books & Almanacs", "Comprehensive hardcover volume featuring civic records, regional history, and maps.", "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80", false),
+                CatalogItem("cat_5", "Harbor Roasters Specialty Reserve Beans", "Harbor Coffee Guild", 34.00, null, "Artisan Goods", "3-Pack single-origin whole bean coffee roasted fresh in Riverside district.", "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80", false)
+            )
+        )
+    }
+
+    // Commercial Ads Wire
+    var ads by remember {
+        mutableStateOf(
+            listOf(
+                CommercialAd("ad_1", "Harbor Bank & Trust", "0% APR Civic Savings Account + $100 Bonus", "CIVIC100", "Banking & Finance", "Open a high-yield savings account today and receive a $100 civic bonus upon first direct deposit.", "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80", "Claim Welcome Bonus"),
+                CommercialAd("ad_2", "Central Audio & Electronics", "Spring Radio & Hi-Fi Equipment Sale", "RADIO30", "Consumer Tech", "30% off all shortwave radios, tube amplifiers, and vinyl turntables this week at Downtown Plaza.", "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80", "Get Discount Coupon"),
+                CommercialAd("ad_3", "Downtown Transit Authority", "Unlimited Monthly Tram & Ferry Commuter Pass", "TRANSIT2026", "Municipal Transit", "Ride all city trams, harbor ferries, and express buses with one unified contactless civic card.", "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80", "Purchase Pass"),
+                CommercialAd("ad_4", "Old Quarter Artisan Bakery", "Fresh Organic Sourdough & Pastry Offer", "BAKERY20", "Local Dining", "Buy 1 artisan sourdough loaf, get a free cinnamon pastry at Riverside Bakery & Cafe.", "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80", "Claim Bakery Voucher")
+            )
+        )
+    }
+
     fun addToCart(listing: MarketplaceListing) {
         val existing = cartItems.find { it.listing.id == listing.id }
         cartItems = if (existing != null) {
@@ -67,12 +122,29 @@ fun TownsquareMarketplaceApp(
         }
     }
 
+    fun addCatalogToCart(catalog: CatalogItem) {
+        val convertedListing = MarketplaceListing(
+            id = catalog.id,
+            title = catalog.title,
+            price = catalog.price,
+            originalPrice = catalog.originalPrice,
+            category = MarketCategory.ALL,
+            condition = ItemCondition.BRAND_NEW,
+            description = catalog.description,
+            sellerName = catalog.merchant,
+            sellerRating = 5.0,
+            sellerLocation = "Official Store Catalog",
+            imageUrl = catalog.imageUrl
+        )
+        addToCart(convertedListing)
+    }
+
     Box(modifier = modifier.fillMaxSize().background(DarkBg)) {
         Column(modifier = Modifier.fillMaxSize()) {
             // App Bar
             Surface(
                 color = DarkSurface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                border = BorderStroke(1.dp, DarkBorder),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -109,7 +181,7 @@ fun TownsquareMarketplaceApp(
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "Townsquare Market",
+                                    text = "Townsquare Unified Market",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = Color.White
                                 )
@@ -119,8 +191,8 @@ fun TownsquareMarketplaceApp(
                                     color = WarmAmber
                                 ) {
                                     Text(
-                                        text = "PLUS",
-                                        fontSize = 9.sp,
+                                        text = "UNIFIED HUB",
+                                        fontSize = 8.sp,
                                         fontWeight = FontWeight.Black,
                                         color = Color(0xFF261800),
                                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
@@ -128,7 +200,7 @@ fun TownsquareMarketplaceApp(
                                 }
                             }
                             Text(
-                                text = "Buy & Sell Online • Community Kiosks",
+                                text = "Marketplace • Store Catalogs • 24/7 Ad Wire",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = DarkTextSecondary
                             )
@@ -166,108 +238,55 @@ fun TownsquareMarketplaceApp(
                 }
             }
 
-            // Search Bar
-            Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = NeonCyan) },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear", tint = DarkTextMuted)
-                            }
-                        }
-                    },
-                    placeholder = { Text("Search vintage, tech, furniture, books...", color = DarkTextMuted, fontSize = 13.sp) },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = DarkSurface,
-                        unfocusedContainerColor = DarkSurface,
-                        focusedBorderColor = NeonCyan,
-                        unfocusedBorderColor = DarkBorder,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
-                    ),
-                    modifier = Modifier.fillMaxWidth().testTag("market_search_input")
+            // Unified Top Navigation Tabs
+            TabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = DarkSurface,
+                contentColor = NeonCyan
+            ) {
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    text = { Text("🛒 Classifieds Market", fontSize = 12.sp, fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal) }
+                )
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    text = { Text("📚 Store Catalogs", fontSize = 12.sp, fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) }
+                )
+                Tab(
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    text = { Text("📺 24/7 Ad Wire", fontSize = 12.sp, fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal) }
                 )
             }
 
-            // Category Chips Carousel
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(DarkSurfaceVariant)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(MarketCategory.entries) { cat ->
-                    val isSelected = selectedCategory == cat
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = if (isSelected) WarmAmber else DarkSurface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) WarmAmber else DarkBorder),
-                        modifier = Modifier.clickable { selectedCategory = cat }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = cat.iconEmoji, fontSize = 12.sp)
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = cat.label,
-                                fontSize = 12.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Color(0xFF261800) else Color.White
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Filtered Items Grid
-            val filteredListings = listings.filter { item ->
-                val matchesCategory = selectedCategory == MarketCategory.ALL || item.category == selectedCategory
-                val matchesSearch = searchQuery.isEmpty() ||
-                        item.title.contains(searchQuery, ignoreCase = true) ||
-                        item.description.contains(searchQuery, ignoreCase = true) ||
-                        item.sellerName.contains(searchQuery, ignoreCase = true)
-                matchesCategory && matchesSearch
-            }
-
-            if (filteredListings.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.Storefront, contentDescription = null, tint = DarkTextMuted, modifier = Modifier.size(48.dp))
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text("No listings match your search.", color = DarkTextSecondary)
-                        Spacer(modifier = Modifier.height(6.dp))
-                        TextButton(onClick = { isSellItemOpen = true }) {
-                            Text("Be the first to list an item in this category!", color = NeonCyan)
-                        }
-                    }
-                }
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    items(filteredListings, key = { it.id }) { listing ->
-                        MarketplaceItemCard(
-                            listing = listing,
-                            onItemClick = { selectedListing = listing },
-                            onToggleSave = {
-                                listings = listings.map {
-                                    if (it.id == listing.id) it.copy(isSaved = !it.isSaved) else it
-                                }
+            Box(modifier = Modifier.weight(1f)) {
+                when (selectedTab) {
+                    0 -> PeerToPeerMarketplaceSection(
+                        listings = listings,
+                        selectedCategory = selectedCategory,
+                        searchQuery = searchQuery,
+                        onSearchChange = { searchQuery = it },
+                        onSelectCategory = { selectedCategory = it },
+                        onSelectListing = { selectedListing = it },
+                        onToggleSave = { listing ->
+                            listings = listings.map {
+                                if (it.id == listing.id) it.copy(isSaved = !it.isSaved) else it
                             }
-                        )
-                    }
+                        },
+                        onOpenSellDialog = { isSellItemOpen = true }
+                    )
+                    1 -> StoreCatalogsSection(
+                        catalogItems = catalogItems,
+                        onAddToCart = { addCatalogToCart(it) }
+                    )
+                    2 -> CommercialAdChannelSection(
+                        ads = ads,
+                        onClaimOffer = { adId ->
+                            ads = ads.map { if (it.id == adId) it.copy(isClaimed = true) else it }
+                        }
+                    )
                 }
             }
         }
@@ -355,7 +374,7 @@ fun TownsquareMarketplaceApp(
                             Surface(
                                 shape = RoundedCornerShape(10.dp),
                                 color = DarkSurface,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                                border = BorderStroke(1.dp, DarkBorder),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Row(
@@ -550,23 +569,11 @@ fun TownsquareMarketplaceApp(
                 text = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "Thank you for supporting our local Townsquare merchants! Your items will be prepared for community locker pickup or local bike delivery.",
+                            text = "Thank you for supporting our local Townsquare merchants & press catalog! Your items will be prepared for community locker pickup or local bike delivery.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = DarkSurfaceElevated,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Column(modifier = Modifier.padding(10.dp)) {
-                                Text(text = "RECEIPT #TS-${(1000..9999).random()}", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = NeonCyan)
-                                Text(text = "Delivery Method: 2-Hour Civic Courier", fontSize = 11.sp, color = DarkTextSecondary)
-                                Text(text = "Status: Transmitted to Sellers", fontSize = 11.sp, color = Color(0xFF30D158))
-                            }
-                        }
                     }
                 },
                 confirmButton = {
@@ -583,9 +590,280 @@ fun TownsquareMarketplaceApp(
     }
 }
 
-// -------------------------------------------------------------
-// ITEM CARD COMPONENT
-// -------------------------------------------------------------
+@Composable
+private fun PeerToPeerMarketplaceSection(
+    listings: List<MarketplaceListing>,
+    selectedCategory: MarketCategory,
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
+    onSelectCategory: (MarketCategory) -> Unit,
+    onSelectListing: (MarketplaceListing) -> Unit,
+    onToggleSave: (MarketplaceListing) -> Unit,
+    onOpenSellDialog: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Search Bar
+        Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = onSearchChange,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = NeonCyan) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { onSearchChange("") }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Clear", tint = DarkTextMuted)
+                        }
+                    }
+                },
+                placeholder = { Text("Search vintage, tech, furniture, books...", color = DarkTextMuted, fontSize = 13.sp) },
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = DarkSurface,
+                    unfocusedContainerColor = DarkSurface,
+                    focusedBorderColor = NeonCyan,
+                    unfocusedBorderColor = DarkBorder,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                ),
+                modifier = Modifier.fillMaxWidth().testTag("market_search_input")
+            )
+        }
+
+        // Category Chips Carousel
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(DarkSurfaceVariant)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(MarketCategory.entries) { cat ->
+                val isSelected = selectedCategory == cat
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = if (isSelected) WarmAmber else DarkSurface,
+                    border = BorderStroke(1.dp, if (isSelected) WarmAmber else DarkBorder),
+                    modifier = Modifier.clickable { onSelectCategory(cat) }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = cat.iconEmoji, fontSize = 12.sp)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = cat.label,
+                            fontSize = 12.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) Color(0xFF261800) else Color.White
+                        )
+                    }
+                }
+            }
+        }
+
+        val filteredListings = listings.filter { item ->
+            val matchesCategory = selectedCategory == MarketCategory.ALL || item.category == selectedCategory
+            val matchesSearch = searchQuery.isEmpty() ||
+                    item.title.contains(searchQuery, ignoreCase = true) ||
+                    item.description.contains(searchQuery, ignoreCase = true)
+            matchesCategory && matchesSearch
+        }
+
+        if (filteredListings.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Default.Storefront, contentDescription = null, tint = DarkTextMuted, modifier = Modifier.size(48.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text("No listings match your search.", color = DarkTextSecondary)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    TextButton(onClick = onOpenSellDialog) {
+                        Text("Be the first to list an item in this category!", color = NeonCyan)
+                    }
+                }
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(filteredListings, key = { it.id }) { listing ->
+                    MarketplaceItemCard(
+                        listing = listing,
+                        onItemClick = { onSelectListing(listing) },
+                        onToggleSave = { onToggleSave(listing) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StoreCatalogsSection(
+    catalogItems: List<CatalogItem>,
+    onAddToCart: (CatalogItem) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text(
+                text = "OFFICIAL STORE & PRESS CATALOGS",
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+                color = WarmAmber
+            )
+        }
+
+        items(catalogItems, key = { it.id }) { item ->
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = DarkSurface,
+                border = BorderStroke(1.dp, DarkBorder),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(modifier = Modifier.padding(12.dp)) {
+                    AsyncImage(
+                        model = item.imageUrl,
+                        contentDescription = item.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(80.dp).clip(RoundedCornerShape(8.dp))
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(item.merchant, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = NeonCyan)
+                            if (item.isOfficialPressMerch) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Surface(shape = RoundedCornerShape(4.dp), color = WarmAmber) {
+                                    Text("PRESS MERCH", fontSize = 8.sp, fontWeight = FontWeight.Black, color = Color(0xFF261800), modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                                }
+                            }
+                        }
+                        Text(item.title, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 13.sp, maxLines = 1)
+                        Text(item.description, fontSize = 11.sp, color = DarkTextSecondary, maxLines = 2)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("$${String.format("%.2f", item.price)}", fontWeight = FontWeight.Black, color = WarmAmber, fontSize = 15.sp)
+                            Button(
+                                onClick = { onAddToCart(item) },
+                                colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = Color(0xFF003544)),
+                                shape = RoundedCornerShape(6.dp),
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
+                                modifier = Modifier.height(30.dp)
+                            ) {
+                                Text("+ Cart", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CommercialAdChannelSection(
+    ads: List<CommercialAd>,
+    onClaimOffer: (String) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = Color(0xFF1B162C),
+                border = BorderStroke(1.dp, Color(0xFFBF5AF2)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Tv, contentDescription = null, tint = Color(0xFFBF5AF2), modifier = Modifier.size(24.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column {
+                        Text("24/7 COMMERCIAL AD WIRE & SPONSOR SHOWCASE", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
+                        Text("Sponsored civic dispatches, merchant deals & flash vouchers", fontSize = 10.sp, color = Color.LightGray)
+                    }
+                }
+            }
+        }
+
+        items(ads, key = { it.id }) { ad ->
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = DarkSurface,
+                border = BorderStroke(1.dp, DarkBorder),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(shape = RoundedCornerShape(4.dp), color = Color(0xFFBF5AF2).copy(alpha = 0.2f)) {
+                            Text("SPONSORED • ${ad.category}", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color(0xFFBF5AF2), modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                        }
+                        Text(ad.sponsorName, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NeonCyan)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row {
+                        AsyncImage(
+                            model = ad.imageUrl,
+                            contentDescription = ad.headline,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(70.dp).clip(RoundedCornerShape(8.dp))
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(ad.headline, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                            Text(ad.bodyText, fontSize = 11.sp, color = Color.LightGray)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ad.offerCode?.let { code ->
+                            Surface(shape = RoundedCornerShape(6.dp), color = Color(0xFF1E293B)) {
+                                Text("CODE: $code", fontFamily = FontFamily.Monospace, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = WarmAmber, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                            }
+                        }
+
+                        Button(
+                            onClick = { onClaimOffer(ad.id) },
+                            enabled = !ad.isClaimed,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (ad.isClaimed) Color.DarkGray else Color(0xFF30D158),
+                                contentColor = Color.Black
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(if (ad.isClaimed) "✓ Claimed" else ad.callToAction, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun MarketplaceItemCard(
     listing: MarketplaceListing,
@@ -595,7 +873,7 @@ private fun MarketplaceItemCard(
     Surface(
         shape = RoundedCornerShape(14.dp),
         color = DarkSurface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+        border = BorderStroke(1.dp, DarkBorder),
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onItemClick() }
@@ -698,9 +976,6 @@ private fun MarketplaceItemCard(
     }
 }
 
-// -------------------------------------------------------------
-// SELL ITEM DIALOG
-// -------------------------------------------------------------
 @Composable
 private fun SellItemDialog(
     onDismiss: () -> Unit,
@@ -754,7 +1029,7 @@ private fun SellItemDialog(
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
                                 color = if (category == cat) NeonCyan else DarkSurface,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, if (category == cat) NeonCyan else DarkBorder),
+                                border = BorderStroke(1.dp, if (category == cat) NeonCyan else DarkBorder),
                                 modifier = Modifier.clickable { category = cat }
                             ) {
                                 Text(
@@ -776,7 +1051,7 @@ private fun SellItemDialog(
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
                                 color = if (condition == cond) WarmAmber else DarkSurface,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, if (condition == cond) WarmAmber else DarkBorder),
+                                border = BorderStroke(1.dp, if (condition == cond) WarmAmber else DarkBorder),
                                 modifier = Modifier.clickable { condition = cond }
                             ) {
                                 Text(
@@ -835,9 +1110,6 @@ private fun SellItemDialog(
     )
 }
 
-// -------------------------------------------------------------
-// CART & CHECKOUT DIALOG
-// -------------------------------------------------------------
 @Composable
 private fun CartCheckoutDialog(
     cartItems: List<CartItem>,
@@ -872,7 +1144,7 @@ private fun CartCheckoutDialog(
                         Surface(
                             shape = RoundedCornerShape(10.dp),
                             color = DarkSurface,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                            border = BorderStroke(1.dp, DarkBorder),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -914,21 +1186,17 @@ private fun CartCheckoutDialog(
                     item {
                         HorizontalDivider(color = DarkBorder, modifier = Modifier.padding(vertical = 4.dp))
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Subtotal", color = DarkTextSecondary, fontSize = 13.sp)
-                            Text("$${String.format("%.2f", subtotal)}", color = Color.White, fontSize = 13.sp)
+                            Text("Subtotal:", fontSize = 12.sp, color = DarkTextSecondary)
+                            Text("$${String.format("%.2f", subtotal)}", fontSize = 12.sp, color = Color.White)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Civic Delivery", color = DarkTextSecondary, fontSize = 13.sp)
-                            Text("FREE (Local Kiosk)", color = Color(0xFF30D158), fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                        }
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Estimated Tax (8%)", color = DarkTextSecondary, fontSize = 13.sp)
-                            Text("$${String.format("%.2f", tax)}", color = Color.White, fontSize = 13.sp)
+                            Text("Estimated Tax (8%):", fontSize = 12.sp, color = DarkTextSecondary)
+                            Text("$${String.format("%.2f", tax)}", fontSize = 12.sp, color = Color.White)
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("TOTAL", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                            Text("$${String.format("%.2f", subtotal + tax)}", color = WarmAmber, fontWeight = FontWeight.Black, fontSize = 17.sp)
+                            Text("Total:", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = WarmAmber)
+                            Text("$${String.format("%.2f", subtotal + tax)}", fontWeight = FontWeight.Black, fontSize = 16.sp, color = WarmAmber)
                         }
                     }
                 }
@@ -938,10 +1206,10 @@ private fun CartCheckoutDialog(
             if (cartItems.isNotEmpty()) {
                 Button(
                     onClick = onCheckout,
-                    colors = ButtonDefaults.buttonColors(containerColor = WarmAmber, contentColor = Color(0xFF261800)),
-                    modifier = Modifier.testTag("checkout_order_button")
+                    colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = Color(0xFF003544)),
+                    modifier = Modifier.fillMaxWidth().testTag("cart_checkout_btn")
                 ) {
-                    Text("Place Order", fontWeight = FontWeight.Bold)
+                    Text("Checkout ($${String.format("%.2f", subtotal + tax)})", fontWeight = FontWeight.Bold)
                 }
             }
         },

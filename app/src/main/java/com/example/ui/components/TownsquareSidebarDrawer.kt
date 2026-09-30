@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.ChildCare
 import androidx.compose.material.icons.filled.FactCheck
 import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.HistoryEdu
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.InsertEmoticon
@@ -174,6 +175,7 @@ fun TownsquareSidebarDrawer(
     onUpdateManuscriptParchmentTheme: (Boolean) -> Unit = {},
     onUpdateMetroTilesView: (Boolean) -> Unit = {},
     onUpdateGeekLiveTickerHeader: (Boolean) -> Unit = {},
+    onOpenLegalNotice: () -> Unit = {},
     initialTab: Int = 0,
     modifier: Modifier = Modifier
 ) {
@@ -1626,6 +1628,21 @@ fun TownsquareSidebarDrawer(
                                         onUpdateEnableVoiceNarration = onUpdateEnableAiVoiceNarration,
                                         onUpdateEnableSmartSummaries = onUpdateEnableAiSmartSummaries
                                     )
+
+                                    // 5. Legal Notice & Guidelines
+                                    OutlinedButton(
+                                        onClick = {
+                                            onClose()
+                                            onOpenLegalNotice()
+                                        },
+                                        shape = RoundedCornerShape(10.dp),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
+                                        modifier = Modifier.fillMaxWidth().testTag("sidebar_legal_notice_btn")
+                                    ) {
+                                        Icon(imageVector = Icons.Default.Gavel, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("Legal Notice & Editorial Charter", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    }
 
                                     // 5. Voice Narration TTS (Modular)
                                     VoiceSettings(

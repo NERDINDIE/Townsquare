@@ -315,6 +315,7 @@ fun TownsquareApp(
     var isDrivingModeOpen by remember { mutableStateOf(false) }
     var isModerationDashboardOpen by remember { mutableStateOf(false) }
     var isCreatorMonetizationOpen by remember { mutableStateOf(false) }
+    var isLegalNoticeOpen by remember { mutableStateOf(false) }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
 
     val reportedContents by viewModel.reportedContents.collectAsState()
@@ -900,11 +901,17 @@ fun TownsquareApp(
         onUpdateManuscriptParchmentTheme = { viewModel.updateEnableManuscriptParchmentTheme(it) },
         onUpdateMetroTilesView = { viewModel.updateEnableMetroTilesView(it) },
         onUpdateGeekLiveTickerHeader = { viewModel.updateEnableGeekLiveTickerHeader(it) },
+        onOpenLegalNotice = { isLegalNoticeOpen = true },
         initialTab = sidebarInitialTab
     )
     }
 
     // Modal Components & Overlays
+    if (isLegalNoticeOpen) {
+        com.example.ui.components.LegalNoticeGuidelinesDialog(
+            onDismiss = { isLegalNoticeOpen = false }
+        )
+    }
 
     // 0a. Local Weather Forecast Dialog
     LocalWeatherForecastDialog(
