@@ -317,6 +317,7 @@ fun TownsquareApp(
     var isCreatorMonetizationOpen by remember { mutableStateOf(false) }
     var isLegalNoticeOpen by remember { mutableStateOf(false) }
     var isWidgetsDrawerOpen by remember { mutableStateOf(false) }
+    var isIotCompanionOpen by remember { mutableStateOf(false) }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
 
     val reportedContents by viewModel.reportedContents.collectAsState()
@@ -869,6 +870,7 @@ fun TownsquareApp(
         onOpenLingo = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
         onOpenBookworm = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
         onOpenPhone = { isInboxOpen = true },
+        onOpenIotCompanion = { isIotCompanionOpen = true },
         onOpenWidgetsDrawer = { isWidgetsDrawerOpen = true },
         onRefreshApp = {
             viewModel.refreshData {
@@ -932,6 +934,18 @@ fun TownsquareApp(
         com.example.ui.components.TownsquareWidgetsDrawerDialog(
             onDismiss = { isWidgetsDrawerOpen = false }
         )
+    }
+
+    // 0-IoT. IoT Companion Simulator
+    if (isIotCompanionOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isIotCompanionOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.iot.TownsquareIotCompanionApp(
+                onBack = { isIotCompanionOpen = false }
+            )
+        }
     }
 
     // 0a. Local Weather Forecast Dialog

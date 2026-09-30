@@ -211,7 +211,8 @@ fun TownsquareInboxDialog(
                         Pair(0, "🔔 Alerts ($unreadCount)"),
                         Pair(1, "📬 Postal Mailbox"),
                         Pair(2, "📞 Phone & Voicemail"),
-                        Pair(3, "⚡ Live Cross-App Highlights")
+                        Pair(3, "⚡ Live Cross-App Highlights"),
+                        Pair(4, "📰 Subscribed Newsletters")
                     )
                     inboxModes.forEach { (modeId, label) ->
                         val isSelected = mainInboxMode == modeId
@@ -245,6 +246,10 @@ fun TownsquareInboxDialog(
                         channels = channels,
                         onOpenBrief = onOpenFullBrief,
                         onOpenWeather = onOpenWeather,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else if (mainInboxMode == 4) {
+                    SubscribedNewslettersView(
                         modifier = Modifier.weight(1f)
                     )
                 } else {

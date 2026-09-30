@@ -150,6 +150,7 @@ fun TownsquareSidebarDrawer(
     onOpenLingo: () -> Unit = {},
     onOpenBookworm: () -> Unit = {},
     onOpenPhone: () -> Unit = {},
+    onOpenIotCompanion: () -> Unit = {},
     onOpenWidgetsDrawer: () -> Unit = {},
     onRefreshApp: () -> Unit = {},
     unreadInboxCount: Int = 0,
@@ -834,7 +835,8 @@ fun TownsquareSidebarDrawer(
                             Triple("🎮 Arcade Games", "Retro games & arcade", onOpenArcade),
                             Triple("🗣️ Lingo Lab", "Language & phrasebook", onOpenLingo),
                             Triple("📚 Bookworm", "Library & archives", onOpenBookworm),
-                            Triple("📞 Phone Link", "Satellite & voicemail", onOpenPhone)
+                            Triple("📞 Phone Link", "Satellite & voicemail", onOpenPhone),
+                            Triple("⌚ IoT Companion", "Smartwatch & ambient simulator", onOpenIotCompanion)
                         )
 
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

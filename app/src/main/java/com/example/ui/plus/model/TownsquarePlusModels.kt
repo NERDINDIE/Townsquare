@@ -45,7 +45,7 @@ data class VoicemailItem(
 // ==========================================
 
 enum class MailFolder {
-    INBOX, STARRED, SENT, DRAFTS, ARCHIVE, TRASH, ENVELOPES, POSTCARDS, DATING_DMS, STAMPS, AI_CHATBOTS
+    INBOX, STARRED, SENT, DRAFTS, ARCHIVE, TRASH, NEWSLETTERS, ENVELOPES, POSTCARDS, DATING_DMS, STAMPS, AI_CHATBOTS
 }
 
 data class MailAttachment(
@@ -284,6 +284,102 @@ object TownsquarePlusSeed {
     )
 
     fun generateInitialEmails(): List<EmailItem> = listOf(
+        EmailItem(
+            senderName = "Townsquare Morning Chronicle 🗞️",
+            senderEmail = "chronicle@townsquare.media",
+            subject = "🗞️ [NEWSLETTER #188] Waterfront Promenade Grand Opening & Autumn Arts Special",
+            snippet = "Welcome to Issue #188! In this edition: Complete guide to the new Pier 14 Promenade, live music schedule, and weekend farmer's market...",
+            body = """TOWNSQUARE MORNING CHRONICLE • ISSUE #188
+Date: September 30, 2026 | Subscribed Edition
+
+Dear Citizen,
+
+Welcome to your daily morning briefing delivered straight to your Townsquare Inbox.
+
+══════════════════════════════════════════
+✨ TOP STORIES TODAY
+══════════════════════════════════════════
+1. Waterfront Promenade & Solar Kiosks Open Thursday
+Mayoralty Council approved the final ribbon-cutting for the 1.8-mile pedestrian boardwalk. Features 24 civic touchscreens and solar charging stations.
+
+2. Autumn Vinyl & Artisanal Coffee Fair
+Old Quarter will host 45 independent roasters and vintage record collectors this Saturday. Bring your vinyl swaps!
+
+3. Canal Waterway Transit Expansion
+Electric canal ferrying launches next month connecting North Wharf to Clocktower Square in under 8 minutes.
+
+══════════════════════════════════════════
+🌿 WEEKEND WEATHER PREVIEW
+══════════════════════════════════════════
+Highs around 74°F with crisp autumn breezes. Ideal for patio dining and walking along Willow Canal.
+
+Thank you for being a subscriber to Townsquare Media dispatches!
+Editorial Syndicate Team""",
+            timestamp = "7:00 AM",
+            folder = MailFolder.INBOX,
+            isUnread = true,
+            isStarred = true,
+            hasAttachments = true,
+            attachments = listOf(
+                MailAttachment("Chronicle_Issue_188_FullPrint.pdf", "3.2 MB", "pdf")
+            ),
+            avatarColorHex = 0xFF00D2FF
+        ),
+        EmailItem(
+            senderName = "Botanical & Urban Flora Gazette 🌿",
+            senderEmail = "flora@townsquare.green",
+            subject = "🌿 [NEWSLETTER #42] Winterizing Balcony Herbs, Seed Swaps & Heirloom Tomatoes",
+            snippet = "Issue #42: Essential tips for harvesting late autumn lavender, prepping raised beds for frost, and next week's community seed exchange...",
+            body = """BOTANICAL & URBAN FLORA GAZETTE • ISSUE #42
+Monthly Community Horticultural Bulletin
+
+Dear Urban Gardener,
+
+As golden hour shortens and autumn fog blankets the valley, it is time to prepare our community gardens and balcony planters!
+
+🌱 IN THIS MONTHLY ISSUE:
+• Cold-Hardy Herbs: Rosemary, Sage, and Thyme winter care tips.
+• Balcony Compost Masterclass: Micro-worm bins for small apartment spaces.
+• Heirloom Seed Swap: Meet at the Botanical Pavilions this Sunday at 2 PM.
+
+Enjoy planting,
+Townsquare Guild of Urban Botanists""",
+            timestamp = "Yesterday",
+            folder = MailFolder.NEWSLETTERS,
+            isUnread = false,
+            isStarred = true,
+            hasAttachments = false,
+            avatarColorHex = 0xFF2EC4B6
+        ),
+        EmailItem(
+            senderName = "Analog Sound & Vinyl Digest 📼",
+            senderEmail = "vintage.audio@townsquare.fm",
+            subject = "📼 [NEWSLETTER #19] The 1970s Marantz Receiver Revival & Tube Amp Calibration",
+            snippet = "Issue #19: A deep dive into restoring warm Japanese hi-fi solid state amplifiers and hunting for vintage vinyl pressings...",
+            body = """ANALOG SOUND & VINYL DIGEST • ISSUE #19
+The Dedicated Publication for Vintage Audiophiles & Tape Enthusiasts
+
+Greetings Audiophile,
+
+In this issue, our lead technician Miles Holloway breaks down the secret to warming up modern digital DACs using vacuum tube buffer stages.
+
+🎧 HIGHLIGHTS:
+• Restoring a 1974 Marantz 2270 Stereo Receiver: Step-by-step capacitor recapping.
+• Japanese City Pop Vinyl Releases: Rare 1982 pressings reissued this autumn.
+• Cassette Tape Culture: Why Type II Chrome cassettes are making a huge resurgence.
+
+Keep the needles dropping!
+Analog Heritage Collective""",
+            timestamp = "Sep 27",
+            folder = MailFolder.NEWSLETTERS,
+            isUnread = true,
+            isStarred = false,
+            hasAttachments = true,
+            attachments = listOf(
+                MailAttachment("Schematics_Marantz_2270.pdf", "4.8 MB", "pdf")
+            ),
+            avatarColorHex = 0xFFFF9F1C
+        ),
         EmailItem(
             senderName = "Mayor's Press Office",
             senderEmail = "press@townsquare.gov",

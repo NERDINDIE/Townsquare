@@ -154,7 +154,12 @@ fun TownsquareExtensionsApp(
             Tab(
                 selected = selectedTab == 1,
                 onClick = { selectedTab = 1 },
-                text = { Text("🛠️ Custom Extension Builder", fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) }
+                text = { Text("🛠️ Skin Builder", fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) }
+            )
+            Tab(
+                selected = selectedTab == 2,
+                onClick = { selectedTab = 2 },
+                text = { Text("🎼 Ringtone Composer", fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal) }
             )
         }
 
@@ -231,6 +236,9 @@ fun TownsquareExtensionsApp(
                         selectedTab = 0
                     },
                     onExportJson = { showJsonExportDialog = true }
+                )
+                2 -> TownsquareRingtoneComposer(
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

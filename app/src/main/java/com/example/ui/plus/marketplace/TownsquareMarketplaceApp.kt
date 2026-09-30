@@ -265,6 +265,11 @@ fun TownsquareMarketplaceApp(
                     onClick = { selectedTab = 3 },
                     text = { Text("📖 Recipe Book & Pantry", fontSize = 12.sp, fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Normal) }
                 )
+                Tab(
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 },
+                    text = { Text("📊 Expenses & Tips", fontSize = 12.sp, fontWeight = if (selectedTab == 4) FontWeight.Bold else FontWeight.Normal) }
+                )
             }
 
             Box(modifier = Modifier.weight(1f)) {
@@ -298,6 +303,9 @@ fun TownsquareMarketplaceApp(
                             items.forEach { addToCart(it) }
                             isCartOpen = true
                         }
+                    )
+                    4 -> TownsquareExpenseAndTippingSection(
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }

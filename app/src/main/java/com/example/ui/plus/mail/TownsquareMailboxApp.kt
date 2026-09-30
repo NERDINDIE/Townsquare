@@ -51,6 +51,7 @@ fun TownsquareMailboxApp(
 
     val folders = listOf(
         Pair(MailFolder.INBOX, "Inbox"),
+        Pair(MailFolder.NEWSLETTERS, "Newsletters 🗞️"),
         Pair(MailFolder.STARRED, "Starred"),
         Pair(MailFolder.SENT, "Sent"),
         Pair(MailFolder.DRAFTS, "Drafts"),

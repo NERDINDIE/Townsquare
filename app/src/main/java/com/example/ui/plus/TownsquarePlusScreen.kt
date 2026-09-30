@@ -197,43 +197,6 @@ fun TownsquarePlusScreen(
                             }
                         }
 
-                        // Concept Incubator Section Header
-                        item {
-                            Text(
-                                text = "PROTOTYPE CONCEPTS & EXTENSIONS",
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                                color = NeonCyan
-                            )
-                        }
-
-                        // 1. Applet Extension & Skin Studio Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Extension & Skin Studio Builder",
-                                subtitle = "Custom Welcome Skins • Retro Terminal • Parchment Theme",
-                                description = "Interactive studio builder for creating applet skin overrides, welcome screen extensions, custom color palettes, and retro UI skins.",
-                                icon = Icons.Default.Build,
-                                iconColor = NeonCyan,
-                                badgeText = "BUILDER",
-                                onClick = { activeSubApp = PlusModularApp.EXTENSIONS },
-                                testTag = "open_extensions_builder_card"
-                            )
-                        }
-
-                        // 2. Catalogs & Storefront Prototype
-                        item {
-                            SuperappModuleCard(
-                                title = "Storefront & Catalog Prototype",
-                                subtitle = "Merchant Catalogs • Press Merch • Special Collections",
-                                description = "Experimental storefront concept displaying merchant catalog items, press merchandise, and official subscriptions before marketplace integration.",
-                                icon = Icons.Default.Category,
-                                iconColor = WarmAmber,
-                                badgeText = "PROTOTYPE",
-                                onClick = { activeSubApp = PlusModularApp.CATALOGS },
-                                testTag = "open_catalogs_app_card"
-                            )
-                        }
-
                         item {
                             Spacer(modifier = Modifier.height(24.dp))
                         }
