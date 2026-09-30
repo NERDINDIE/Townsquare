@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -75,6 +76,7 @@ fun CreateContentDialog(
         durationSeconds: Int,
         frequency: String
     ) -> Unit,
+    onOpenExtensionBuilder: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
     var selectedType by remember { mutableStateOf(MediaType.SOCIAL_POST) }
@@ -171,7 +173,64 @@ fun CreateContentDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Extension Builder Banner in Content Creation Suite
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFF1E1508),
+                    border = BorderStroke(1.dp, WarmAmber.copy(alpha = 0.6f)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onDismiss()
+                            onOpenExtensionBuilder()
+                        }
+                        .testTag("create_suite_extension_builder_card")
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = "🛠️", fontSize = 20.sp)
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Extension & Skin Studio Builder",
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = WarmAmber
+                                )
+                                Text(
+                                    text = "Build custom welcome skins, themes & functional applet extensions",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.LightGray,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = WarmAmber
+                        ) {
+                            Text(
+                                text = "BUILD",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = Color.Black,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Column(
                     modifier = Modifier

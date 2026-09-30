@@ -91,6 +91,7 @@ fun ProfileSpacesScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0: All, 1: Posts, 2: Newsletters, 3: Articles, 4: Audio, 5: Bookmarks
+    var mainProfileModule by remember { mutableIntStateOf(0) } // 0: Created Content Wall, 1: Personal Finance, 2: Health & Well-being, 3: State & Civic Pass
 
     val totalSubscribers = userSpaces.sumOf { it.subscriberCount }
     val totalPublished = userCreatedItems.size
@@ -290,16 +291,103 @@ fun ProfileSpacesScreen(
                 }
             }
 
-            // Published Works Tab Row
+            // Unified Personal Profile Subapp Modules
             item {
-                val tabLabels = listOf(
-                    "All My Works (${userCreatedItems.size})",
-                    "💬 Posts",
-                    "✉️ Newsletters",
-                    "📰 Articles",
-                    "📻 Audio",
-                    "🔖 Saved (${bookmarkedItems.size})"
-                )
+                Column {
+                    Text(
+                        text = "UNIFIED PERSONAL PROFILE MODULES",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.1.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        val profileModules = listOf(
+                            Pair(0, "🖼️ Content Wall"),
+                            Pair(1, "💳 Finance"),
+                            Pair(2, "🫀 Health"),
+                            Pair(3, "🏛️ State Pass")
+                        )
+                        profileModules.forEach { (modId, label) ->
+                            val isSelected = mainProfileModule == modId
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = if (isSelected) NeonCyan else MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(38.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable { mainProfileModule = modId }
+                                    .testTag("profile_module_tab_$modId")
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = if (isSelected) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (mainProfileModule == 1) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(680.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, WarmAmber.copy(alpha = 0.5f))
+                    ) {
+                        com.example.ui.plus.finance.TownsquareFinanceApp(onBack = { mainProfileModule = 0 })
+                    }
+                }
+            } else if (mainProfileModule == 2) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(680.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f))
+                    ) {
+                        com.example.ui.plus.health.TownsquareHealthApp(onBack = { mainProfileModule = 0 })
+                    }
+                }
+            } else if (mainProfileModule == 3) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(680.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF00E5FF).copy(alpha = 0.5f))
+                    ) {
+                        com.example.ui.plus.state.TownsquareStateApp(onBack = { mainProfileModule = 0 })
+                    }
+                }
+            } else {
+                // Default: Published Works Content Wall
+                item {
+                    val tabLabels = listOf(
+                        "All My Works (${userCreatedItems.size})",
+                        "💬 Posts",
+                        "✉️ Newsletters",
+                        "📰 Articles",
+                        "📻 Audio",
+                        "🔖 Saved (${bookmarkedItems.size})"
+                    )
 
                 ScrollableTabRow(
                     selectedTabIndex = selectedTab,
@@ -391,6 +479,7 @@ fun ProfileSpacesScreen(
                         onToggleSavedOffline = onToggleSavedOffline
                     )
                 }
+            }
             }
 
             item {

@@ -106,7 +106,7 @@ fun TownsquarePlusScreen(
                 Column(modifier = Modifier.fillMaxSize()) {
                     TownsquareTopBar(
                         title = "Townsquare Plus",
-                        subtitle = "Superapp Suite • 4 Modular Apps",
+                        subtitle = "Experimental Concept Lab & Prototype Sandbox",
                         onOpenSidebar = onOpenSidebar
                     )
 
@@ -152,7 +152,7 @@ fun TownsquarePlusScreen(
                                                 color = WarmAmber
                                             ) {
                                                 Text(
-                                                    text = "TOWNSQUARE PLUS SUITE",
+                                                    text = "🧪 CONCEPT EXPERIMENTAL LAB",
                                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
                                                     color = Color(0xFF261800),
                                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
@@ -174,7 +174,7 @@ fun TownsquarePlusScreen(
                                                         modifier = Modifier.size(6.dp)
                                                     ) {}
                                                     Spacer(modifier = Modifier.width(6.dp))
-                                                    Text("4 APPS ACTIVE", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = NeonCyan)
+                                                    Text("SANDBOX ACTIVE", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = NeonCyan)
                                                 }
                                             }
                                         }
@@ -182,13 +182,13 @@ fun TownsquarePlusScreen(
                                         Spacer(modifier = Modifier.height(14.dp))
 
                                         Text(
-                                            text = "Your Modular Daily Ecosystem",
+                                            text = "Temporary Feature & App Incubator",
                                             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Black),
                                             color = Color.White
                                         )
                                         Spacer(modifier = Modifier.height(6.dp))
                                         Text(
-                                            text = "A full-featured superapp experience seamlessly hosting your phone communications, civic mailbox, interactive cartography with travel magazine, and neighborhood marketplace.",
+                                            text = "Townsquare Plus serves as an experimental sandbox hosting temporary prototype concepts, skin extension builders, custom applet overlays, and feature previews that may or may not be implemented into regular Townsquare over time.",
                                             style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
                                             color = DarkTextSecondary
                                         )
@@ -197,247 +197,41 @@ fun TownsquarePlusScreen(
                             }
                         }
 
-                        // Superapp Launchers Section Header
+                        // Concept Incubator Section Header
                         item {
                             Text(
-                                text = "MODULAR MINI-APPS",
+                                text = "PROTOTYPE CONCEPTS & EXTENSIONS",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
                                 color = NeonCyan
                             )
                         }
 
-                        // 1. Phone App Launcher Card
+                        // 1. Applet Extension & Skin Studio Card
                         item {
                             SuperappModuleCard(
-                                title = "Townsquare Phone",
-                                subtitle = "Satellite Link • Visual Voicemail • Masthead Radar • AI Deflector",
-                                description = "Dialer with off-grid satellite phone compatibility, visual voicemail with smart call redirection, nearest cell masthead telemetry & health, and customizable AI personas to deflect scammers.",
-                                icon = Icons.Default.Phone,
-                                iconColor = Color(0xFF30D158),
-                                badgeText = "SAT & AI",
-                                onClick = { activeSubApp = PlusModularApp.PHONE },
-                                testTag = "open_phone_app_card"
-                            )
-                        }
-
-                        // 2. Mailbox App Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Mailbox",
-                                subtitle = "Inbox • Compose • Folders • Starred • Attachments",
-                                description = "Full encrypted email and dispatch client. Compose rich messages, inspect attachments, archive dispatches, and manage editorial correspondence.",
-                                icon = Icons.Default.Mail,
-                                iconColor = WarmAmber,
-                                badgeText = "3 NEW",
-                                onClick = { activeSubApp = PlusModularApp.MAILBOX },
-                                testTag = "open_mailbox_app_card"
-                            )
-                        }
-
-                        // 3. Maps & Travel Magazine Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Maps & Travel Magazine",
-                                subtitle = "Interactive Map • Personalized Magazine • Day Itinerary",
-                                description = "Explore local sights, generate a custom personalized travel magazine issue based on your exploration pace, and schedule your day route.",
-                                icon = Icons.Default.Map,
-                                iconColor = MintTeal,
-                                badgeText = "MAGAZINE",
-                                onClick = { activeSubApp = PlusModularApp.MAPS },
-                                testTag = "open_maps_app_card"
-                            )
-                        }
-
-                        // 4. Marketplace App Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Marketplace",
-                                subtitle = "Buy & Sell • Listings • Make Offer • Cart & Checkout",
-                                description = "Browse vintage audio, artisanal pottery, and books. List your own items for sale, make offers to sellers, and checkout with local locker pickup.",
-                                icon = Icons.Default.Storefront,
-                                iconColor = RadiantPurple,
-                                badgeText = "BUY & SELL",
-                                onClick = { activeSubApp = PlusModularApp.MARKETPLACE },
-                                testTag = "open_marketplace_app_card"
-                            )
-                        }
-
-                        // 5. Extensions Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Extensions",
-                                subtitle = "In-App Plugins • UI Builder • Personalization",
-                                description = "Build custom extensions, add new widgets to your Townsquare dashboard, and personalize your modular experience.",
-                                icon = Icons.Default.Extension,
+                                title = "Extension & Skin Studio Builder",
+                                subtitle = "Custom Welcome Skins • Retro Terminal • Parchment Theme",
+                                description = "Interactive studio builder for creating applet skin overrides, welcome screen extensions, custom color palettes, and retro UI skins.",
+                                icon = Icons.Default.Build,
                                 iconColor = NeonCyan,
                                 badgeText = "BUILDER",
                                 onClick = { activeSubApp = PlusModularApp.EXTENSIONS },
-                                testTag = "open_extensions_app_card"
+                                testTag = "open_extensions_builder_card"
                             )
                         }
 
-                        // 6. Finance Launcher Card
+                        // 2. Catalogs & Storefront Prototype
                         item {
                             SuperappModuleCard(
-                                title = "Townsquare Finance",
-                                subtitle = "Card Management • Spending • Wallet",
-                                description = "Manage your digital cards, monitor your spending habits, and secure your monetary means.",
-                                icon = Icons.Default.AccountBalanceWallet,
-                                iconColor = Color(0xFF30D158),
-                                badgeText = "FINANCE",
-                                onClick = { activeSubApp = PlusModularApp.FINANCE },
-                                testTag = "open_finance_app_card"
-                            )
-                        }
-
-                        // 8. State Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare State",
-                                subtitle = "Civil Services • Bills • Taxes • Voting",
-                                description = "Manage your civil services, pay utility bills, file taxes, and cast your vote in live local elections.",
-                                icon = Icons.Default.AccountBalance,
-                                iconColor = Color(0xFF6200EE),
-                                badgeText = "STATE",
-                                onClick = { activeSubApp = PlusModularApp.STATE },
-                                testTag = "open_state_app_card"
-                            )
-                        }
-
-                        // 9. Arcade Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Arcade",
-                                subtitle = "Play Games • Achievements • Live Leaderboard",
-                                description = "Play retro canvas games like Space Invaders and Block Breaker, track unlocked achievements, and see other local high scores.",
-                                icon = Icons.Default.Gamepad,
-                                iconColor = Color(0xFF33FF33),
-                                badgeText = "NEW GAMES",
-                                onClick = { activeSubApp = PlusModularApp.ARCADE },
-                                testTag = "open_arcade_app_card"
-                            )
-                        }
-
-                        // 10. Health & Screen Time Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Health",
-                                subtitle = "Screen Time • Step Counter • FOMO Shields",
-                                description = "Log steps, track screen usage across dispatches, configure FOMO shields to silence non-urgent dings, and practice breathing mindfulness.",
-                                icon = Icons.Default.Favorite,
-                                iconColor = Color(0xFFFF5252),
-                                badgeText = "FITNESS & MIND",
-                                onClick = { activeSubApp = PlusModularApp.HEALTH },
-                                testTag = "open_health_app_card"
-                            )
-                        }
-
-                        // 11. Bookworm Book Tracker Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Bookworm",
-                                subtitle = "Book Tracker • Reading Streak • Literature Club",
-                                description = "Track your reading shelves, record page progress, set annual reading goals, and connect with Bookworm literature news.",
-                                icon = Icons.Default.MenuBook,
+                                title = "Storefront & Catalog Prototype",
+                                subtitle = "Merchant Catalogs • Press Merch • Special Collections",
+                                description = "Experimental storefront concept displaying merchant catalog items, press merchandise, and official subscriptions before marketplace integration.",
+                                icon = Icons.Default.Category,
                                 iconColor = WarmAmber,
-                                badgeText = "BOOK TRACKER",
-                                onClick = { activeSubApp = PlusModularApp.BOOKS },
-                                testTag = "open_bookworm_app_card"
+                                badgeText = "PROTOTYPE",
+                                onClick = { activeSubApp = PlusModularApp.CATALOGS },
+                                testTag = "open_catalogs_app_card"
                             )
-                        }
-
-                        // 12. Lingo Polyglot Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Lingo Polyglot",
-                                subtitle = "Dictionary • Real-Time Translator • AI Language Tutor",
-                                description = "Lookup words with pronunciations and etymology, translate phrases across 7 languages in real-time, and practice spoken dialogue scenarios with an AI tutor.",
-                                icon = Icons.Default.Translate,
-                                iconColor = NeonCyan,
-                                badgeText = "POLYGLOT",
-                                onClick = { activeSubApp = PlusModularApp.LINGO },
-                                testTag = "open_lingo_app_card"
-                            )
-                        }
-
-                        // 13. Planner & Calendar Launcher Card
-                        item {
-                            SuperappModuleCard(
-                                title = "Townsquare Planner & Tasks",
-                                subtitle = "Calendar • Hourly Schedule • Task Manager",
-                                description = "Interactive day and month calendar, hourly appointment scheduler, and prioritized task manager with category tags.",
-                                icon = Icons.Default.CalendarMonth,
-                                iconColor = Color(0xFFFF9F1C),
-                                badgeText = "CALENDAR",
-                                onClick = { activeSubApp = PlusModularApp.PLANNER },
-                                testTag = "open_planner_app_card"
-                            )
-                        }
-
-                        // Superapp Quick Peek / Status summary
-                        item {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "CROSS-APP LIVE HIGHLIGHTS",
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                                color = DarkTextSecondary
-                            )
-                        }
-
-                        item {
-                            Surface(
-                                shape = RoundedCornerShape(14.dp),
-                                color = DarkSurfaceElevated,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "⚡ Quick Highlights",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 14.sp,
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Tap to launch",
-                                            fontSize = 11.sp,
-                                            color = NeonCyan
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(10.dp))
-
-                                    QuickHighlightRow(
-                                        icon = Icons.Default.Voicemail,
-                                        label = "Recent Voicemail from Elena Rostova",
-                                        detail = "Pier 4 archives verification (48s)",
-                                        onClick = { activeSubApp = PlusModularApp.PHONE }
-                                    )
-
-                                    HorizontalDivider(color = DarkBorder, modifier = Modifier.padding(vertical = 8.dp))
-
-                                    QuickHighlightRow(
-                                        icon = Icons.Default.AutoStories,
-                                        label = "Townsquare Wanderer • Autumn Chronicle",
-                                        detail = "Cover story: Cobblestone Spires & Print presses",
-                                        onClick = { activeSubApp = PlusModularApp.MAPS }
-                                    )
-
-                                    HorizontalDivider(color = DarkBorder, modifier = Modifier.padding(vertical = 8.dp))
-
-                                    QuickHighlightRow(
-                                        icon = Icons.Default.LocalOffer,
-                                        label = "Market Deal: 1974 Braun Transistor Radio",
-                                        detail = "$145.00 • Restored by Analog Sound Lab",
-                                        onClick = { activeSubApp = PlusModularApp.MARKETPLACE }
-                                    )
-                                }
-                            }
                         }
 
                         item {

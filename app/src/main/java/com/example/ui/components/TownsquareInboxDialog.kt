@@ -91,6 +91,7 @@ fun TownsquareInboxDialog(
     if (!isOpen) return
 
     var selectedCategory by remember { mutableStateOf(InboxCategory.ALL) }
+    var mainInboxMode by remember { androidx.compose.runtime.mutableIntStateOf(0) } // 0 = Alerts & Notifications, 1 = Postal Mailbox & Letters
     val unreadCount = remember(items) { items.count { !it.isRead } }
 
     val filteredItems = remember(items, selectedCategory) {
@@ -190,8 +191,65 @@ fun TownsquareInboxDialog(
                     }
                 }
 
-                // Category Filter Bar
+                // Mode Switcher Tabs (System Alerts, Postal Mailbox, Phone & Live Highlights)
                 ScrollableTabRow(
+                    selectedTabIndex = mainInboxMode,
+                    edgePadding = 16.dp,
+                    containerColor = Color(0xFF0B111E),
+                    contentColor = NeonCyan,
+                    indicator = { tabPositions ->
+                        if (mainInboxMode < tabPositions.size) {
+                            TabRowDefaults.SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[mainInboxMode]),
+                                color = NeonCyan
+                            )
+                        }
+                    },
+                    divider = {}
+                ) {
+                    val inboxModes = listOf(
+                        Pair(0, "🔔 Alerts ($unreadCount)"),
+                        Pair(1, "📬 Postal Mailbox"),
+                        Pair(2, "📞 Phone & Voicemail"),
+                        Pair(3, "⚡ Live Cross-App Highlights")
+                    )
+                    inboxModes.forEach { (modeId, label) ->
+                        val isSelected = mainInboxMode == modeId
+                        Tab(
+                            selected = isSelected,
+                            onClick = { mainInboxMode = modeId },
+                            text = {
+                                Text(
+                                    text = label,
+                                    fontSize = 12.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (isSelected) NeonCyan else Color.LightGray
+                                )
+                            },
+                            modifier = Modifier.testTag("inbox_tab_$modeId")
+                        )
+                    }
+                }
+
+                if (mainInboxMode == 1) {
+                    com.example.ui.plus.mail.TownsquareMailboxApp(
+                        onBack = { mainInboxMode = 0 },
+                        modifier = Modifier.weight(1f)
+                    )
+                } else if (mainInboxMode == 2) {
+                    com.example.ui.plus.phone.TownsquarePhoneApp(
+                        onBack = { mainInboxMode = 0 }
+                    )
+                } else if (mainInboxMode == 3) {
+                    LiveCrossAppHighlightsView(
+                        channels = channels,
+                        onOpenBrief = onOpenFullBrief,
+                        onOpenWeather = onOpenWeather,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    // Category Filter Bar
+                    ScrollableTabRow(
                     selectedTabIndex = selectedCategory.ordinal,
                     edgePadding = 12.dp,
                     containerColor = Color(0xFF0B111E),
@@ -290,6 +348,7 @@ fun TownsquareInboxDialog(
                     }
 
                     item { Spacer(modifier = Modifier.height(40.dp)) }
+                }
                 }
             }
         }
@@ -473,6 +532,154 @@ private fun EmptyInboxState(category: InboxCategory) {
                 color = Color(0xFF94A3B8),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
+        }
+    }
+}
+
+@Composable
+private fun LiveCrossAppHighlightsView(
+    channels: List<MediaChannelEntity>,
+    onOpenBrief: () -> Unit,
+    onOpenWeather: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        item {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFF0D1D30),
+                border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "📡", fontSize = 20.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "LIVE CROSS-APP DISPATCH WIRE",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
+                                color = NeonCyan
+                            )
+                        }
+                        Surface(shape = RoundedCornerShape(6.dp), color = Color(0xFFFF3B30)) {
+                            Text(
+                                text = "LIVE FEEDS",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Real-time updates aggregated across TV Broadcasts, Local Weather, Marketplace, Fandoms & Press Wire.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.LightGray
+                    )
+                }
+            }
+        }
+
+        // Live TV Highlight
+        item {
+            Card(
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF131D30)),
+                border = BorderStroke(1.dp, Color(0xFF30D158).copy(alpha = 0.5f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "📺", fontSize = 28.sp)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "TCTV-1 Evening Broadcast • LIVE",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Flagship evening wire dispatch with live satellite correspondents.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.LightGray
+                        )
+                    }
+                }
+            }
+        }
+
+        // Marketplace Highlight
+        item {
+            Card(
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E170A)),
+                border = BorderStroke(1.dp, WarmAmber.copy(alpha = 0.5f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "🛍️", fontSize = 28.sp)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Marketplace • Fresh Listing Arrival",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = WarmAmber
+                        )
+                        Text(
+                            text = "Vintage AM/FM Vacuum Tube Receiver listed in Old Quarter.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.LightGray
+                        )
+                    }
+                }
+            }
+        }
+
+        // Weather & Radar Highlight
+        item {
+            Card(
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF0E2235)),
+                border = BorderStroke(1.dp, Color(0xFF00D2FF).copy(alpha = 0.5f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onOpenWeather() }
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "⛅", fontSize = 28.sp)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Harbor Weather Station • 72°F Clear",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = Color(0xFF00D2FF)
+                        )
+                        Text(
+                            text = "Maritime & meteorological radar synced. High 78°F expected.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.LightGray
+                        )
+                    }
+                }
+            }
         }
     }
 }

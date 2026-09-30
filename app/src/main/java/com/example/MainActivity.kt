@@ -861,6 +861,12 @@ fun TownsquareApp(
         onOpenVoiceBuilder = { isVoiceBuilderOpen = true },
         onOpenDrivingMode = { isDrivingModeOpen = true },
         onOpenProfileSwitcher = { viewModel.selectProfile(null) },
+        onOpenMarketplace = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
+        onOpenMaps = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
+        onOpenArcade = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
+        onOpenLingo = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
+        onOpenBookworm = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
+        onOpenPhone = { isInboxOpen = true },
         unreadInboxCount = unreadInboxCount,
         draftsCount = notepadDrafts.size,
         settings = appSettings,
@@ -1084,6 +1090,10 @@ fun TownsquareApp(
                 scope.launch {
                     snackbarHostState.showSnackbar("Published to ${space?.title ?: "Media Space"}!")
                 }
+            },
+            onOpenExtensionBuilder = {
+                isCreateContentVisible = false
+                currentNavIndex = NavDestination.TOWNSQUARE_PLUS
             },
             onDismiss = { isCreateContentVisible = false }
         )

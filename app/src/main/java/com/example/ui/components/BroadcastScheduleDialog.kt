@@ -148,6 +148,7 @@ fun BroadcastScheduleDialog(
     }
 
     var selectedChannelIndex by remember { mutableIntStateOf(0) }
+    var stationClockTab by remember { mutableIntStateOf(0) } // 0 = Clock & Broadcast Schedules, 1 = Planner & Tasks Agenda
     val activeSchedule = channelSchedules[selectedChannelIndex]
 
     Dialog(
@@ -210,10 +211,63 @@ fun BroadcastScheduleDialog(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Unified Time & Planning Switcher Tabs
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (stationClockTab == 0) NeonCyan else MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(38.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { stationClockTab = 0 }
+                            .testTag("station_clock_tab_schedules")
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "🕰️ Station Clock & TV Guide",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = if (stationClockTab == 0) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (stationClockTab == 1) NeonCyan else MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(38.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { stationClockTab = 1 }
+                            .testTag("station_clock_tab_planner")
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "🗓️ Planner, Tasks & Agenda",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = if (stationClockTab == 1) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Station Master Clock Banner
-                Surface(
+                if (stationClockTab == 1) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        com.example.ui.plus.planner.TownsquarePlannerApp(
+                            onBack = { stationClockTab = 0 }
+                        )
+                    }
+                } else {
+                    // Station Master Clock Banner
+                    Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = Color(0xFF001F2B),
                     border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.4f)),
@@ -379,6 +433,7 @@ fun BroadcastScheduleDialog(
                     items(activeSchedule.programs) { program ->
                         ProgramScheduleCard(program = program)
                     }
+                }
                 }
             }
         }

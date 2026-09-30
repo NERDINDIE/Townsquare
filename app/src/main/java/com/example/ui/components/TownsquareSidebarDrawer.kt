@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
@@ -140,6 +141,12 @@ fun TownsquareSidebarDrawer(
     onOpenVoiceBuilder: () -> Unit = {},
     onOpenDrivingMode: () -> Unit = {},
     onOpenProfileSwitcher: () -> Unit = {},
+    onOpenMarketplace: () -> Unit = {},
+    onOpenMaps: () -> Unit = {},
+    onOpenArcade: () -> Unit = {},
+    onOpenLingo: () -> Unit = {},
+    onOpenBookworm: () -> Unit = {},
+    onOpenPhone: () -> Unit = {},
     unreadInboxCount: Int = 0,
     draftsCount: Int = 3,
     // Settings state & callbacks merged into Sidebar
@@ -468,7 +475,7 @@ fun TownsquareSidebarDrawer(
                                     Column {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Text(
-                                                text = "Townsquare Plus",
+                                                text = "Townsquare Plus Lab",
                                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                                 color = Color.White
                                             )
@@ -478,7 +485,7 @@ fun TownsquareSidebarDrawer(
                                                 color = com.example.ui.theme.WarmAmber
                                             ) {
                                                 Text(
-                                                    text = "SUITE",
+                                                    text = "LAB",
                                                     fontSize = 8.sp,
                                                     fontWeight = FontWeight.Black,
                                                     color = Color(0xFF261800),
@@ -487,7 +494,7 @@ fun TownsquareSidebarDrawer(
                                             }
                                         }
                                         Text(
-                                            text = "Phone • Mailbox • Maps • Market",
+                                            text = "Experimental Concepts & Extension Sandbox",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = com.example.ui.theme.WarmAmber.copy(alpha = 0.9f)
                                         )
@@ -541,12 +548,12 @@ fun TownsquareSidebarDrawer(
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
-                                            text = "Townsquare Inbox",
+                                            text = "Townsquare Unified Inbox",
                                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
-                                            text = "Briefs, Dispatches & Alerts",
+                                            text = "Alerts, Dispatches, Letters & Mailbox",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -633,7 +640,7 @@ fun TownsquareSidebarDrawer(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    onOpenLettersMailbox()
+                                    onOpenInbox()
                                     onClose()
                                 }
                                 .testTag("sidebar_letters_mailbox_button")
@@ -677,6 +684,66 @@ fun TownsquareSidebarDrawer(
                                         color = Color(0xFF003544),
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                     )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Standalone Apps Section
+                        Text(
+                            text = "STANDALONE CIVIC APPS",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+                            color = NeonCyan
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        val standaloneApps = listOf(
+                            Triple("🛍️ Marketplace", "Buy, sell & catalogs", onOpenMarketplace),
+                            Triple("🗺️ Maps & Travel", "Cartography & guide", onOpenMaps),
+                            Triple("🎮 Arcade Games", "Retro games & arcade", onOpenArcade),
+                            Triple("🗣️ Lingo Lab", "Language & phrasebook", onOpenLingo),
+                            Triple("📚 Bookworm", "Library & archives", onOpenBookworm),
+                            Triple("📞 Phone Link", "Satellite & voicemail", onOpenPhone)
+                        )
+
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            standaloneApps.forEach { (title, subtitle, onClick) ->
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = DarkSurfaceElevated,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            onClose()
+                                            onClick()
+                                        }
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Column {
+                                            Text(
+                                                text = title,
+                                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                                color = Color.White
+                                            )
+                                            Text(
+                                                text = subtitle,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = Color.Gray
+                                            )
+                                        }
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                            contentDescription = null,
+                                            tint = NeonCyan,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
