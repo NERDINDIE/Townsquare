@@ -730,6 +730,7 @@ private fun getLeadCuratorForChannel(channelId: String): String {
         "channel_anime" -> "Kenji Sato • Pop Culture & Anime Shinbun"
         "channel_bookworm" -> "Julian Vance • Literature & Antiquarian Guild"
         "channel_waves" -> "Aria Scott • Waves Music Bureau & Frequency Lab"
+        "channel_retro_vintage" -> "Miles Holloway • Vintage Sound & Analog Heritage"
         else -> "Townsquare Editorial Collective"
     }
 }

@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.MediaChannelEntity
+import com.example.ui.components.TownsquareTopBar
 import com.example.ui.theme.DarkBorder
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
@@ -52,6 +53,7 @@ fun ChannelsScreen(
     channels: List<MediaChannelEntity>,
     onToggleFollowChannel: (MediaChannelEntity) -> Unit,
     onSelectChannel: (String) -> Unit,
+    onOpenSidebar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -60,23 +62,11 @@ fun ChannelsScreen(
             .background(MaterialTheme.colorScheme.background)
             .testTag("channels_screen")
     ) {
-        // Top Header
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 14.dp)
-        ) {
-            Text(
-                text = "Discovery Hub",
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "Discover and follow thematic channels and spaces to curate your daily feed",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        TownsquareTopBar(
+            title = "Discovery Hub",
+            subtitle = "Follow thematic channels & curate daily feed",
+            onOpenSidebar = onOpenSidebar
+        )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),

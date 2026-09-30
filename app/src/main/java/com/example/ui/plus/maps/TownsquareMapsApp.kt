@@ -149,10 +149,11 @@ fun TownsquareMapsApp(
             }
 
             // Tabs Selector
-            TabRow(
+            ScrollableTabRow(
                 selectedTabIndex = selectedTopTab,
                 containerColor = DarkSurfaceVariant,
                 contentColor = NeonCyan,
+                edgePadding = 12.dp,
                 indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
                         Modifier.tabIndicatorOffset(tabPositions[selectedTopTab]),
@@ -163,20 +164,32 @@ fun TownsquareMapsApp(
                 Tab(
                     selected = selectedTopTab == 0,
                     onClick = { selectedTopTab = 0 },
-                    icon = { Icon(Icons.Default.Explore, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("Interactive Map", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.Explore, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("🗺️ Interactive Map", fontSize = 12.sp, fontWeight = if (selectedTopTab == 0) FontWeight.Bold else FontWeight.Normal) }
                 )
                 Tab(
                     selected = selectedTopTab == 1,
                     onClick = { selectedTopTab = 1 },
-                    icon = { Icon(Icons.Default.AutoStories, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("Travel Magazine", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.BeachAccess, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("🏖️ Palapa Vacationing", fontSize = 12.sp, fontWeight = if (selectedTopTab == 1) FontWeight.Bold else FontWeight.Normal) }
                 )
                 Tab(
                     selected = selectedTopTab == 2,
                     onClick = { selectedTopTab = 2 },
-                    icon = { Icon(Icons.Default.Route, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("My Itinerary (${itineraryStops.size})", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.LocalGasStation, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("⛽ Rest Area & Traps", fontSize = 12.sp, fontWeight = if (selectedTopTab == 2) FontWeight.Bold else FontWeight.Normal) }
+                )
+                Tab(
+                    selected = selectedTopTab == 3,
+                    onClick = { selectedTopTab = 3 },
+                    icon = { Icon(Icons.Default.AutoStories, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("📖 Travel Magazine", fontSize = 12.sp, fontWeight = if (selectedTopTab == 3) FontWeight.Bold else FontWeight.Normal) }
+                )
+                Tab(
+                    selected = selectedTopTab == 4,
+                    onClick = { selectedTopTab = 4 },
+                    icon = { Icon(Icons.Default.Route, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("🧭 My Itinerary (${itineraryStops.size})", fontSize = 12.sp, fontWeight = if (selectedTopTab == 4) FontWeight.Bold else FontWeight.Normal) }
                 )
             }
 
@@ -197,16 +210,40 @@ fun TownsquareMapsApp(
                                 note = spot.description.take(70) + "..."
                             )
                             itineraryStops = itineraryStops + newStop
-                            selectedTopTab = 2
+                            selectedTopTab = 4
                         }
                     )
-                    1 -> TravelMagazineView(
+                    1 -> PalapaVacationingView(
+                        spots = mapSpots,
+                        onAddToItinerary = { spot ->
+                            val newStop = ItineraryStop(
+                                timeSlot = "Afternoon Palapa",
+                                spotName = spot.name,
+                                note = "Seaside cabana lounge & tropical retreat."
+                            )
+                            itineraryStops = itineraryStops + newStop
+                            selectedTopTab = 4
+                        }
+                    )
+                    2 -> RestAreaTrapsView(
+                        spots = mapSpots,
+                        onAddToItinerary = { spot ->
+                            val newStop = ItineraryStop(
+                                timeSlot = "Highway Pitstop",
+                                spotName = spot.name,
+                                note = "Roadside oddity & traveler stop."
+                            )
+                            itineraryStops = itineraryStops + newStop
+                            selectedTopTab = 4
+                        }
+                    )
+                    3 -> TravelMagazineView(
                         articles = magazineArticles,
                         currentArticle = activeMagazineArticle,
                         onSelectArticle = { activeMagazineArticle = it },
                         onOpenGenerator = { isGeneratorOpen = true }
                     )
-                    2 -> ItineraryPlannerView(
+                    4 -> ItineraryPlannerView(
                         stops = itineraryStops,
                         onToggleComplete = { stopId ->
                             itineraryStops = itineraryStops.map {

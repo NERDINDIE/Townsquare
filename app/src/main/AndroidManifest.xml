@@ -91,6 +91,18 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_facsimile_broadsheet_info" />
         </receiver>
+
+        <!-- Home Screen Widget: TCTV Station Clock -->
+        <receiver
+            android:name=".widget.TownsquareClockWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_clock_tctv_info" />
+        </receiver>
     </application>
 
 </manifest>

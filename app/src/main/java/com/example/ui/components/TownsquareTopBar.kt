@@ -65,8 +65,6 @@ fun TownsquareTopBar(
         
         Row(verticalAlignment = Alignment.CenterVertically) {
             actions()
-            Spacer(modifier = Modifier.width(8.dp))
-            ClockTvIdentWidget()
         }
     }
 }

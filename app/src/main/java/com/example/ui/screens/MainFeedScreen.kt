@@ -214,29 +214,6 @@ fun MainFeedScreen(
                         }
                     }
 
-                    // Offline Mode Toggle
-                    IconButton(
-                        onClick = onToggleOfflineMode,
-                        modifier = Modifier.testTag("toggle_offline_mode_button")
-                    ) {
-                        Icon(
-                            imageVector = if (isOfflineMode) Icons.Default.CloudDone else Icons.Default.CloudOff,
-                            contentDescription = if (isOfflineMode) "Offline Mode Active" else "Live Mode",
-                            tint = if (isOfflineMode) NeonCyan else MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onRefresh,
-                        modifier = Modifier.testTag("feed_refresh_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Refresh Feed",
-                            tint = if (isRefreshing) NeonCyan else MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-
                     IconButton(
                         onClick = { searchVisible = !searchVisible },
                         modifier = Modifier.testTag("toggle_search_button")
@@ -369,15 +346,7 @@ fun MainFeedScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 1. Morning Editorial Briefing Highlight
-                item {
-                    MorningBriefCard(
-                        channels = channels,
-                        onOpenFullBrief = onOpenFullBrief,
-                        onPlayAudioBrief = onPlayAudioBrief,
-                        modifier = Modifier.testTag("feed_morning_brief_card")
-                    )
-                }
+
 
                 // Townsquare Plus Superapp Showcase Banner
                 item {

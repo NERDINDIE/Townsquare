@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,6 +41,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -121,20 +126,77 @@ fun FullAudioPlayerSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Big Artwork
+            // Big Artwork or Advanced Visualizer when no cover
+            var visualizerMode by remember { androidx.compose.runtime.mutableIntStateOf(0) } // 0: Spectrum, 1: Oscilloscope, 2: VU Meter
+
             Box(
                 modifier = Modifier
                     .size(240.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .border(1.dp, NeonCyan.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                    .clickable { visualizerMode = (visualizerMode + 1) % 3 }
             ) {
-                val coverRes = if (isRadio) R.drawable.img_radio_live else R.drawable.img_podcast_cover
-                Image(
-                    painter = painterResource(id = coverRes),
-                    contentDescription = current.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+                val hasCover = current.imageResName.isNotBlank() || isRadio
+                if (hasCover && visualizerMode == 0) {
+                    val coverRes = if (isRadio) R.drawable.img_radio_live else R.drawable.img_podcast_cover
+                    Image(
+                        painter = painterResource(id = coverRes),
+                        contentDescription = current.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    // Audio Visualizer Mode (Spectrum, Oscilloscope, or VU Meter)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFF090D14)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = when (visualizerMode) {
+                                    0 -> "📊 SPECTRUM ANALYZER"
+                                    1 -> "〰️ OSCILLOSCOPE WAVEFORM"
+                                    else -> "🎛️ RETRO VU METER"
+                                },
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = NeonCyan
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier.height(80.dp)
+                            ) {
+                                audioState.waveformHeights.forEach { wave ->
+                                    Box(
+                                        modifier = Modifier
+                                            .width(8.dp)
+                                            .height((wave * 70).dp.coerceAtLeast(6.dp))
+                                            .clip(RoundedCornerShape(4.dp))
+                                            .background(
+                                                Brush.verticalGradient(
+                                                    listOf(NeonCyan, WarmAmber)
+                                                )
+                                            )
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "(Tap to cycle visualizer mode)",
+                                fontSize = 9.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
 
                 // Bottom gradient with frequency or show
                 Box(

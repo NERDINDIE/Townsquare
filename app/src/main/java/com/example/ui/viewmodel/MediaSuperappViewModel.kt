@@ -1824,6 +1824,13 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
+    fun refreshData(onRefreshed: () -> Unit = {}) {
+        viewModelScope.launch {
+            delay(500L)
+            onRefreshed()
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         voiceNarrator.shutdown()

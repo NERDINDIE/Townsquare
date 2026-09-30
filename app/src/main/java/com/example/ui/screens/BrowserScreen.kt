@@ -40,7 +40,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.font.FontFamily
 import com.example.ui.plus.extensions.Android10SoundEffects
-import com.example.ui.components.ClockTvIdentWidget
 import com.example.ui.components.DEFAULT_BOOKMARKS
 import com.example.ui.components.WebTabItem
 import com.example.ui.theme.NeonCyan
@@ -183,10 +182,6 @@ fun BrowserTopBar(
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            ClockTvIdentWidget()
         }
     }
 }

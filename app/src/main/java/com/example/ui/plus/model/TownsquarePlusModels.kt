@@ -81,7 +81,9 @@ enum class SpotCategory(val title: String, val emoji: String) {
     CULTURE("Museums & Art", "🎨"),
     NATURE("Parks & Walks", "🌲"),
     MARKET("Local Markets", "🛍️"),
-    PRESS("Newsstands & Books", "📰")
+    PRESS("Newsstands & Books", "📰"),
+    PALAPA("Palapa Vacationing", "🏖️"),
+    REST_AREA("Rest Area & Traps", "⛽")
 }
 
 data class MapLocationSpot(
@@ -591,6 +593,126 @@ Stored securely in your encrypted mailbox vault.""",
             audioGuideDuration = "5 min street story",
             isCuratedPick = true,
             tags = listOf("Street Food", "Ceramics", "Local Culture")
+        ),
+        MapLocationSpot(
+            name = "Azure Palapa & Beachfront Cabanas",
+            category = SpotCategory.PALAPA,
+            description = "Thatched-roof tropical palapas over calm turquoise waters, hammocks under swaying palms, and fresh coconut citrus mocktails.",
+            address = "Cove Beach, Coastal Way 101",
+            openingHours = "07:00 AM - 10:00 PM",
+            rating = 4.95,
+            reviewsCount = 1840,
+            latitudeOffset = 0.85f,
+            longitudeOffset = 0.18f,
+            photoUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "4 min ocean waves",
+            isCuratedPick = true,
+            tags = listOf("Palapa", "Vacation", "Beachfront", "Resort")
+        ),
+        MapLocationSpot(
+            name = "Coral Reef Lagoon & Tiki Sunbeds",
+            category = SpotCategory.PALAPA,
+            description = "Private sunbeds and thatched cabana loungers overlooking protected coral reefs with snorkeling gear and sunset barbecue skewers.",
+            address = "South Reef Point, Palapa Isle",
+            openingHours = "08:00 AM - 11:00 PM",
+            rating = 4.88,
+            reviewsCount = 920,
+            latitudeOffset = 0.90f,
+            longitudeOffset = 0.35f,
+            photoUrl = "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "6 min island lore",
+            isCuratedPick = true,
+            tags = listOf("Snorkeling", "Palapa Cabana", "Sunset")
+        ),
+        MapLocationSpot(
+            name = "Highway 9 Oasis Rest Area & Neon Diner",
+            category = SpotCategory.REST_AREA,
+            description = "Iconic 1950s chrome diner, EV fast chargers, 24/7 trucker coffee, clean picnic lawns, and a vintage juke box playing rockabilly classics.",
+            address = "Mile Marker 48, Coastal Highway 9",
+            openingHours = "24 Hours / 7 Days",
+            rating = 4.75,
+            reviewsCount = 3100,
+            latitudeOffset = 0.15f,
+            longitudeOffset = 0.82f,
+            photoUrl = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "3 min diner history",
+            isCuratedPick = true,
+            tags = listOf("Rest Stop", "24/7 Diner", "Pitstop", "Route 9")
+        ),
+        MapLocationSpot(
+            name = "The Giant Jackalope & Roadside Wonder Shed",
+            category = SpotCategory.REST_AREA,
+            description = "Famous tourist trap featuring a 20-foot fiberglass Jackalope statue, eccentric mystery vortex room, and handmade prickly pear fudge.",
+            address = "Old Bypass Road & Cactus Loop",
+            openingHours = "09:00 AM - 08:00 PM",
+            rating = 4.62,
+            reviewsCount = 1450,
+            latitudeOffset = 0.28f,
+            longitudeOffset = 0.88f,
+            photoUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "5 min roadside oddity",
+            isCuratedPick = false,
+            tags = listOf("Tourist Trap", "Curio Shop", "Roadside Classic")
+        ),
+        MapLocationSpot(
+            name = "Sunset Palm Cove Palapa & Overwater Hammocks",
+            category = SpotCategory.PALAPA,
+            description = "Thatched private bungalows suspended over tranquil tidal lagoon with floating ceviche trays, private daybed loungers, and paddleboard rentals.",
+            address = "Lagoon Pier 3, West Coastline",
+            openingHours = "06:30 AM - 11:00 PM",
+            rating = 4.98,
+            reviewsCount = 2410,
+            latitudeOffset = 0.82f,
+            longitudeOffset = 0.12f,
+            photoUrl = "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "5 min lagoon lore",
+            isCuratedPick = true,
+            tags = listOf("Palapa", "Overwater", "Lagoon", "Sunset")
+        ),
+        MapLocationSpot(
+            name = "Sanctuary Dune Palapas & Sea Shell Cabanas",
+            category = SpotCategory.PALAPA,
+            description = "Quiet bohemian palapa village nestled in golden sea oats dunes with acoustic live guitar at dusk, yoga pavilions, and fresh mango-lime granitas.",
+            address = "Dune Preserve Mile 4, Coast Road",
+            openingHours = "08:00 AM - 09:30 PM",
+            rating = 4.91,
+            reviewsCount = 1120,
+            latitudeOffset = 0.78f,
+            longitudeOffset = 0.24f,
+            photoUrl = "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "4 min dune acoustic",
+            isCuratedPick = true,
+            tags = listOf("Palapa", "Boho Dunes", "Yoga", "Granitas")
+        ),
+        MapLocationSpot(
+            name = "Chrome Star Route 66 Truckstop & Cherry Pie Diner",
+            category = SpotCategory.REST_AREA,
+            description = "Authentic stainless-steel diner car with 24-hour breakfast skillets, 350kW CCS EV superchargers, tire pressure stations, and showers for long-haul highway wanderers.",
+            address = "Junction 14, Cross-County Freeway",
+            openingHours = "24 Hours / 7 Days",
+            rating = 4.82,
+            reviewsCount = 4200,
+            latitudeOffset = 0.18f,
+            longitudeOffset = 0.75f,
+            photoUrl = "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "4 min truckstop tales",
+            isCuratedPick = true,
+            tags = listOf("Rest Area", "EV Supercharger", "24h Diner", "Cherry Pie")
+        ),
+        MapLocationSpot(
+            name = "The Mystery Gravity Hill & Petrified Cactus Emporium",
+            category = SpotCategory.REST_AREA,
+            description = "Bizarre roadside optical illusion where cars appear to roll uphill, giant petrified wood garden, taxidermy museum, and neon rattlesnake jerky outpost.",
+            address = "Gravity Ridge Road, Mile 12",
+            openingHours = "10:00 AM - 07:00 PM",
+            rating = 4.58,
+            reviewsCount = 1890,
+            latitudeOffset = 0.32f,
+            longitudeOffset = 0.92f,
+            photoUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            audioGuideDuration = "6 min gravity illusion",
+            isCuratedPick = false,
+            tags = listOf("Tourist Trap", "Gravity Hill", "Oddity", "Jerky")
         )
     )
 
@@ -640,6 +762,50 @@ Stored securely in your encrypted mailbox vault.""",
                 "Foundry Antiquarian Books & Kiosk",
                 "Market Hall & Guild Arcade",
                 "Canal Promenade Botanical Garden"
+            )
+        ),
+        TravelMagazineArticle(
+            issueTitle = "Palapa Vacation Gazette • Coastal Edition",
+            editionNumber = "Vol. 3 / Issue 1",
+            title = "Palapa Dreams: Sunbeds, Salt Air & Coconut Groves",
+            subtitle = "Escaping the bustling civic grid for thatched-roof palapas and tranquil lagoon sunsets.",
+            author = "Marina Solis, Island Life Editor",
+            readTimeMinutes = 6,
+            heroImageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+            contentParagraphs = listOf(
+                "When the daily deadlines begin to weigh heavy, the coastal expressway carries you straight to the azure lagoons of Cove Beach. Here, traditional Mexican-style palapas line the sand, their dried palm fronds rustling softly in the warm ocean breeze.",
+                "Under the shade of the palapa canopy, time slows to the rhythm of incoming tide. Local artisans serve chilled hibiscus tea, fresh ceviche, and grilled pineapple skewers directly to your hammock."
+            ),
+            highlights = listOf(
+                "Best Sunset View: Azure Palapa Pier 101 at 6:30 PM",
+                "Snorkeling Haven: Coral Reef Lagoon transparent waters",
+                "Refreshment Tip: Try the iced lime-coconut water served in whole shell"
+            ),
+            recommendedStopNames = listOf(
+                "Azure Palapa & Beachfront Cabanas",
+                "Coral Reef Lagoon & Tiki Sunbeds"
+            )
+        ),
+        TravelMagazineArticle(
+            issueTitle = "Roadside Odyssey • Highway & Rest Stops",
+            editionNumber = "Vol. 8 / Issue 2",
+            title = "The Neon Rest Stop: Diners, Jackalopes & Route 9 Oddities",
+            subtitle = "A celebration of quirky American roadside stops, 24/7 trucker coffee, and classic tourist traps.",
+            author = "Hank 'Miles' Miller, Highway Dispatcher",
+            readTimeMinutes = 5,
+            heroImageUrl = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+            contentParagraphs = listOf(
+                "Nothing captures the romance of the open road quite like the hum of a roadside neon sign in the deep twilight. Mile Marker 48 on Highway 9 is home to the Oasis Diner, where chrome barstools and black coffee have welcomed long-haul drivers since 1958.",
+                "Two miles down the bypass stands the legendary Giant Jackalope Wonder Shed—part museum of oddities, part gift shop filled with retro bumper stickers and fresh prickly pear fudge. It's the ultimate homage to retro Americana roadside culture."
+            ),
+            highlights = listOf(
+                "Roadside Classic: 20-foot Jackalope fiberglass selfie spot",
+                "Diner Must-Try: Sizzling patty melt & malted chocolate shake",
+                "Scenic Pull-Off: Overlook sunset at Mile 52"
+            ),
+            recommendedStopNames = listOf(
+                "Highway 9 Oasis Rest Area & Neon Diner",
+                "The Giant Jackalope & Roadside Wonder Shed"
             )
         )
     )

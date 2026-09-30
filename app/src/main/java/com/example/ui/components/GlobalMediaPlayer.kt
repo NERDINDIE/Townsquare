@@ -140,23 +140,51 @@ private fun GlobalAudioPlayerView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Thumbnail
+                // Thumbnail or Live Audio Visualizer when no cover
                 Box(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(10.dp))
                 ) {
-                    val coverRes = if (current.type == MediaType.RADIO_STATION.name) {
-                        R.drawable.img_radio_live
+                    val hasCover = current.imageResName.isNotBlank() || current.type == MediaType.RADIO_STATION.name
+                    if (hasCover) {
+                        val coverRes = if (current.type == MediaType.RADIO_STATION.name) {
+                            R.drawable.img_radio_live
+                        } else {
+                            R.drawable.img_podcast_cover
+                        }
+                        Image(
+                            painter = painterResource(id = coverRes),
+                            contentDescription = "Cover",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     } else {
-                        R.drawable.img_podcast_cover
+                        // No cover art available -> Show live audio visualizer (Spectrum / Oscilloscope / VU Meter)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0xFF0F172A))
+                                .border(1.dp, NeonCyan, RoundedCornerShape(10.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(1.5.dp),
+                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier.height(28.dp).padding(4.dp)
+                            ) {
+                                audioState.waveformHeights.take(6).forEach { wave ->
+                                    Box(
+                                        modifier = Modifier
+                                            .width(3.dp)
+                                            .height((wave * 22).dp.coerceAtLeast(4.dp))
+                                            .clip(RoundedCornerShape(1.dp))
+                                            .background(NeonCyan)
+                                    )
+                                }
+                            }
+                        }
                     }
-                    Image(
-                        painter = painterResource(id = coverRes),
-                        contentDescription = "Cover",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
                 }
 
                 Spacer(modifier = Modifier.width(10.dp))

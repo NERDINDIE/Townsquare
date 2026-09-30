@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
@@ -37,28 +38,52 @@ fun ClockTvIdentWidget(modifier: Modifier = Modifier) {
     }
     
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(10.dp),
         color = Color.Black,
         border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan),
         modifier = modifier.clickable { isAnalogue = !isAnalogue }
+            .testTag("station_clock_widget")
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "TCTV",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                ),
-                color = NeonCyan
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "TCTV",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                        fontSize = 9.sp
+                    ),
+                    color = NeonCyan
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = if (isAnalogue) com.example.ui.theme.WarmAmber.copy(alpha = 0.2f) else NeonCyan.copy(alpha = 0.2f)
+                ) {
+                    Text(
+                        text = if (isAnalogue) "ANALOG" else "DIGITAL",
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isAnalogue) com.example.ui.theme.WarmAmber else NeonCyan,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
             if (isAnalogue) {
                 // Simplified Analog Clock Canvas
-                Canvas(modifier = Modifier.size(30.dp)) {
+                Canvas(modifier = Modifier.size(34.dp)) {
                     val center = androidx.compose.ui.geometry.Offset(size.width / 2, size.height / 2)
-                    drawCircle(color = Color.White, radius = size.width / 2, style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1f))
+                    drawCircle(color = Color.White, radius = size.width / 2, style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5f))
                     
                     val now = LocalDateTime.now()
                     val hourAngle = (now.hour % 12 + now.minute / 60f) * 30f - 90f
@@ -69,20 +94,20 @@ fun ClockTvIdentWidget(modifier: Modifier = Modifier) {
                         color = Color.White,
                         start = center,
                         end = center + androidx.compose.ui.geometry.Offset(
-                            (size.width / 4 * kotlin.math.cos(Math.toRadians(hourAngle.toDouble()))).toFloat(),
-                            (size.height / 4 * kotlin.math.sin(Math.toRadians(hourAngle.toDouble()))).toFloat()
+                            (size.width / 3.5 * kotlin.math.cos(Math.toRadians(hourAngle.toDouble()))).toFloat(),
+                            (size.height / 3.5 * kotlin.math.sin(Math.toRadians(hourAngle.toDouble()))).toFloat()
                         ),
-                        strokeWidth = 4f
+                        strokeWidth = 3f
                     )
                     // Minute hand
                     drawLine(
                         color = NeonCyan,
                         start = center,
                         end = center + androidx.compose.ui.geometry.Offset(
-                            (size.width / 2.5 * kotlin.math.cos(Math.toRadians(minuteAngle.toDouble()))).toFloat(),
-                            (size.height / 2.5 * kotlin.math.sin(Math.toRadians(minuteAngle.toDouble()))).toFloat()
+                            (size.width / 2.2 * kotlin.math.cos(Math.toRadians(minuteAngle.toDouble()))).toFloat(),
+                            (size.height / 2.2 * kotlin.math.sin(Math.toRadians(minuteAngle.toDouble()))).toFloat()
                         ),
-                        strokeWidth = 2f
+                        strokeWidth = 1.5f
                     )
                 }
             } else {

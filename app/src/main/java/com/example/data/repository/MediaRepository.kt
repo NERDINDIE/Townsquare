@@ -622,6 +622,17 @@ This week's highlights:
                 followersCount = 31200,
                 morningBriefHighlight = "Autumn vinyl releases and analog synthesizer festival announcements live on Waves.",
                 iconEmoji = "🌊"
+            ),
+            MediaChannelEntity(
+                id = "channel_retro_vintage",
+                name = "📼 Retro & Vintage Chronicle",
+                description = "All things retro and vintage: 80s/90s analog electronics, tube radios, CRT TVs, vinyl pressings, classic computing, retro fashion, and nostalgic culture.",
+                category = "Retro & Vintage",
+                bannerColorHex = 0xFFFFB703,
+                isFollowed = true,
+                followersCount = 36400,
+                morningBriefHighlight = "The analog renaissance: 1980s cassette tapes and vacuum tube amplifiers see huge revival in local audio guilds.",
+                iconEmoji = "📼"
             )
         )
         mediaDao.insertChannels(channels)
@@ -939,6 +950,43 @@ Highlights include an exclusive breakdown of upcoming autumn music festival line
                 likesCount = 1120,
                 isBookmarked = true,
                 tags = "#waves #music #vinyl #synth #ambient #soundscapes"
+            ),
+            MediaItemEntity(
+                type = MediaType.NEWSPAPER_MAGAZINE.name,
+                title = "📼 The Analog Renaissance: Why Vintage Vinyl & Vacuum Tubes Sound Alive in 2026",
+                subtitle = "Retro & Vintage Chronicle • Special Feature",
+                authorName = "Miles Holloway",
+                authorHandle = "@miles_retro",
+                channelId = "channel_retro_vintage",
+                channelName = "📼 Retro & Vintage Chronicle",
+                bodyText = """In an era of hyper-compressed streaming and instant algorithmic playlists, an unstoppable cultural renaissance is sweeping through living rooms and listening bars: the resurgence of physical, tactile analog media.
+
+From 180-gram virgin vinyl pressings and restored 1950s vacuum tube amplifiers to 80s boomboxes, CRT monitors with scanlines, and mechanical typewriters, analog technology offers a tangible, intentional connection that screen-bound media simply cannot replicate.
+
+"When you drop a diamond stylus onto a spinning groove, you aren't just playing a file—you are engaging in a deliberate sensory ritual," explains master audio restorer Eleanor Finch at the Old Quarter Sound Workshop. "The warm second-order harmonic distortion of a vacuum tube isn't a flaw; it's acoustic life."
+
+This edition explores the craft of vintage receiver restoration, the underground cassette tape trading networks, and how 90s aesthetic memories are shaping tomorrow's industrial design.""",
+                timestamp = now - 3600000L * 1,
+                likesCount = 874,
+                isBookmarked = true,
+                tags = "#retro #vintage #vinyl #tubes #analog #nostalgia #80s #90s"
+            ),
+            MediaItemEntity(
+                type = MediaType.RADIO_STATION.name,
+                title = "📼 Retro Vinyl Vault 91.3 FM",
+                subtitle = "Classic 70s/80s Vinyl, Synthwave, City Pop & Motown Frequencies",
+                authorName = "Miles Holloway",
+                authorHandle = "@miles_retro",
+                channelId = "channel_retro_vintage",
+                channelName = "📼 Retro & Vintage Chronicle",
+                stationFrequency = "91.3 FM",
+                mediaUrl = "https://icecast.townsquare.local/retro913",
+                durationSeconds = 7200,
+                bodyText = "Live broadcast streaming uninterrupted vintage vinyl records, Japanese 80s city pop, 70s funk & soul, and nostalgic synthesizer tape masters.",
+                timestamp = now,
+                likesCount = 1430,
+                isBookmarked = true,
+                tags = "#retro #vintage #radio #citypop #vinyl #synthwave"
             ),
 
             // 1. Social Post

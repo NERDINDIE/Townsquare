@@ -316,6 +316,7 @@ fun TownsquareApp(
     var isModerationDashboardOpen by remember { mutableStateOf(false) }
     var isCreatorMonetizationOpen by remember { mutableStateOf(false) }
     var isLegalNoticeOpen by remember { mutableStateOf(false) }
+    var isWidgetsDrawerOpen by remember { mutableStateOf(false) }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
 
     val reportedContents by viewModel.reportedContents.collectAsState()
@@ -769,7 +770,8 @@ fun TownsquareApp(
                         com.example.ui.screens.ChannelsScreen(
                             channels = allChannels,
                             onToggleFollowChannel = { viewModel.toggleFollowChannel(it) },
-                            onSelectChannel = { activeChannelProfileId = it }
+                            onSelectChannel = { activeChannelProfileId = it },
+                            onOpenSidebar = { viewModel.openSidebar() }
                         )
                     }
                     NavDestination.PLAYGROUND -> {
@@ -867,6 +869,12 @@ fun TownsquareApp(
         onOpenLingo = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
         onOpenBookworm = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
         onOpenPhone = { isInboxOpen = true },
+        onOpenWidgetsDrawer = { isWidgetsDrawerOpen = true },
+        onRefreshApp = {
+            viewModel.refreshData {
+                scope.launch { snackbarHostState.showSnackbar("🔄 Feeds & App Data Refreshed!") }
+            }
+        },
         unreadInboxCount = unreadInboxCount,
         draftsCount = notepadDrafts.size,
         settings = appSettings,
@@ -916,6 +924,13 @@ fun TownsquareApp(
     if (isLegalNoticeOpen) {
         com.example.ui.components.LegalNoticeGuidelinesDialog(
             onDismiss = { isLegalNoticeOpen = false }
+        )
+    }
+
+    // 0. Home Screen Widget Drawer Dialog
+    if (isWidgetsDrawerOpen) {
+        com.example.ui.components.TownsquareWidgetsDrawerDialog(
+            onDismiss = { isWidgetsDrawerOpen = false }
         )
     }
 

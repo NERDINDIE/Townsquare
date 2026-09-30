@@ -239,10 +239,11 @@ fun TownsquareMarketplaceApp(
             }
 
             // Unified Top Navigation Tabs
-            TabRow(
+            ScrollableTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = DarkSurface,
-                contentColor = NeonCyan
+                contentColor = NeonCyan,
+                edgePadding = 12.dp
             ) {
                 Tab(
                     selected = selectedTab == 0,
@@ -258,6 +259,11 @@ fun TownsquareMarketplaceApp(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
                     text = { Text("📺 24/7 Ad Wire", fontSize = 12.sp, fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal) }
+                )
+                Tab(
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
+                    text = { Text("📖 Recipe Book & Pantry", fontSize = 12.sp, fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Normal) }
                 )
             }
 
@@ -285,6 +291,12 @@ fun TownsquareMarketplaceApp(
                         ads = ads,
                         onClaimOffer = { adId ->
                             ads = ads.map { if (it.id == adId) it.copy(isClaimed = true) else it }
+                        }
+                    )
+                    3 -> RecipeCookbookSection(
+                        onAddIngredientsToCart = { items ->
+                            items.forEach { addToCart(it) }
+                            isCartOpen = true
                         }
                     )
                 }

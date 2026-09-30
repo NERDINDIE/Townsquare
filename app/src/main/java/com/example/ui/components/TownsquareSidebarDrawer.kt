@@ -33,9 +33,12 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.ChildCare
@@ -147,6 +150,8 @@ fun TownsquareSidebarDrawer(
     onOpenLingo: () -> Unit = {},
     onOpenBookworm: () -> Unit = {},
     onOpenPhone: () -> Unit = {},
+    onOpenWidgetsDrawer: () -> Unit = {},
+    onRefreshApp: () -> Unit = {},
     unreadInboxCount: Int = 0,
     draftsCount: Int = 3,
     // Settings state & callbacks merged into Sidebar
@@ -684,6 +689,131 @@ fun TownsquareSidebarDrawer(
                                         color = Color(0xFF003544),
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                     )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Home Screen Widget Drawer Button
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = Color(0xFF161E2E),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.4f)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onOpenWidgetsDrawer()
+                                    onClose()
+                                }
+                                .testTag("sidebar_widgets_drawer_button")
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.Widgets,
+                                        contentDescription = null,
+                                        tint = NeonCyan,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = "Home Screen Widget Drawer",
+                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = "Pin TCTV Clock, Radio & Brief to Screen",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = NeonCyan
+                                ) {
+                                    Text(
+                                        text = "WIDGETS",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = Color(0xFF003544),
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Offline Mode & Refresh Section
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = DarkSurfaceElevated,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Default.CloudOff,
+                                            contentDescription = null,
+                                            tint = if (isOfflineMode) com.example.ui.theme.CoralRed else NeonCyan,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Column {
+                                            Text(
+                                                text = "Offline Reading Mode",
+                                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Text(
+                                                text = if (isOfflineMode) "Active • Cached locally" else "Online • Live sync active",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = if (isOfflineMode) com.example.ui.theme.CoralRed else Color.Gray
+                                            )
+                                        }
+                                    }
+                                    Switch(
+                                        checked = isOfflineMode,
+                                        onCheckedChange = { onToggleOfflineMode() },
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = Color.White,
+                                            checkedTrackColor = NeonCyan
+                                        ),
+                                        modifier = Modifier.testTag("sidebar_offline_switch")
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                OutlinedButton(
+                                    onClick = {
+                                        onRefreshApp()
+                                        onClose()
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .testTag("sidebar_refresh_button"),
+                                    shape = RoundedCornerShape(10.dp),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f))
+                                ) {
+                                    Icon(Icons.Default.Refresh, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Refresh Feeds & App Data", color = NeonCyan, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 }
                             }
                         }
