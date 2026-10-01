@@ -303,29 +303,29 @@ fun ProfileSpacesScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Row(
+                    LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         val profileModules = listOf(
-                            Pair(0, "🖼️ Content Wall"),
+                            Pair(0, "🖼️ Works"),
                             Pair(1, "💳 Finance"),
                             Pair(2, "🫀 Health"),
-                            Pair(3, "🏛️ State Pass")
+                            Pair(3, "🏛️ State Pass"),
+                            Pair(4, "💼 Business ERP")
                         )
-                        profileModules.forEach { (modId, label) ->
+                        items(profileModules) { (modId, label) ->
                             val isSelected = mainProfileModule == modId
                             Surface(
                                 shape = RoundedCornerShape(10.dp),
                                 color = if (isSelected) NeonCyan else MaterialTheme.colorScheme.surfaceVariant,
                                 modifier = Modifier
-                                    .weight(1f)
                                     .height(38.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .clickable { mainProfileModule = modId }
                                     .testTag("profile_module_tab_$modId")
                             ) {
-                                Box(contentAlignment = Alignment.Center) {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 12.dp)) {
                                     Text(
                                         text = label,
                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
@@ -375,6 +375,21 @@ fun ProfileSpacesScreen(
                         border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF00E5FF).copy(alpha = 0.5f))
                     ) {
                         com.example.ui.plus.state.TownsquareStateApp(onBack = { mainProfileModule = 0 })
+                    }
+                }
+            } else if (mainProfileModule == 4) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(720.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f))
+                    ) {
+                        Box(modifier = Modifier.padding(12.dp)) {
+                            TownsquareBusinessErpSection(modifier = Modifier.fillMaxSize())
+                        }
                     }
                 }
             } else {

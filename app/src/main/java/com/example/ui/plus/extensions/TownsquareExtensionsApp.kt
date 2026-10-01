@@ -91,6 +91,8 @@ fun TownsquareExtensionsApp(
                     "CLI_DOS" -> CliDosSkin(modifier = Modifier.fillMaxSize())
                     "METRO_WIN8" -> MetroWin8Skin(modifier = Modifier.fillMaxSize())
                     "ANDROID_10" -> Android10Skin(modifier = Modifier.fillMaxSize())
+                    "SYMBOS_AMBER" -> SymbOSAmberSkin(modifier = Modifier.fillMaxSize())
+                    "SYMBIAN_OS" -> SymbianOSSkin(modifier = Modifier.fillMaxSize())
                     else -> {
                         // Custom Extension Live View
                         val customManifest = customExtensions.find { it.id == activeTestingSkinId }
@@ -382,7 +384,9 @@ private fun InstalledExtensionsTab(
             ExtensionCardData("FANDOM_TIMES", "The Fandom Times Live", "Interactive portal skin with red-brown layout", Icons.Default.Newspaper, Color(0xFFD2042D)),
             ExtensionCardData("CLI_DOS", "MS-DOS Terminal v2.86", "Functional green phosphor CRT command shell", Icons.Default.Terminal, Color(0xFF33FF33)),
             ExtensionCardData("METRO_WIN8", "Windows 8 Metro Start", "Flat live tile start screen & diagnostics", Icons.Default.Gamepad, Color(0xFF38BDF8)),
-            ExtensionCardData("ANDROID_10", "Android 1.0 G1 Retro", "Nostalgic 2008 Android G1 & trackball", Icons.Default.Phonelink, Color(0xFFA4C639))
+            ExtensionCardData("ANDROID_10", "Android 1.0 G1 Retro", "Nostalgic 2008 Android G1 & trackball", Icons.Default.Phonelink, Color(0xFFA4C639)),
+            ExtensionCardData("SYMBOS_AMBER", "SymbOS Amber CRT", "8-bit multi-tasking desktop with amber phosphor glow", Icons.Default.DesktopWindows, Color(0xFFFFB000)),
+            ExtensionCardData("SYMBIAN_OS", "Symbian OS Series 60", "Classic Nokia S60 mobile interface with 3G active standby", Icons.Default.PhoneAndroid, Color(0xFF00D2FF))
         )
 
         preinstalled.forEach { item ->

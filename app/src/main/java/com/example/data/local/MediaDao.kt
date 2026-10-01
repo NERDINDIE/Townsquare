@@ -77,6 +77,12 @@ interface MediaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChannels(channels: List<MediaChannelEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertChannelsIgnore(channels: List<MediaChannelEntity>)
+
+    @Query("SELECT id FROM media_channels")
+    suspend fun getAllChannelIds(): List<String>
+
     @Query("UPDATE media_channels SET isFollowed = :isFollowed WHERE id = :channelId")
     suspend fun updateChannelFollow(channelId: String, isFollowed: Boolean)
 

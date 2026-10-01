@@ -81,6 +81,7 @@ fun TownsquareMarketplaceApp(
     // Cart state
     var cartItems by remember { mutableStateOf<List<CartItem>>(emptyList()) }
     var isCartOpen by remember { mutableStateOf(false) }
+    var isCheckoutSheetOpen by remember { mutableStateOf(false) }
     var isOrderCompletedDialog by remember { mutableStateOf(false) }
 
     // Make offer dialog state
@@ -568,8 +569,20 @@ fun TownsquareMarketplaceApp(
                     }
                 },
                 onCheckout = {
-                    cartItems = emptyList()
                     isCartOpen = false
+                    isCheckoutSheetOpen = true
+                }
+            )
+        }
+
+        // Multi-Step Marketplace Checkout Sheet
+        if (isCheckoutSheetOpen && cartItems.isNotEmpty()) {
+            MarketplaceCheckoutSheet(
+                cartItems = cartItems,
+                onDismiss = { isCheckoutSheetOpen = false },
+                onOrderPlaced = { order ->
+                    cartItems = emptyList()
+                    isCheckoutSheetOpen = false
                     isOrderCompletedDialog = true
                 }
             )

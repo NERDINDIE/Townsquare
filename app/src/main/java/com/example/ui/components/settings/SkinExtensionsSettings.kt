@@ -148,7 +148,9 @@ fun SkinExtensionsSettings(
                 SkinOption("FANDOM_TIMES", "The Fandom Times Live", "Interactive portal skin with red-brown layout", Icons.Default.Newspaper, Color(0xFFD2042D)),
                 SkinOption("CLI_DOS", "MS-DOS Terminal v2.86", "Functional green phosphor command shell", Icons.Default.Terminal, Color(0xFF33FF33)),
                 SkinOption("METRO_WIN8", "Windows 8 Metro Start", "Flat live tile dashboard & diagnostics", Icons.Default.Gamepad, Color(0xFF38BDF8)),
-                SkinOption("ANDROID_10", "Android 1.0 G1 Retro", "Nostalgic 2008 Android G1 & trackball", Icons.Default.Phonelink, Color(0xFFA4C639))
+                SkinOption("ANDROID_10", "Android 1.0 G1 Retro", "Nostalgic 2008 Android G1 & trackball", Icons.Default.Phonelink, Color(0xFFA4C639)),
+                SkinOption("SYMBOS_AMBER", "SymbOS Amber CRT", "8-bit multi-tasking desktop with amber phosphor glow", Icons.Default.DesktopWindows, Color(0xFFFFB000)),
+                SkinOption("SYMBIAN_OS", "Symbian OS Series 60", "Classic Nokia S60 mobile interface with 3G active standby", Icons.Default.PhoneAndroid, Color(0xFF00D2FF))
             )
 
             preinstalledAppSkins.forEach { option ->

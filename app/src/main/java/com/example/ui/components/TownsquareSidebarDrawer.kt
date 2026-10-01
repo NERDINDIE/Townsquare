@@ -151,6 +151,8 @@ fun TownsquareSidebarDrawer(
     onOpenBookworm: () -> Unit = {},
     onOpenPhone: () -> Unit = {},
     onOpenIotCompanion: () -> Unit = {},
+    onOpenTownsquares: () -> Unit = {},
+    onOpenWeatherman: () -> Unit = {},
     onOpenWidgetsDrawer: () -> Unit = {},
     onRefreshApp: () -> Unit = {},
     unreadInboxCount: Int = 0,
@@ -832,6 +834,8 @@ fun TownsquareSidebarDrawer(
                         val standaloneApps = listOf(
                             Triple("🛍️ Marketplace", "Buy, sell & catalogs", onOpenMarketplace),
                             Triple("🗺️ Maps & Travel", "Cartography & guide", onOpenMaps),
+                            Triple("🌍 Townsquares", "World city feeds & transit routes", onOpenTownsquares),
+                            Triple("🎙️ Weatherman", "Personalized weather podcasts", onOpenWeatherman),
                             Triple("🎮 Arcade Games", "Retro games & arcade", onOpenArcade),
                             Triple("🗣️ Lingo Lab", "Language & phrasebook", onOpenLingo),
                             Triple("📚 Bookworm", "Library & archives", onOpenBookworm),
@@ -1064,7 +1068,7 @@ fun TownsquareSidebarDrawer(
                             SidebarNavItem(
                                 index = NavDestination.TOWNSQUARE_PLUS,
                                 title = "Townsquare Plus",
-                                subtitle = "Phone, Mail, Maps & Marketplace",
+                                subtitle = "Prototypes: Townsquares, Weatherman & Lab",
                                 icon = Icons.Default.Stars,
                                 badge = "PLUS",
                                 testTag = "sidebar_nav_plus"

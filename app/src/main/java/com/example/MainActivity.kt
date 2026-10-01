@@ -274,7 +274,8 @@ fun TownsquareApp(
             feedItems = feedItems,
             journalEditions = journalEditions,
             bulletins = bulletins,
-            onEnterHomepage = { showOpeningFlow = false }
+            onEnterHomepage = { showOpeningFlow = false },
+            activeSkinId = appSettings.activeWelcomeSkinId
         )
         return
     }
@@ -318,6 +319,14 @@ fun TownsquareApp(
     var isLegalNoticeOpen by remember { mutableStateOf(false) }
     var isWidgetsDrawerOpen by remember { mutableStateOf(false) }
     var isIotCompanionOpen by remember { mutableStateOf(false) }
+    var isMarketplaceOpen by remember { mutableStateOf(false) }
+    var isMapsOpen by remember { mutableStateOf(false) }
+    var isArcadeOpen by remember { mutableStateOf(false) }
+    var isLingoOpen by remember { mutableStateOf(false) }
+    var isBookwormOpen by remember { mutableStateOf(false) }
+    var isPhoneOpen by remember { mutableStateOf(false) }
+    var isTownsquaresOpen by remember { mutableStateOf(false) }
+    var isWeathermanOpen by remember { mutableStateOf(false) }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
 
     val reportedContents by viewModel.reportedContents.collectAsState()
@@ -335,6 +344,8 @@ fun TownsquareApp(
                     "CLI_DOS" -> CliDosSkin(modifier = Modifier.fillMaxSize())
                     "METRO_WIN8" -> MetroWin8Skin(modifier = Modifier.fillMaxSize())
                     "ANDROID_10" -> Android10Skin(modifier = Modifier.fillMaxSize())
+                    "SYMBOS_AMBER" -> SymbOSAmberSkin(modifier = Modifier.fillMaxSize())
+                    "SYMBIAN_OS" -> SymbianOSSkin(modifier = Modifier.fillMaxSize())
                     else -> {
                         val customManifest = customExtensions.find { it.id == skinId }
                         if (customManifest != null) {
@@ -864,13 +875,15 @@ fun TownsquareApp(
         onOpenVoiceBuilder = { isVoiceBuilderOpen = true },
         onOpenDrivingMode = { isDrivingModeOpen = true },
         onOpenProfileSwitcher = { viewModel.selectProfile(null) },
-        onOpenMarketplace = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
-        onOpenMaps = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
-        onOpenArcade = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
-        onOpenLingo = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
-        onOpenBookworm = { currentNavIndex = NavDestination.TOWNSQUARE_PLUS },
-        onOpenPhone = { isInboxOpen = true },
+        onOpenMarketplace = { isMarketplaceOpen = true },
+        onOpenMaps = { isMapsOpen = true },
+        onOpenArcade = { isArcadeOpen = true },
+        onOpenLingo = { isLingoOpen = true },
+        onOpenBookworm = { isBookwormOpen = true },
+        onOpenPhone = { isPhoneOpen = true },
         onOpenIotCompanion = { isIotCompanionOpen = true },
+        onOpenTownsquares = { isTownsquaresOpen = true },
+        onOpenWeatherman = { isWeathermanOpen = true },
         onOpenWidgetsDrawer = { isWidgetsDrawerOpen = true },
         onRefreshApp = {
             viewModel.refreshData {
@@ -944,6 +957,102 @@ fun TownsquareApp(
         ) {
             com.example.ui.plus.iot.TownsquareIotCompanionApp(
                 onBack = { isIotCompanionOpen = false }
+            )
+        }
+    }
+
+    // 0-Civic: Marketplace App
+    if (isMarketplaceOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isMarketplaceOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.marketplace.TownsquareMarketplaceApp(
+                onBack = { isMarketplaceOpen = false }
+            )
+        }
+    }
+
+    // 0-Civic: Maps & Travel App
+    if (isMapsOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isMapsOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.maps.TownsquareMapsApp(
+                onBack = { isMapsOpen = false }
+            )
+        }
+    }
+
+    // 0-Civic: Arcade Games App
+    if (isArcadeOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isArcadeOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.arcade.TownsquareArcadeApp(
+                onBack = { isArcadeOpen = false }
+            )
+        }
+    }
+
+    // 0-Civic: Lingo Lab App
+    if (isLingoOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isLingoOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.lingo.TownsquareLingoApp(
+                onBack = { isLingoOpen = false }
+            )
+        }
+    }
+
+    // 0-Civic: Bookworm App
+    if (isBookwormOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isBookwormOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.books.TownsquareBookwormApp(
+                onBack = { isBookwormOpen = false }
+            )
+        }
+    }
+
+    // 0-Civic: Phone Link App
+    if (isPhoneOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isPhoneOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.phone.TownsquarePhoneApp(
+                onBack = { isPhoneOpen = false }
+            )
+        }
+    }
+
+    // 0-Plus: Townsquares Prototype App
+    if (isTownsquaresOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isTownsquaresOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.townsquares.TownsquaresApp(
+                onBack = { isTownsquaresOpen = false }
+            )
+        }
+    }
+
+    // 0-Plus: Weatherman Prototype Podcast App
+    if (isWeathermanOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isWeathermanOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.weather.WeathermanApp(
+                onBack = { isWeathermanOpen = false }
             )
         }
     }
@@ -1272,7 +1381,8 @@ fun TownsquareApp(
                 feedItems = feedItems,
                 journalEditions = journalEditions,
                 bulletins = bulletins,
-                onEnterHomepage = { isBroadsheetViewOpen = false }
+                onEnterHomepage = { isBroadsheetViewOpen = false },
+                activeSkinId = appSettings.activeWelcomeSkinId
             )
             IconButton(
                 onClick = { isBroadsheetViewOpen = false },

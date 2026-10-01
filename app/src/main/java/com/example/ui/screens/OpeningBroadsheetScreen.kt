@@ -60,7 +60,8 @@ fun OpeningBroadsheetFlow(
     feedItems: List<MediaItemEntity>,
     journalEditions: List<JournalEditionEntity>,
     bulletins: List<LocalBulletinEntity>,
-    onEnterHomepage: () -> Unit
+    onEnterHomepage: () -> Unit,
+    activeSkinId: String = "BROADSHEET"
 ) {
     var stage by remember { mutableStateOf(SplashStage.WORDMARK) }
 
@@ -75,6 +76,7 @@ fun OpeningBroadsheetFlow(
                 feedItems = feedItems,
                 journalEditions = journalEditions,
                 bulletins = bulletins,
+                activeSkinId = activeSkinId,
                 onEnterHomepage = {
                     stage = SplashStage.ENTERED
                     onEnterHomepage()
@@ -273,15 +275,20 @@ enum class WelcomeSkinType(val label: String, val emoji: String) {
 
 /**
  * Front-Page Screen supporting modular Welcome Extension Skins.
+ * The active skin is configured via Settings and applied automatically.
  */
 @Composable
 fun BroadsheetOpeningScreen(
     feedItems: List<MediaItemEntity>,
     journalEditions: List<JournalEditionEntity>,
     bulletins: List<LocalBulletinEntity>,
-    onEnterHomepage: () -> Unit
+    onEnterHomepage: () -> Unit,
+    activeSkinId: String = "BROADSHEET"
 ) {
-    var selectedSkin by remember { mutableStateOf(WelcomeSkinType.BROADSHEET) }
+    val selectedSkin = remember(activeSkinId) {
+        WelcomeSkinType.entries.find { it.name.equals(activeSkinId, ignoreCase = true) }
+            ?: WelcomeSkinType.BROADSHEET
+    }
 
     Column(
         modifier = Modifier
@@ -291,55 +298,8 @@ fun BroadsheetOpeningScreen(
             .navigationBarsPadding()
             .testTag("broadsheet_opening_screen")
     ) {
-        // TOP WELCOME SKIN EXTENSION SWITCHER BAR
-        Surface(
-            color = Color(0xFF0B132B),
-            border = BorderStroke(1.dp, Color(0xFF1E293B)),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "🎨 Welcome Skin:",
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WarmAmber
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(WelcomeSkinType.entries) { skin ->
-                        val isSel = selectedSkin == skin
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (isSel) WarmAmber else Color(0xFF1E293B),
-                            border = BorderStroke(1.dp, if (isSel) WarmAmber else Color(0xFF334155)),
-                            modifier = Modifier.clickable { selectedSkin = skin }
-                        ) {
-                            Text(
-                                text = "${skin.emoji} ${skin.label}",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isSel) Color(0xFF261800) else Color.White,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
         // RENDER SELECTED WELCOME EXTENSION SKIN
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        Box(modifier = Modifier.fillMaxSize()) {
             when (selectedSkin) {
                 WelcomeSkinType.BROADSHEET -> BroadsheetWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)
                 WelcomeSkinType.TABLOID -> TabloidWelcomeSkin(feedItems, journalEditions, bulletins, onEnterHomepage)

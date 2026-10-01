@@ -47,6 +47,8 @@ fun PlaygroundScreen(
     )
     var selectedProfileIndex by remember { mutableStateOf(0) }
     var showProfileDropdown by remember { mutableStateOf(false) }
+    var isSchoolPaperOpen by remember { mutableStateOf(false) }
+    var isPlaygroundSidebarOpen by remember { mutableStateOf(false) }
     val activeProfile = profiles[selectedProfileIndex]
 
     Column(

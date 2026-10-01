@@ -463,6 +463,15 @@ This week's highlights:
         val count = mediaDao.getMediaItemsCount()
         if (count == 0) {
             seedDatabase()
+        } else {
+            // Ensure newly added media discovery channels exist in already-created databases
+            val existingChannelIds = mediaDao.getAllChannelIds().toSet()
+            val newChannels = MediaDiscoveryChannels.getNewMediaChannels()
+            val missing = newChannels.filter { it.id !in existingChannelIds }
+            if (missing.isNotEmpty()) {
+                mediaDao.insertChannelsIgnore(missing)
+                mediaDao.insertMediaItems(MediaDiscoveryChannels.getNewChannelsMediaItems(System.currentTimeMillis()))
+            }
         }
         if (mediaDao.getUpcomingEditionsCount() == 0) {
             seedUpcomingEditions()
@@ -634,7 +643,7 @@ This week's highlights:
                 morningBriefHighlight = "The analog renaissance: 1980s cassette tapes and vacuum tube amplifiers see huge revival in local audio guilds.",
                 iconEmoji = "📼"
             )
-        )
+        ) + MediaDiscoveryChannels.getNewMediaChannels()
         mediaDao.insertChannels(channels)
 
         val userSpaces = listOf(
@@ -1395,7 +1404,7 @@ Urban economists predict the corridor will unlock unprecedented economic revital
                 issueEdition = "Weekend Gazette • Issue 512",
                 tags = "#newspaper #rail #metro #dispatch"
             )
-        )
+        ) + MediaDiscoveryChannels.getNewChannelsMediaItems(now)
         mediaDao.insertMediaItems(items)
 
         // Seed initial Journal Editions if empty

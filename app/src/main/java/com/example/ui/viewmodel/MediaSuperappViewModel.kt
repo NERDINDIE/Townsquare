@@ -1826,6 +1826,7 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
 
     fun refreshData(onRefreshed: () -> Unit = {}) {
         viewModelScope.launch {
+            repository.checkAndSeedDatabase()
             delay(500L)
             onRefreshed()
         }

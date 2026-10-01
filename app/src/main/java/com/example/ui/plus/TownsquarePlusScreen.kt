@@ -39,7 +39,7 @@ import com.example.ui.plus.planner.TownsquarePlannerApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH, BOOKS, LINGO, PLANNER
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH, BOOKS, LINGO, PLANNER, TOWNSQUARES, WEATHERMAN
 }
 
 @Composable
@@ -100,6 +100,12 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.PLANNER -> {
                 TownsquarePlannerApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.TOWNSQUARES -> {
+                com.example.ui.plus.townsquares.TownsquaresApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.WEATHERMAN -> {
+                com.example.ui.plus.weather.WeathermanApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -195,6 +201,58 @@ fun TownsquarePlusScreen(
                                     }
                                 }
                             }
+                        }
+
+                        // Section: Featured Prototypes
+                        item {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "FEATURED EXPERIMENTAL PROTOTYPES",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+                                color = NeonCyan
+                            )
+                        }
+
+                        // 1. Townsquares Prototype Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquares",
+                                subtitle = "World Cities Social Feed & Metro Transit Networks",
+                                description = "Social media feed based on world cities. Travelers and residents post about local moments, secret cafes, and canal walks across Tokyo, Paris, New York, London, Berlin, Kyoto, and Buenos Aires — complete with interactive urban transit route guides.",
+                                icon = Icons.Default.Public,
+                                iconColor = NeonCyan,
+                                badgeText = "NEW PROTOTYPE",
+                                onClick = { activeSubApp = PlusModularApp.TOWNSQUARES },
+                                testTag = "plus_app_townsquares"
+                            )
+                        }
+
+                        // 2. Weatherman Prototype Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Weatherman",
+                                subtitle = "Personalized Audio Weather Podcast",
+                                description = "Turn daily meteorology into a personalized audio podcast with distinct host personas (Vintage Radio, Melancholic Barista, High-Energy Met, Zen Naturalist). Features real spoken TTS narration, live barometer telemetry, and lifestyle commute advice.",
+                                icon = Icons.Default.RecordVoiceOver,
+                                iconColor = WarmAmber,
+                                badgeText = "NEW PROTOTYPE",
+                                onClick = { activeSubApp = PlusModularApp.WEATHERMAN },
+                                testTag = "plus_app_weatherman"
+                            )
+                        }
+
+                        // 3. Extension Builder Sandbox Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Extension Builder & Ringtone Composer",
+                                subtitle = "Skin Extensions & Synthesizer Sandbox",
+                                description = "Create modular skin extensions, compose retro chiptune polyphonic ringtones, and build custom widget applets inside the Plus developer incubator.",
+                                icon = Icons.Default.Extension,
+                                iconColor = Color(0xFFC77DFF),
+                                badgeText = "SANDBOX",
+                                onClick = { activeSubApp = PlusModularApp.EXTENSIONS },
+                                testTag = "plus_app_extensions"
+                            )
                         }
 
                         item {

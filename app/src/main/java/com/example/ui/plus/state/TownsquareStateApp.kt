@@ -143,6 +143,7 @@ data class ElectionOption(
 fun TownsquareStateApp(onBack: () -> Unit) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Services, 1: Bills & Taxes, 2: Vote & Live Tally
     var activeRole by remember { mutableStateOf(CitizenRole.CITIZEN) }
+    var isIdVerificationOpen by remember { mutableStateOf(false) }
     
     // Live Bills State
     var bills by remember {
@@ -498,14 +499,14 @@ fun TownsquareStateApp(onBack: () -> Unit) {
 
                     item {
                         Button(
-                            onClick = { /* Simulated NFC share */ },
+                            onClick = { isIdVerificationOpen = true },
                             colors = ButtonDefaults.buttonColors(containerColor = activeRole.primaryColor.copy(alpha = 0.15f)),
                             border = BorderStroke(1.dp, activeRole.primaryColor),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth().testTag("verify_digital_identity_btn")
                         ) {
                             Icon(Icons.Default.QrCode, contentDescription = null, tint = activeRole.primaryColor, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Verify Digital Identity", color = activeRole.primaryColor)
+                            Text("Verify Digital Identity (Biometric & Ledger Scan)", color = activeRole.primaryColor, fontWeight = FontWeight.Bold)
                         }
                     }
 
@@ -971,5 +972,14 @@ fun TownsquareStateApp(onBack: () -> Unit) {
                 Spacer(modifier = Modifier.height(48.dp))
             }
         }
+
+        // Citizen ID Verification Dialog
+        com.example.ui.components.CitizenIdVerificationDialog(
+            isOpen = isIdVerificationOpen,
+            onDismiss = { isIdVerificationOpen = false },
+            onVerificationSuccess = { cert ->
+                isIdVerificationOpen = false
+            }
+        )
     }
 }
