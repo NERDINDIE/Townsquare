@@ -51,6 +51,7 @@ import com.example.audio.AudioState
 import com.example.data.model.MediaItemEntity
 import com.example.data.model.MediaType
 import com.example.ui.components.AndroidAutoDrivingDialog
+import com.example.ui.components.LiveBroadcastCallInDialog
 import com.example.ui.components.MediaCardItem
 import com.example.ui.components.RadioDialTuner
 import com.example.ui.components.TownsquareTopBar
@@ -74,11 +75,21 @@ fun AudioHubScreen(
 ) {
     var selectedAudioTab by remember { mutableIntStateOf(0) } // 0: Radio, 1: Podcasts, 2: Songs, 3: Playlists
     var showAndroidAutoDialog by remember { mutableStateOf(false) }
+    var isRadioCallInOpen by remember { mutableStateOf(false) }
 
     val radioStations = items.filter { it.type == MediaType.RADIO_STATION.name }
     val podcasts = items.filter { it.type == MediaType.PODCAST_EPISODE.name }
     val songs = items.filter { it.type == MediaType.SONG.name }
     val playlists = items.filter { it.type == MediaType.PLAYLIST.name }
+
+    if (isRadioCallInOpen) {
+        val currentStationName = audioState.currentItem?.title ?: radioStations.firstOrNull()?.title ?: "Townsquare Central Radio"
+        LiveBroadcastCallInDialog(
+            broadcastTitle = "Live Radio Talkback - $currentStationName",
+            channelOrStation = "FM Broadcast Studio Link",
+            onDismiss = { isRadioCallInOpen = false }
+        )
+    }
 
     if (showAndroidAutoDialog) {
         AndroidAutoDrivingDialog(
@@ -252,11 +263,20 @@ fun AudioHubScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
-                        Text(
-                            text = "Tap to tune dial",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = NeonCyan
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            FilledTonalButton(
+                                onClick = { isRadioCallInOpen = true },
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = NeonCyan.copy(alpha = 0.15f),
+                                    contentColor = NeonCyan
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.height(28.dp).testTag("radio_call_in_button")
+                            ) {
+                                Text("📞 Studio Call-In", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
                     }
                 }
 

@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import com.example.ui.components.BrowserMultitaskingBar
 import com.example.ui.components.BrowserWorkspaceTab
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -238,6 +239,12 @@ fun TownsquareApp(
     val lettersToEditor by viewModel.lettersToEditor.collectAsState()
     val activeLetterRecipient by viewModel.activeLetterRecipient.collectAsState()
     val isLettersMailboxOpen by viewModel.isLettersMailboxOpen.collectAsState()
+
+    // Geotag diagnostic telemetry to active navigation destination
+    LaunchedEffect(currentNavIndex) {
+        val destinationName = if (currentNavIndex in tabTitles.indices) tabTitles[currentNavIndex] else "Nav_$currentNavIndex"
+        com.example.diagnostics.SessionErrorHandler.currentActiveScreenName = destinationName
+    }
     val sundayFunniesComics by viewModel.filteredSundayFunnies.collectAsState()
     val selectedFunniesCategory by viewModel.selectedFunniesCategory.collectAsState()
 
@@ -331,6 +338,10 @@ fun TownsquareApp(
     var isMeshNetworkOpen by remember { mutableStateOf(false) }
     var isYellowPagesOpen by remember { mutableStateOf(false) }
     var isFilesOpen by remember { mutableStateOf(false) }
+    var isWatchfaceMakerOpen by remember { mutableStateOf(false) }
+    var isPocketOpen by remember { mutableStateOf(false) }
+    var isGlitchInspectorOpen by remember { mutableStateOf(false) }
+    var isServerConsoleOpen by remember { mutableStateOf(false) }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
 
     val reportedContents by viewModel.reportedContents.collectAsState()
@@ -891,6 +902,11 @@ fun TownsquareApp(
         onOpenArCamera = { isArCameraOpen = true },
         onOpenMeshNetwork = { isMeshNetworkOpen = true },
         onOpenYellowPages = { isYellowPagesOpen = true },
+        onOpenFiles = { isFilesOpen = true },
+        onOpenWatchfaceMaker = { isWatchfaceMakerOpen = true },
+        onOpenPocket = { isPocketOpen = true },
+        onOpenDiagnostics = { isGlitchInspectorOpen = true },
+        onOpenServerConsole = { isServerConsoleOpen = true },
         onOpenWidgetsDrawer = { isWidgetsDrawerOpen = true },
         onRefreshApp = {
             viewModel.refreshData {
@@ -1096,6 +1112,15 @@ fun TownsquareApp(
         }
     }
 
+    // Global Media Sleep Timer Auto-Stop Host
+    com.example.ui.components.SleepTimerHost(
+        onPauseAudio = {
+            viewModel.stopAudio()
+            viewModel.stopVoiceNarration()
+            scope.launch { snackbarHostState.showSnackbar("🌙 Sleep Timer finished: Playback paused.") }
+        }
+    )
+
     // 0-Plus: Yellow Pages Gig Directory App
     if (isYellowPagesOpen) {
         androidx.compose.ui.window.Dialog(
@@ -1105,6 +1130,73 @@ fun TownsquareApp(
             com.example.ui.plus.yellowpages.TownsquareYellowPagesApp(
                 onBack = { isYellowPagesOpen = false }
             )
+        }
+    }
+
+    // 0-Plus: File Explorer App
+    if (isFilesOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isFilesOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.files.TownsquareFileExplorerApp(
+                onBack = { isFilesOpen = false }
+            )
+        }
+    }
+
+    // 0-Plus: Watchface Maker App
+    if (isWatchfaceMakerOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isWatchfaceMakerOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.watchface.TownsquareWatchfaceMaker(
+                onBack = { isWatchfaceMakerOpen = false }
+            )
+        }
+    }
+
+    // 0-Plus: Townsquare Pocket RSS Reader App
+    if (isPocketOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isPocketOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.pocket.TownsquarePocketApp(
+                onBack = { isPocketOpen = false }
+            )
+        }
+    }
+
+    // 0-Plus: System Diagnostics & Glitch Inspector
+    if (isGlitchInspectorOpen) {
+        com.example.diagnostics.ui.GlitchInspectorDialog(
+            onDismiss = { isGlitchInspectorOpen = false }
+        )
+    }
+
+    // 0-Plus: Embedded Backend Server Gateway Console
+    if (isServerConsoleOpen) {
+        com.example.server.ui.TownsquareServerConsoleDialog(
+            onDismissRequest = { isServerConsoleOpen = false }
+        )
+    }
+
+    // Connect remote control hooks to ViewModel
+    LaunchedEffect(Unit) {
+        com.example.server.TownsquareServerManager.onRemotePlaybackToggle = {
+            viewModel.togglePlayPause()
+        }
+        com.example.server.TownsquareServerManager.onRemoteNextTrack = {
+            viewModel.skipAudioForward()
+        }
+        com.example.server.TownsquareServerManager.onRemotePrevTrack = {
+            viewModel.skipAudioBackward()
+        }
+        com.example.server.TownsquareServerManager.onRemoteStop = {
+            viewModel.stopAudio()
+            viewModel.stopVoiceNarration()
         }
     }
 

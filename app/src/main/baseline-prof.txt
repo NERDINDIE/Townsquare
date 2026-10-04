@@ -1,0 +1,17 @@
+# Baseline Profile for Townsquare OS
+# Enables Android runtime (ART) ahead-of-time method compilation for instant app startup and smooth 60fps scrolling
+
+HSPLcom/example/TownsquareApplication;->onCreate()V
+HSPLcom/example/TownsquareApplication;->newImageLoader()Lcoil/ImageLoader;
+HSPLcom/example/TownsquareApplication;->onTrimMemory(I)V
+HSPLcom/example/MainActivity;->onCreate(Landroid/os/Bundle;)V
+HSPLcom/example/diagnostics/SessionErrorHandler;->install(Landroid/content/Context;)V
+HSPLcom/example/diagnostics/SessionErrorHandler;->logEvent(Lcom/example/diagnostics/DiagnosticSeverity;Lcom/example/diagnostics/GlitchCategory;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+HSPLcom/example/diagnostics/BackgroundGlitchWatchdog;->start(Landroid/content/Context;)V
+HSPLcom/example/data/local/AppDatabase;->getInstance(Landroid/content/Context;)Lcom/example/data/local/AppDatabase;
+HSPLcom/example/data/repository/MediaRepository;->getAllChannels()Lkotlinx/coroutines/flow/Flow;
+HSPLcom/example/ui/viewmodel/MediaSuperappViewModel;-><init>(Lcom/example/data/repository/MediaRepository;Lcom/example/data/local/AppSettingsManager;)V
+HSPLcom/example/ui/screens/MainFeedScreenKt;->MainFeedScreen(Lcom/example/ui/viewmodel/MediaSuperappViewModel;Landroidx/compose/ui/Modifier;)V
+HSPLcom/example/ui/components/GlobalMediaPlayerKt;->GlobalMediaPlayer(Lcom/example/ui/viewmodel/MediaSuperappViewModel;Landroidx/compose/ui/Modifier;)V
+HSPLcom/example/audio/AudioPlayerManager;->getInstance(Landroid/content/Context;)Lcom/example/audio/AudioPlayerManager;
+HSPLcom/example/server/TownsquareServerManager;->getInstance(Landroid/content/Context;)Lcom/example/server/TownsquareServerManager;

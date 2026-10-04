@@ -36,10 +36,12 @@ import com.example.ui.plus.health.TownsquareHealthApp
 import com.example.ui.plus.books.TownsquareBookwormApp
 import com.example.ui.plus.lingo.TownsquareLingoApp
 import com.example.ui.plus.planner.TownsquarePlannerApp
+import com.example.ui.plus.watchface.TownsquareWatchfaceMaker
+import com.example.ui.plus.pocket.TownsquarePocketApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH, BOOKS, LINGO, PLANNER, TOWNSQUARES, WEATHERMAN, AR_CAMERA, MESH_NETWORK, YELLOW_PAGES, FILES
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH, BOOKS, LINGO, PLANNER, TOWNSQUARES, WEATHERMAN, AR_CAMERA, MESH_NETWORK, YELLOW_PAGES, FILES, WATCHFACE_MAKER, POCKET_RSS
 }
 
 @Composable
@@ -122,6 +124,12 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.FILES -> {
                 com.example.ui.plus.files.TownsquareFileExplorerApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.WATCHFACE_MAKER -> {
+                TownsquareWatchfaceMaker(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.POCKET_RSS -> {
+                TownsquarePocketApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -313,7 +321,35 @@ fun TownsquarePlusScreen(
                             )
                         }
 
-                        // 3. Extension Builder Sandbox Card
+                        // 7. Watchface Maker Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Watchface Maker",
+                                subtitle = "Custom Smartwatch & Ambient Dial Studio",
+                                description = "Design custom watchfaces for Wearable IoT and Station Clocks. Configure analog chronographs, digital LED retro matrices, Bauhaus dials, complications, ambient AOD modes, and export to companion devices.",
+                                icon = Icons.Default.Watch,
+                                iconColor = WarmAmber,
+                                badgeText = "DIAL STUDIO",
+                                onClick = { activeSubApp = PlusModularApp.WATCHFACE_MAKER },
+                                testTag = "plus_app_watchface_maker"
+                            )
+                        }
+
+                        // 8. Townsquare Pocket RSS Reader Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Pocket",
+                                subtitle = "Clean RSS & Atom Article Reader",
+                                description = "Personal RSS reader and offline article vault. Subscribe to news feeds, sub-bulletins, tech journals, and independent press blogs with clutter-free typography, text-to-speech, and offline caching.",
+                                icon = Icons.Default.Bookmark,
+                                iconColor = Color(0xFFFF5252),
+                                badgeText = "RSS VAULT",
+                                onClick = { activeSubApp = PlusModularApp.POCKET_RSS },
+                                testTag = "plus_app_pocket_rss"
+                            )
+                        }
+
+                        // 9. Extension Builder Sandbox Card
                         item {
                             SuperappModuleCard(
                                 title = "Extension Builder & Ringtone Composer",

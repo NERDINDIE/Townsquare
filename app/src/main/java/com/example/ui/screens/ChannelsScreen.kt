@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.MediaChannelEntity
 import com.example.ui.components.TownsquareTopBar
+import com.example.ui.screens.discovery.VisualPhotoDiscoveryView
+import com.example.ui.screens.discovery.TownsquarePeepsView
 import com.example.ui.theme.DarkBorder
 import com.example.ui.theme.DarkSurface
 import com.example.ui.theme.NeonCyan
@@ -42,6 +44,7 @@ fun ChannelsScreen(
     onOpenSidebar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    var discoveryTab by remember { mutableIntStateOf(0) } // 0: Channels, 1: Photos, 2: Peeps, 3: Sports Scores
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategoryFilter by remember { mutableStateOf("All") }
     var showOnlyFollowed by remember { mutableStateOf(false) }
@@ -75,153 +78,256 @@ fun ChannelsScreen(
     ) {
         TownsquareTopBar(
             title = "Discovery Hub",
-            subtitle = "Explore channels, local broadsheets & audio frequencies",
+            subtitle = "Explore channels, photo feeds, verified peeps & sports scores",
             onOpenSidebar = onOpenSidebar
         )
 
-        // SEARCH & QUICK FILTER BAR
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp)
+        // DISCOVERY MODE TABS
+        ScrollableTabRow(
+            selectedTabIndex = discoveryTab,
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = NeonCyan,
+            edgePadding = 16.dp,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("channels_search_input"),
-                placeholder = {
-                    Text(
-                        "Search 22+ channels, cinema, stonks, broadsheet...",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = NeonCyan,
-                        modifier = Modifier.size(18.dp)
-                    )
-                },
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { searchQuery = "" }) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Clear",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(16.dp)
+            Tab(
+                selected = discoveryTab == 0,
+                onClick = { discoveryTab = 0 },
+                text = { Text("📡 Channels (${channels.size})", fontWeight = if (discoveryTab == 0) FontWeight.Bold else FontWeight.Normal) },
+                modifier = Modifier.testTag("discovery_tab_channels")
+            )
+            Tab(
+                selected = discoveryTab == 1,
+                onClick = { discoveryTab = 1 },
+                text = { Text("📸 Photo Discovery", fontWeight = if (discoveryTab == 1) FontWeight.Bold else FontWeight.Normal) },
+                modifier = Modifier.testTag("discovery_tab_photos")
+            )
+            Tab(
+                selected = discoveryTab == 2,
+                onClick = { discoveryTab = 2 },
+                text = { Text("⚡ Townsquare Peeps", fontWeight = if (discoveryTab == 2) FontWeight.Bold else FontWeight.Normal) },
+                modifier = Modifier.testTag("discovery_tab_peeps")
+            )
+            Tab(
+                selected = discoveryTab == 3,
+                onClick = { discoveryTab = 3 },
+                text = { Text("🏅 Live Scores", fontWeight = if (discoveryTab == 3) FontWeight.Bold else FontWeight.Normal) },
+                modifier = Modifier.testTag("discovery_tab_sports")
+            )
+        }
+
+        when (discoveryTab) {
+            1 -> {
+                VisualPhotoDiscoveryView(modifier = Modifier.fillMaxSize())
+            }
+            2 -> {
+                TownsquarePeepsView(modifier = Modifier.fillMaxSize())
+            }
+            3 -> {
+                SportsScoresChannelSection(
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = { discoveryTab = 0 }
+                )
+            }
+            else -> {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // SEARCH & QUICK FILTER BAR
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("channels_search_input"),
+                            placeholder = {
+                                Text(
+                                    "Search 22+ channels, cinema, stonks, broadsheet...",
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "Search",
+                                    tint = NeonCyan,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            },
+                            trailingIcon = {
+                                if (searchQuery.isNotEmpty()) {
+                                    IconButton(onClick = { searchQuery = "" }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Clear",
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = NeonCyan,
+                                unfocusedBorderColor = DarkBorder,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // CATEGORY FILTER CHIPS
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            item {
+                                FilterChip(
+                                    selected = showOnlyFollowed,
+                                    onClick = { showOnlyFollowed = !showOnlyFollowed },
+                                    label = {
+                                        Text(
+                                            if (showOnlyFollowed) "★ Following Only" else "★ Following",
+                                            fontSize = 11.sp,
+                                            fontWeight = if (showOnlyFollowed) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = NeonCyan.copy(alpha = 0.2f),
+                                        selectedLabelColor = NeonCyan
+                                    ),
+                                    border = FilterChipDefaults.filterChipBorder(
+                                        enabled = true,
+                                        selected = showOnlyFollowed,
+                                        borderColor = if (showOnlyFollowed) NeonCyan else DarkBorder
+                                    )
+                                )
+                            }
+
+                            items(categories) { cat ->
+                                val isSelected = selectedCategoryFilter == cat && !showOnlyFollowed
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = {
+                                        selectedCategoryFilter = cat
+                                        showOnlyFollowed = false
+                                    },
+                                    label = {
+                                        Text(
+                                            text = cat,
+                                            fontSize = 11.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = NeonCyan,
+                                        selectedLabelColor = Color(0xFF003544)
+                                    ),
+                                    border = FilterChipDefaults.filterChipBorder(
+                                        enabled = true,
+                                        selected = isSelected,
+                                        borderColor = if (isSelected) NeonCyan else DarkBorder
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    // RESULTS HEADER
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${filteredChannels.size} CHANNELS FOUND",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        if (selectedCategoryFilter != "All" || showOnlyFollowed || searchQuery.isNotBlank()) {
+                            Text(
+                                text = "Reset Filters",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = NeonCyan,
+                                modifier = Modifier.clickable {
+                                    searchQuery = ""
+                                    selectedCategoryFilter = "All"
+                                    showOnlyFollowed = false
+                                }
                             )
                         }
                     }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan,
-                    unfocusedBorderColor = DarkBorder,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                )
-            )
 
-            Spacer(modifier = Modifier.height(10.dp))
+                    // CHANNELS LIST
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        // Featured Sports Live Scores Banner
+                        item {
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = Color(0xFF132238),
+                                border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.6f)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { discoveryTab = 3 }
+                                    .testTag("sports_live_channel_banner")
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(14.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = Color(0xFFFF9500).copy(alpha = 0.2f),
+                                            modifier = Modifier.size(42.dp)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Text("🏅", fontSize = 20.sp)
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Column {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Surface(
+                                                    shape = RoundedCornerShape(4.dp),
+                                                    color = Color(0xFFFF3B30),
+                                                    modifier = Modifier.padding(end = 6.dp)
+                                                ) {
+                                                    Text("LIVE", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
+                                                }
+                                                Text("Townsquare Sports Media Hub", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.White)
+                                            }
+                                            Text("Live match ticker, scores, lineups & stadium commentary", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                    }
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                        contentDescription = "View Sports",
+                                        tint = NeonCyan,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
 
-            // CATEGORY FILTER CHIPS
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    FilterChip(
-                        selected = showOnlyFollowed,
-                        onClick = { showOnlyFollowed = !showOnlyFollowed },
-                        label = {
-                            Text(
-                                if (showOnlyFollowed) "★ Following Only" else "★ Following",
-                                fontSize = 11.sp,
-                                fontWeight = if (showOnlyFollowed) FontWeight.Bold else FontWeight.Normal
-                            )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = NeonCyan.copy(alpha = 0.2f),
-                            selectedLabelColor = NeonCyan
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
-                            selected = showOnlyFollowed,
-                            borderColor = if (showOnlyFollowed) NeonCyan else DarkBorder
-                        )
-                    )
-                }
-
-                items(categories) { cat ->
-                    val isSelected = selectedCategoryFilter == cat && !showOnlyFollowed
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = {
-                            selectedCategoryFilter = cat
-                            showOnlyFollowed = false
-                        },
-                        label = {
-                            Text(
-                                text = cat,
-                                fontSize = 11.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                            )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = NeonCyan,
-                            selectedLabelColor = Color(0xFF003544)
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
-                            selected = isSelected,
-                            borderColor = if (isSelected) NeonCyan else DarkBorder
-                        )
-                    )
-                }
-            }
-        }
-
-        // RESULTS HEADER
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "${filteredChannels.size} CHANNELS FOUND",
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            if (selectedCategoryFilter != "All" || showOnlyFollowed || searchQuery.isNotBlank()) {
-                Text(
-                    text = "Reset Filters",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = NeonCyan,
-                    modifier = Modifier.clickable {
-                        searchQuery = ""
-                        selectedCategoryFilter = "All"
-                        showOnlyFollowed = false
-                    }
-                )
-            }
-        }
-
-        // CHANNELS LIST
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            items(filteredChannels, key = { it.id }) { channel ->
+                        items(filteredChannels, key = { it.id }) { channel ->
                 val channelAccent = remember(channel.bannerColorHex) { Color(channel.bannerColorHex) }
 
                 Card(
@@ -393,4 +499,7 @@ fun ChannelsScreen(
             }
         }
     }
+}
+}
+}
 }

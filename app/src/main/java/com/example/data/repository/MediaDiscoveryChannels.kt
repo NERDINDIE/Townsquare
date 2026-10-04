@@ -125,6 +125,19 @@ object MediaDiscoveryChannels {
             followersCount = 51200,
             morningBriefHighlight = "Annual Autumn Hillclimb features 60 vintage roadsters and retro electric prototypes taking to the winding ridge highway.",
             iconEmoji = "🏎️"
+        ),
+
+        // 10. Stadium Central / Sports media with live scores and matches
+        MediaChannelEntity(
+            id = "channel_sports_central",
+            name = "🏆 Stadium Central",
+            description = "Live scores, match trackers, pitch commentary, tournament brackets, and municipal league standings.",
+            category = "Sports & Athletics",
+            bannerColorHex = 0xFFFF5722, // Deep Stadium Orange
+            isFollowed = true,
+            followersCount = 78400,
+            morningBriefHighlight = "Canal Harbor FC edges Metropolis Athletic 2-1 in thrilling 78th-minute cup derby at the Basin Stadium.",
+            iconEmoji = "🏆"
         )
     )
 

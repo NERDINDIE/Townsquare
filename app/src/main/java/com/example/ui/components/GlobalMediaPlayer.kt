@@ -115,6 +115,16 @@ private fun GlobalAudioPlayerView(
     modifier: Modifier = Modifier
 ) {
     val current = audioState.currentItem ?: return
+    var isSleepTimerDialogOpen by remember { mutableStateOf(false) }
+
+    if (isSleepTimerDialogOpen) {
+        SleepTimerDialog(
+            onDismiss = { isSleepTimerDialogOpen = false },
+            onSetTimer = { mins, label ->
+                SleepTimerController.startTimer(mins, label)
+            }
+        )
+    }
 
     AnimatedVisibility(
         visible = true,
@@ -235,6 +245,20 @@ private fun GlobalAudioPlayerView(
 
                 // Controls
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = { isSleepTimerDialogOpen = true },
+                        modifier = Modifier.size(32.dp).testTag("global_audio_sleep_timer_button")
+                    ) {
+                        Text(
+                            text = if (SleepTimerController.isTimerActive) "🌙 ${SleepTimerController.remainingSeconds / 60}m" else "🌙",
+                            fontSize = if (SleepTimerController.isTimerActive) 10.sp else 14.sp,
+                            color = if (SleepTimerController.isTimerActive) WarmAmber else MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = if (SleepTimerController.isTimerActive) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(2.dp))
+
                     IconButton(
                         onClick = onTogglePlayPause,
                         modifier = Modifier

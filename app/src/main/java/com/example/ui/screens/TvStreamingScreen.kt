@@ -82,6 +82,7 @@ import com.example.data.model.TvChannelEntity
 import com.example.data.model.TvOnDemandItem
 import com.example.data.model.TvScheduleItem
 import com.example.ui.components.TvBroadcastPlayer
+import com.example.ui.components.LiveBroadcastCallInDialog
 import com.example.ui.theme.DarkBg
 import com.example.ui.theme.DarkSurface
 import com.example.ui.theme.NeonCyan
@@ -120,6 +121,15 @@ fun TvStreamingScreen(
     modifier: Modifier = Modifier
 ) {
     val activeChannel = channels.find { it.id == activeChannelId } ?: channels.firstOrNull()
+    var isCallInDialogOpen by remember { mutableStateOf(false) }
+
+    if (isCallInDialogOpen && activeChannel != null) {
+        LiveBroadcastCallInDialog(
+            broadcastTitle = activeChannel.name + " - " + activeChannel.tagline,
+            channelOrStation = "Channel ${activeChannel.channelNumber}: ${activeChannel.name}",
+            onDismiss = { isCallInDialogOpen = false }
+        )
+    }
 
     // Fullscreen Landscape Dialog Mode
     if (isFullscreen && activeChannel != null) {
@@ -209,6 +219,7 @@ fun TvStreamingScreen(
                         onToggleFavorite = { onToggleFavorite(activeChannel) },
                         onToggleReminder = { onToggleReminder(activeChannel) },
                         onToggleRecording = { onToggleRecording(activeChannel) },
+                        onOpenCallIn = { isCallInDialogOpen = true },
                         onShare = { onShareBroadcast(activeChannel) },
                         onNextChannel = onNextChannel,
                         onPrevChannel = onPrevChannel
@@ -437,6 +448,7 @@ private fun ActiveChannelDetailCard(
     onToggleFavorite: () -> Unit,
     onToggleReminder: () -> Unit,
     onToggleRecording: () -> Unit,
+    onOpenCallIn: () -> Unit = {},
     onShare: () -> Unit,
     onNextChannel: () -> Unit,
     onPrevChannel: () -> Unit
@@ -646,6 +658,26 @@ private fun ActiveChannelDetailCard(
                         text = if (channel.isRecording) "Recording" else "Record",
                         style = MaterialTheme.typography.labelSmall,
                         color = if (channel.isRecording) Color(0xFFFF3B30) else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                // Call-In to Live Studio
+                FilledTonalButton(
+                    onClick = onOpenCallIn,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = NeonCyan.copy(alpha = 0.2f)
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                    modifier = Modifier.testTag("tv_live_call_in_button")
+                ) {
+                    Text("📞", fontSize = 13.sp)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Call-In",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = NeonCyan,
+                        fontWeight = FontWeight.Bold
                     )
                 }
 

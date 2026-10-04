@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- OS Performance Tuning & Resource Threshold Constants -->
+    <integer name="performance_ui_heartbeat_interval_ms">500</integer>
+    <integer name="performance_anr_freeze_threshold_ms">1200</integer>
+    <integer name="performance_jank_frame_threshold_ms">32</integer>
+    <integer name="performance_max_cached_reports">100</integer>
+    <integer name="performance_memory_trim_threshold_mb">128</integer>
+    <integer name="performance_max_image_disk_cache_mb">256</integer>
+    <bool name="performance_enable_background_watchdog">true</bool>
+    <bool name="performance_enable_strict_mode_logging">true</bool>
+    <string name="performance_watchdog_thread_name">Townsquare-Watchdog-Daemon</string>
+</resources>

@@ -157,6 +157,10 @@ fun TownsquareSidebarDrawer(
     onOpenMeshNetwork: () -> Unit = {},
     onOpenYellowPages: () -> Unit = {},
     onOpenFiles: () -> Unit = {},
+    onOpenWatchfaceMaker: () -> Unit = {},
+    onOpenPocket: () -> Unit = {},
+    onOpenDiagnostics: () -> Unit = {},
+    onOpenServerConsole: () -> Unit = {},
     onOpenWidgetsDrawer: () -> Unit = {},
     onRefreshApp: () -> Unit = {},
     unreadInboxCount: Int = 0,
@@ -848,7 +852,11 @@ fun TownsquareSidebarDrawer(
                             Triple("📷 AR Vision & HUD", "Civic Geo-AR, scanners & HUD camera", onOpenArCamera),
                             Triple("📶 Mesh Connectivity", "Off-grid P2P relay & SOS beacon", onOpenMeshNetwork),
                             Triple("📒 Yellow Pages", "Freelance gigs & skilled trades", onOpenYellowPages),
-                            Triple("📁 File Explorer", "Storage volumes & media vault", onOpenFiles)
+                            Triple("📁 File Explorer", "Storage volumes & media vault", onOpenFiles),
+                            Triple("⌚ Watchface Maker", "Smartwatch dials & chronographs", onOpenWatchfaceMaker),
+                            Triple("📖 Townsquare Pocket", "Clean RSS reader & offline vault", onOpenPocket),
+                            Triple("🩺 System Diagnostics", "Glitch watchdog, freeze monitor & vitals", onOpenDiagnostics),
+                            Triple("🖧 Backend Server", "Embedded HTTP/REST & remote control", onOpenServerConsole)
                         )
 
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

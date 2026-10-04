@@ -35,13 +35,15 @@ import com.example.ui.theme.DarkBorder
 import com.example.ui.theme.DarkSurfaceElevated
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
+import com.example.ui.plus.arcade.games.DebuggerCabinet
+import com.example.ui.plus.arcade.games.ExtraNewspaperCabinet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlin.math.sqrt
 
 // Game Enums
 enum class ArcadeGame {
-    NONE, SPACE_INVADERS, BLOCK_BREAKER
+    NONE, SPACE_INVADERS, BLOCK_BREAKER, DEBUGGER, EXTRA_NEWSPAPER
 }
 
 // Data Classes for Game States
@@ -74,6 +76,8 @@ fun TownsquareArcadeApp(
     var activeGame by remember { mutableStateOf(ArcadeGame.NONE) }
     var highestSpaceScore by remember { mutableIntStateOf(0) }
     var highestBlockScore by remember { mutableIntStateOf(0) }
+    var highestDebuggerScore by remember { mutableIntStateOf(0) }
+    var highestExtraScore by remember { mutableIntStateOf(0) }
 
     // Arcade Achievements State
     var achievements by remember {
@@ -83,13 +87,15 @@ fun TownsquareArcadeApp(
                 ArcadeAchievement("survivor", "Invasion Survivor", "Score 100+ points in Space Invaders.", "🛸", 100, false),
                 ArcadeAchievement("demolisher", "Brick Demolisher", "Score 120+ points in Block Breaker.", "🧱", 120, false),
                 ArcadeAchievement("duo", "Duo Gamer", "Play both Space Invaders and Block Breaker.", "🕹️", 2, false),
+                ArcadeAchievement("debugger_whiz", "Syntax Sensei", "Score 300+ in the Debugger gameshow.", "🐛", 300, false),
+                ArcadeAchievement("pulitzer", "Front-Page Legend", "Score 250+ in Extra! Newspaper Rush.", "📰", 250, false),
                 ArcadeAchievement("legend", "Local Legend", "Get in the Top 3 Local High Scores.", "🏆", 350, false)
             )
         )
     }
 
     // Leaderboard entries (Static + User best)
-    val userBest = maxOf(highestSpaceScore, highestBlockScore)
+    val userBest = maxOf(highestSpaceScore, highestBlockScore, highestDebuggerScore, highestExtraScore)
     val leaderboard = remember(userBest) {
         val baseList = listOf(
             LeaderboardEntry("Elena Vance", "@elenavance", 480, "2026-09-28"),
@@ -263,6 +269,36 @@ fun TownsquareArcadeApp(
                                 activeGame = ArcadeGame.BLOCK_BREAKER
                                 triggerUnlock("cadet")
                                 if (highestSpaceScore > 0) triggerUnlock("duo")
+                            }
+                        )
+                    }
+
+                    // GAME 3: Debugger: The Code Quizshow
+                    item {
+                        GameCabinetCard(
+                            title = "DEBUGGER: CODE GAMESHOW",
+                            description = "The high-stakes quizshow where you inspect and patch faulty code snippets! Lifelines, linter hints, test suite traces, and combo multipliers.",
+                            imageEmoji = "⚡",
+                            neonColor = Color(0xFF33FF33),
+                            highScore = highestDebuggerScore,
+                            onPlay = {
+                                activeGame = ArcadeGame.DEBUGGER
+                                triggerUnlock("cadet")
+                            }
+                        )
+                    }
+
+                    // GAME 4: Extra! The Newspaper Rush
+                    item {
+                        GameCabinetCard(
+                            title = "EXTRA! NEWSPAPER RUSH",
+                            description = "Beat rival newsrooms to break the city's biggest scoops! Race the teletype wire, fact-check leads, and craft front-page headlines to capture maximum readers.",
+                            imageEmoji = "📰",
+                            neonColor = WarmAmber,
+                            highScore = highestExtraScore,
+                            onPlay = {
+                                activeGame = ArcadeGame.EXTRA_NEWSPAPER
+                                triggerUnlock("cadet")
                             }
                         )
                     }
@@ -459,6 +495,40 @@ fun TownsquareArcadeApp(
                                     }
                                     if (finalScore >= 120) {
                                         triggerUnlock("demolisher")
+                                    }
+                                    if (finalScore >= 360) {
+                                        triggerUnlock("legend")
+                                    }
+                                    activeGame = ArcadeGame.NONE
+                                },
+                                onExit = { activeGame = ArcadeGame.NONE }
+                            )
+                        }
+                        ArcadeGame.DEBUGGER -> {
+                            DebuggerCabinet(
+                                onGameOver = { finalScore ->
+                                    if (finalScore > highestDebuggerScore) {
+                                        highestDebuggerScore = finalScore
+                                    }
+                                    if (finalScore >= 300) {
+                                        triggerUnlock("debugger_whiz")
+                                    }
+                                    if (finalScore >= 360) {
+                                        triggerUnlock("legend")
+                                    }
+                                    activeGame = ArcadeGame.NONE
+                                },
+                                onExit = { activeGame = ArcadeGame.NONE }
+                            )
+                        }
+                        ArcadeGame.EXTRA_NEWSPAPER -> {
+                            ExtraNewspaperCabinet(
+                                onGameOver = { finalScore ->
+                                    if (finalScore > highestExtraScore) {
+                                        highestExtraScore = finalScore
+                                    }
+                                    if (finalScore >= 250) {
+                                        triggerUnlock("pulitzer")
                                     }
                                     if (finalScore >= 360) {
                                         triggerUnlock("legend")
