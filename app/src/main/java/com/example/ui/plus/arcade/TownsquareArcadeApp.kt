@@ -267,6 +267,11 @@ fun TownsquareArcadeApp(
                         )
                     }
 
+                    // Scheduled Interactive Tournaments & Dubbing Studio
+                    item {
+                        ArcadeScheduledGamesSection()
+                    }
+
                     // Stats & Achievements & Leaderboard split Row
                     item {
                         Spacer(modifier = Modifier.height(4.dp))

@@ -342,6 +342,18 @@ fun TvStreamingScreen(
                     }
                 }
             }
+
+            "CABLE_TIERS" -> {
+                item {
+                    TvCableSubscriptionManager()
+                }
+            }
+
+            "WATCH_PARTY" -> {
+                item {
+                    TvWatchPartyView(activeChannelName = activeChannel?.name ?: "Townsquare Central TV")
+                }
+            }
         }
     }
 }
@@ -742,7 +754,9 @@ private fun TvSectionTabs(
         Pair("LIVE_CHANNELS", "📺 Live Roster"),
         Pair("TV_GUIDE", "📅 TV Guide"),
         Pair("ON_DEMAND", "📼 On-Demand"),
-        Pair("RECORDINGS", "🔴 DVR Vault")
+        Pair("RECORDINGS", "🔴 DVR Vault"),
+        Pair("CABLE_TIERS", "📡 Cable Tiers"),
+        Pair("WATCH_PARTY", "🎉 Watch Party")
     )
     val selectedIndex = tabs.indexOfFirst { it.first == selectedTab }.coerceAtLeast(0)
 

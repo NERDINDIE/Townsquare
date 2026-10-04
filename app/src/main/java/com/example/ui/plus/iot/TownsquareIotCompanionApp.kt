@@ -39,7 +39,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 enum class IotDeviceEnvironment {
-    SMARTWATCH, EINK_HOME_DISPLAY, AUTOMOTIVE_CLUSTER
+    SMARTWATCH, EINK_HOME_DISPLAY, CAR_DASHBOARD, MP3_PLAYER, REMOTE_COMPUTER, AUTOMOTIVE_CLUSTER
 }
 
 enum class WatchFaceStyle {
@@ -147,12 +147,31 @@ fun TownsquareIotCompanionApp(
                 }
             }
 
-            // Environment Selector Tabs
-            TabRow(
+            // Environment Selector Tabs (Scrollable for rich IoT device companion suite)
+            ScrollableTabRow(
                 selectedTabIndex = activeEnvironment.ordinal,
                 containerColor = DarkSurfaceVariant,
-                contentColor = NeonCyan
+                contentColor = NeonCyan,
+                edgePadding = 8.dp
             ) {
+                Tab(
+                    selected = activeEnvironment == IotDeviceEnvironment.CAR_DASHBOARD,
+                    onClick = { activeEnvironment = IotDeviceEnvironment.CAR_DASHBOARD },
+                    icon = { Icon(Icons.Default.Speed, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("🚗 Car Dashboard", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                )
+                Tab(
+                    selected = activeEnvironment == IotDeviceEnvironment.MP3_PLAYER,
+                    onClick = { activeEnvironment = IotDeviceEnvironment.MP3_PLAYER },
+                    icon = { Icon(Icons.Default.Headphones, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("🎵 MP3 Audio Player", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                )
+                Tab(
+                    selected = activeEnvironment == IotDeviceEnvironment.REMOTE_COMPUTER,
+                    onClick = { activeEnvironment = IotDeviceEnvironment.REMOTE_COMPUTER },
+                    icon = { Icon(Icons.Default.Terminal, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("🖥️ Remote Workstation", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                )
                 Tab(
                     selected = activeEnvironment == IotDeviceEnvironment.SMARTWATCH,
                     onClick = { activeEnvironment = IotDeviceEnvironment.SMARTWATCH },
@@ -169,13 +188,16 @@ fun TownsquareIotCompanionApp(
                     selected = activeEnvironment == IotDeviceEnvironment.AUTOMOTIVE_CLUSTER,
                     onClick = { activeEnvironment = IotDeviceEnvironment.AUTOMOTIVE_CLUSTER },
                     icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                    text = { Text("🚗 In-Car Cluster", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    text = { Text("🚘 In-Car Cluster", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                 )
             }
 
             // Environment Views
             Box(modifier = Modifier.weight(1f)) {
                 when (activeEnvironment) {
+                    IotDeviceEnvironment.CAR_DASHBOARD -> IotCarDashboardView(liveTime = liveTime)
+                    IotDeviceEnvironment.MP3_PLAYER -> IotMp3PlayerView()
+                    IotDeviceEnvironment.REMOTE_COMPUTER -> IotRemoteComputerView()
                     IotDeviceEnvironment.SMARTWATCH -> SmartwatchSimulationView(
                         watchFaceStyle = watchFaceStyle,
                         activeTile = activeWatchTile,

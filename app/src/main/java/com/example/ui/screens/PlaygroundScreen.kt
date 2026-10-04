@@ -210,6 +210,14 @@ fun PlaygroundScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // School Media: Radio Station & Publication Submissions
+            item {
+                com.example.ui.screens.playground.PlaygroundSchoolMediaFeatures(
+                    studentName = activeProfile.name,
+                    schoolName = activeProfile.school
+                )
+            }
+
             // School Announcements
             item {
                 Surface(

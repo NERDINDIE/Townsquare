@@ -327,6 +327,10 @@ fun TownsquareApp(
     var isPhoneOpen by remember { mutableStateOf(false) }
     var isTownsquaresOpen by remember { mutableStateOf(false) }
     var isWeathermanOpen by remember { mutableStateOf(false) }
+    var isArCameraOpen by remember { mutableStateOf(false) }
+    var isMeshNetworkOpen by remember { mutableStateOf(false) }
+    var isYellowPagesOpen by remember { mutableStateOf(false) }
+    var isFilesOpen by remember { mutableStateOf(false) }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
 
     val reportedContents by viewModel.reportedContents.collectAsState()
@@ -884,6 +888,9 @@ fun TownsquareApp(
         onOpenIotCompanion = { isIotCompanionOpen = true },
         onOpenTownsquares = { isTownsquaresOpen = true },
         onOpenWeatherman = { isWeathermanOpen = true },
+        onOpenArCamera = { isArCameraOpen = true },
+        onOpenMeshNetwork = { isMeshNetworkOpen = true },
+        onOpenYellowPages = { isYellowPagesOpen = true },
         onOpenWidgetsDrawer = { isWidgetsDrawerOpen = true },
         onRefreshApp = {
             viewModel.refreshData {
@@ -1053,6 +1060,50 @@ fun TownsquareApp(
         ) {
             com.example.ui.plus.weather.WeathermanApp(
                 onBack = { isWeathermanOpen = false }
+            )
+        }
+    }
+
+    // 0-Plus: AR Vision & HUD Camera App
+    if (isArCameraOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isArCameraOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.camera.TownsquareArCameraApp(
+                onBack = { isArCameraOpen = false },
+                onNavigateToMarketplace = {
+                    isArCameraOpen = false
+                    isMarketplaceOpen = true
+                },
+                onNavigateToMailbox = {
+                    isArCameraOpen = false
+                    viewModel.openLettersMailbox()
+                }
+            )
+        }
+    }
+
+    // 0-Plus: Mesh Connectivity App
+    if (isMeshNetworkOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isMeshNetworkOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.mesh.TownsquareMeshNetworkApp(
+                onBack = { isMeshNetworkOpen = false }
+            )
+        }
+    }
+
+    // 0-Plus: Yellow Pages Gig Directory App
+    if (isYellowPagesOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isYellowPagesOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.yellowpages.TownsquareYellowPagesApp(
+                onBack = { isYellowPagesOpen = false }
             )
         }
     }

@@ -312,7 +312,8 @@ fun ProfileSpacesScreen(
                             Pair(1, "💳 Finance"),
                             Pair(2, "🫀 Health"),
                             Pair(3, "🏛️ State Pass"),
-                            Pair(4, "💼 Business ERP")
+                            Pair(4, "💼 Business ERP"),
+                            Pair(5, "🏺 Collections")
                         )
                         items(profileModules) { (modId, label) ->
                             val isSelected = mainProfileModule == modId
@@ -389,6 +390,19 @@ fun ProfileSpacesScreen(
                     ) {
                         Box(modifier = Modifier.padding(12.dp)) {
                             TownsquareBusinessErpSection(modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                }
+            } else if (mainProfileModule == 5) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, WarmAmber.copy(alpha = 0.5f))
+                    ) {
+                        Box(modifier = Modifier.padding(12.dp)) {
+                            com.example.ui.screens.profile.CollectionTrackerSection(modifier = Modifier.fillMaxWidth())
                         }
                     }
                 }

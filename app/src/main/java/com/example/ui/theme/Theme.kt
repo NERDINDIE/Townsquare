@@ -94,7 +94,14 @@ fun TownsquareTheme(
         )
     }
 
-    val typography = if (themeConfig.id == "cli_dos") CliDosTypography else Typography
+    val typography = when (themeConfig.typographyStyle) {
+        "monospace" -> CliDosTypography
+        "broadsheet" -> FirebaseTypographyExtensions.BroadsheetTypography
+        "inter" -> FirebaseTypographyExtensions.InterTypography
+        "teletext" -> FirebaseTypographyExtensions.TeletextTypography
+        "condensed" -> FirebaseTypographyExtensions.CondensedTypography
+        else -> if (themeConfig.id == "cli_dos") CliDosTypography else Typography
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,

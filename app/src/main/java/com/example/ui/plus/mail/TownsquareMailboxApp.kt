@@ -38,6 +38,7 @@ fun TownsquareMailboxApp(
     var emails by remember { mutableStateOf(TownsquarePlusSeed.generateInitialEmails()) }
     var currentFolder by remember { mutableStateOf(MailFolder.INBOX) }
     var searchQuery by remember { mutableStateOf("") }
+    var isInstantMessengerOpen by remember { mutableStateOf(false) }
     
     // Active Reading Email
     var activeEmail by remember { mutableStateOf<EmailItem?>(null) }
@@ -91,7 +92,11 @@ fun TownsquareMailboxApp(
     }
 
     Box(modifier = modifier.fillMaxSize().background(DarkBg)) {
-        if (activeEmail != null) {
+        if (isInstantMessengerOpen) {
+            MailboxInstantMessenger(
+                onBackToPostalMail = { isInstantMessengerOpen = false }
+            )
+        } else if (activeEmail != null) {
             // Email Detail View
             EmailDetailView(
                 email = activeEmail!!,
@@ -184,24 +189,43 @@ fun TownsquareMailboxApp(
                             }
                         }
 
-                        IconButton(
-                            onClick = {
-                                composeTo = ""
-                                composeSubject = ""
-                                composeBody = ""
-                                composeAttachmentName = null
-                                isComposeOpen = true
-                            },
-                            modifier = Modifier.testTag("mailbox_compose_top_button")
-                        ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = NeonCyan.copy(alpha = 0.2f),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan),
-                                modifier = Modifier.size(36.dp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            FilledTonalButton(
+                                onClick = { isInstantMessengerOpen = true },
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = NeonCyan.copy(alpha = 0.2f),
+                                    contentColor = NeonCyan
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                                modifier = Modifier.testTag("open_im_button")
                             ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Compose", tint = NeonCyan, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Chat, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Civic IM", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            IconButton(
+                                onClick = {
+                                    composeTo = ""
+                                    composeSubject = ""
+                                    composeBody = ""
+                                    composeAttachmentName = null
+                                    isComposeOpen = true
+                                },
+                                modifier = Modifier.testTag("mailbox_compose_top_button")
+                            ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = NeonCyan.copy(alpha = 0.2f),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan),
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Compose", tint = NeonCyan, modifier = Modifier.size(18.dp))
+                                    }
                                 }
                             }
                         }

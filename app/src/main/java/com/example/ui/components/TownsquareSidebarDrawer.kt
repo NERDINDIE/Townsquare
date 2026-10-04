@@ -153,6 +153,10 @@ fun TownsquareSidebarDrawer(
     onOpenIotCompanion: () -> Unit = {},
     onOpenTownsquares: () -> Unit = {},
     onOpenWeatherman: () -> Unit = {},
+    onOpenArCamera: () -> Unit = {},
+    onOpenMeshNetwork: () -> Unit = {},
+    onOpenYellowPages: () -> Unit = {},
+    onOpenFiles: () -> Unit = {},
     onOpenWidgetsDrawer: () -> Unit = {},
     onRefreshApp: () -> Unit = {},
     unreadInboxCount: Int = 0,
@@ -840,7 +844,11 @@ fun TownsquareSidebarDrawer(
                             Triple("🗣️ Lingo Lab", "Language & phrasebook", onOpenLingo),
                             Triple("📚 Bookworm", "Library & archives", onOpenBookworm),
                             Triple("📞 Phone Link", "Satellite & voicemail", onOpenPhone),
-                            Triple("⌚ IoT Companion", "Smartwatch & ambient simulator", onOpenIotCompanion)
+                            Triple("⌚ IoT Companion", "Car dashboard, MP3, remote PC & watch", onOpenIotCompanion),
+                            Triple("📷 AR Vision & HUD", "Civic Geo-AR, scanners & HUD camera", onOpenArCamera),
+                            Triple("📶 Mesh Connectivity", "Off-grid P2P relay & SOS beacon", onOpenMeshNetwork),
+                            Triple("📒 Yellow Pages", "Freelance gigs & skilled trades", onOpenYellowPages),
+                            Triple("📁 File Explorer", "Storage volumes & media vault", onOpenFiles)
                         )
 
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1858,7 +1866,10 @@ fun TownsquareSidebarDrawer(
                                     // 6. Identity & ID Management (Modular & NEW!)
                                     IdentitySettings()
 
-                                    // 7. Offline, Storage & Alerts (Modular)
+                                    // 7. Activity History & Downloads Vault (NEW!)
+                                    com.example.ui.components.settings.HistoryDownloadsSettings()
+
+                                    // 8. Offline, Storage & Alerts (Modular)
                                     StorageAlertsSettings(
                                         isOfflineMode = isOfflineMode,
                                         autoCacheEnabled = settings?.autoCacheMorningEdition ?: true,

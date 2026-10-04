@@ -216,7 +216,7 @@ fun BroadcastScheduleDialog(
                 // Unified Time & Planning Switcher Tabs
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Surface(
                         shape = RoundedCornerShape(10.dp),
@@ -230,8 +230,8 @@ fun BroadcastScheduleDialog(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
-                                text = "🕰️ Station Clock & TV Guide",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                text = "🕰️ Clock & TV",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = if (stationClockTab == 0) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -249,9 +249,28 @@ fun BroadcastScheduleDialog(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
-                                text = "🗓️ Planner, Tasks & Agenda",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                text = "🗓️ Planner",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = if (stationClockTab == 1) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (stationClockTab == 2) NeonCyan else MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(38.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { stationClockTab = 2 }
+                            .testTag("station_clock_tab_alarms")
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "⏰ Alarms",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                color = if (stationClockTab == 2) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -265,6 +284,8 @@ fun BroadcastScheduleDialog(
                             onBack = { stationClockTab = 0 }
                         )
                     }
+                } else if (stationClockTab == 2) {
+                    StationClockAlarmSection()
                 } else {
                     // Station Master Clock Banner
                     Surface(

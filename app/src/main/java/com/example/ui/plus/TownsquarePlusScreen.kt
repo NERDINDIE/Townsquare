@@ -39,7 +39,7 @@ import com.example.ui.plus.planner.TownsquarePlannerApp
 import com.example.ui.theme.*
 
 enum class PlusModularApp {
-    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH, BOOKS, LINGO, PLANNER, TOWNSQUARES, WEATHERMAN
+    NONE, PHONE, MAILBOX, MAPS, MARKETPLACE, EXTENSIONS, FINANCE, CATALOGS, STATE, ARCADE, HEALTH, BOOKS, LINGO, PLANNER, TOWNSQUARES, WEATHERMAN, AR_CAMERA, MESH_NETWORK, YELLOW_PAGES, FILES
 }
 
 @Composable
@@ -106,6 +106,22 @@ fun TownsquarePlusScreen(
             }
             PlusModularApp.WEATHERMAN -> {
                 com.example.ui.plus.weather.WeathermanApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.AR_CAMERA -> {
+                com.example.ui.plus.camera.TownsquareArCameraApp(
+                    onBack = { activeSubApp = PlusModularApp.NONE },
+                    onNavigateToMarketplace = { activeSubApp = PlusModularApp.MARKETPLACE },
+                    onNavigateToMailbox = { activeSubApp = PlusModularApp.MAILBOX }
+                )
+            }
+            PlusModularApp.MESH_NETWORK -> {
+                com.example.ui.plus.mesh.TownsquareMeshNetworkApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.YELLOW_PAGES -> {
+                com.example.ui.plus.yellowpages.TownsquareYellowPagesApp(onBack = { activeSubApp = PlusModularApp.NONE })
+            }
+            PlusModularApp.FILES -> {
+                com.example.ui.plus.files.TownsquareFileExplorerApp(onBack = { activeSubApp = PlusModularApp.NONE })
             }
             PlusModularApp.NONE -> {
                 // Main Townsquare Plus Hub Dashboard
@@ -238,6 +254,62 @@ fun TownsquarePlusScreen(
                                 badgeText = "NEW PROTOTYPE",
                                 onClick = { activeSubApp = PlusModularApp.WEATHERMAN },
                                 testTag = "plus_app_weatherman"
+                            )
+                        }
+
+                        // 3. AR Camera & HUD Vision Card
+                        item {
+                            SuperappModuleCard(
+                                title = "AR Vision & HUD Camera",
+                                subtitle = "Civic Geo-AR, Smart Object Scanner & Thermal Night HUD",
+                                description = "Augmented reality camera app integrated with the Townsquare ecosystem. Features spatial landmark pins, barcode & object targeting connected directly to Marketplace, and military-grade thermal/night HUD vision with photo dispatch to Mailbox.",
+                                icon = Icons.Default.CameraAlt,
+                                iconColor = NeonCyan,
+                                badgeText = "AR ENGINE",
+                                onClick = { activeSubApp = PlusModularApp.AR_CAMERA },
+                                testTag = "plus_app_ar_camera"
+                            )
+                        }
+
+                        // 4. Mesh Connectivity Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Decentralized Mesh Connectivity",
+                                subtitle = "Off-Grid P2P Packet Routing & Emergency SOS Beacon",
+                                description = "Decentralized peer-to-peer mesh network interface. Route encrypted citizen dispatches and transit telemetry over local ad-hoc radio links with zero internet, inspect real-time topology radar, and broadcast emergency beacons.",
+                                icon = Icons.Default.Hub,
+                                iconColor = Color(0xFF22C55E),
+                                badgeText = "OFF-GRID MESH",
+                                onClick = { activeSubApp = PlusModularApp.MESH_NETWORK },
+                                testTag = "plus_app_mesh"
+                            )
+                        }
+
+                        // 5. Yellow Pages Freelance Gigs Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare Yellow Pages",
+                                subtitle = "Freelance Gigs & Skilled Trades Directory",
+                                description = "Civic classifieds and freelance gig marketplace. Browse verified job opportunities in design, journalism, carpentry, transit engineering, and culinary writing, or publish your own gig listings.",
+                                icon = Icons.Default.Work,
+                                iconColor = Color(0xFFF59E0B),
+                                badgeText = "CLASSIFIEDS",
+                                onClick = { activeSubApp = PlusModularApp.YELLOW_PAGES },
+                                testTag = "plus_app_yellow_pages"
+                            )
+                        }
+
+                        // 6. File Explorer System Card
+                        item {
+                            SuperappModuleCard(
+                                title = "Townsquare File Explorer",
+                                subtitle = "Storage Volumes, Broadsheets & Media Vault",
+                                description = "Full municipal file management system. Browse internal storage, removable SD volumes, and cloud drives. Open PDF press runs, audio dispatches, DVR recordings, and manage local directory trees.",
+                                icon = Icons.Default.Folder,
+                                iconColor = NeonCyan,
+                                badgeText = "STORAGE",
+                                onClick = { activeSubApp = PlusModularApp.FILES },
+                                testTag = "plus_app_file_explorer"
                             )
                         }
 

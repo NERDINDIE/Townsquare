@@ -50,7 +50,7 @@ fun TownsquaresApp(
     val transitRoutes = remember { TownsquaresSeed.getInitialTransitRoutes() }
 
     var selectedCityId by remember { mutableStateOf<String?>("tokyo") } // null = All Cities
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: City Feed, 1: Transit Routes, 2: Saved Stories, 3: World Hubs
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: City Feed, 1: Tour Guides, 2: Transit Routes, 3: Saved Stories, 4: World Hubs
     var isCreatePostOpen by remember { mutableStateOf(false) }
     var activeCommentPost by remember { mutableStateOf<CityExperiencePost?>(null) }
     var postCommentsMap by remember {
@@ -73,7 +73,7 @@ fun TownsquaresApp(
                 if (selectedCityId == null) posts
                 else posts.filter { it.cityId == selectedCityId }
             }
-            2 -> posts.filter { it.isBookmarked }
+            3 -> posts.filter { it.isBookmarked }
             else -> posts
         }
     }
@@ -247,10 +247,11 @@ fun TownsquaresApp(
             }
 
             // 2. MAIN TABS ROW
-            TabRow(
+            ScrollableTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = DarkSurfaceElevated,
                 contentColor = NeonCyan,
+                edgePadding = 8.dp,
                 indicator = { tabPositions ->
                     if (selectedTab < tabPositions.size) {
                         TabRowDefaults.SecondaryIndicator(
@@ -278,6 +279,17 @@ fun TownsquaresApp(
                     onClick = { selectedTab = 1 },
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🧭 Tour Guides")
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("NEW", fontSize = 9.sp, fontWeight = FontWeight.Black, color = WarmAmber)
+                        }
+                    }
+                )
+                Tab(
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("🚇 Transit Routes")
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("(${filteredTransit.size})", fontSize = 11.sp, color = WarmAmber)
@@ -285,20 +297,20 @@ fun TownsquaresApp(
                     }
                 )
                 Tab(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
                     text = { Text("🔖 Bookmarks") }
                 )
                 Tab(
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 },
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 },
                     text = { Text("🌐 World Hubs") }
                 )
             }
 
             // 3. TAB CONTENT
             when (selectedTab) {
-                0, 2 -> {
+                0, 3 -> {
                     // CITY SOCIAL EXPERIENCES FEED
                     if (filteredPosts.isEmpty()) {
                         Box(
@@ -309,7 +321,7 @@ fun TownsquaresApp(
                                 Text("🏙️", fontSize = 48.sp)
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Text(
-                                    text = if (selectedTab == 2) "No bookmarked stories yet" else "No posts for this city yet",
+                                    text = if (selectedTab == 3) "No bookmarked stories yet" else "No posts for this city yet",
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -365,6 +377,14 @@ fun TownsquaresApp(
                 }
 
                 1 -> {
+                    // DETAILED TOUR GUIDES & WALKING ITINERARIES
+                    TownsquaresTourGuidesSection(
+                        selectedCityId = selectedCityId,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                2 -> {
                     // TRANSIT ROUTES & METRO EXPLORER
                     Column(modifier = Modifier.fillMaxSize()) {
                         // Transit Mode Filter Row
@@ -420,7 +440,7 @@ fun TownsquaresApp(
                     }
                 }
 
-                3 -> {
+                4 -> {
                     // WORLD CITY HUBS DIRECTORY
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
