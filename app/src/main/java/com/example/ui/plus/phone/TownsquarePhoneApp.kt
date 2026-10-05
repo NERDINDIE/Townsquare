@@ -257,6 +257,12 @@ fun TownsquarePhoneApp(
                     icon = { Icon(Icons.Default.SmartToy, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     text = { Text("AI Deflector", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                 )
+                Tab(
+                    selected = selectedTab == 7,
+                    onClick = { selectedTab = 7 },
+                    icon = { Icon(Icons.Default.CellTower, contentDescription = null, modifier = Modifier.size(18.dp), tint = CoralRed) },
+                    text = { Text("Emergency Pager", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = CoralRed) }
+                )
             }
 
             // Tab Content
@@ -300,6 +306,7 @@ fun TownsquarePhoneApp(
                     )
                     5 -> SignalMastheadComponent()
                     6 -> AiRobocallDeflectorComponent()
+                    7 -> EmergencyPagerComponent()
                 }
             }
         }

@@ -342,6 +342,11 @@ fun TownsquareApp(
     var isPocketOpen by remember { mutableStateOf(false) }
     var isGlitchInspectorOpen by remember { mutableStateOf(false) }
     var isServerConsoleOpen by remember { mutableStateOf(false) }
+    var isLoginSignupOpen by remember { mutableStateOf(false) }
+    var isFomoDigestOpen by remember { mutableStateOf(false) }
+    var isAdBlockVpnOpen by remember { mutableStateOf(false) }
+    var currentUserEmailState by remember { mutableStateOf<String?>("citizen@townsquare.gov") }
+    var currentUserNameState by remember { mutableStateOf<String?>("Verified Citizen") }
     var reportedItemToReport by remember { mutableStateOf<MediaItemEntity?>(null) }
 
     val reportedContents by viewModel.reportedContents.collectAsState()
@@ -907,6 +912,9 @@ fun TownsquareApp(
         onOpenPocket = { isPocketOpen = true },
         onOpenDiagnostics = { isGlitchInspectorOpen = true },
         onOpenServerConsole = { isServerConsoleOpen = true },
+        onOpenLoginSignup = { isLoginSignupOpen = true },
+        onOpenFomoDigest = { isFomoDigestOpen = true },
+        onOpenAdBlockVpn = { isAdBlockVpnOpen = true },
         onOpenWidgetsDrawer = { isWidgetsDrawerOpen = true },
         onRefreshApp = {
             viewModel.refreshData {
@@ -1180,6 +1188,46 @@ fun TownsquareApp(
     if (isServerConsoleOpen) {
         com.example.server.ui.TownsquareServerConsoleDialog(
             onDismissRequest = { isServerConsoleOpen = false }
+        )
+    }
+
+    // Login & Single Sign-On Dialog
+    if (isLoginSignupOpen) {
+        com.example.ui.components.LoginSignupDialog(
+            currentUserEmail = currentUserEmailState,
+            onLoginSuccess = { email, name ->
+                currentUserEmailState = email
+                currentUserNameState = name
+                scope.launch { snackbarHostState.showSnackbar("Welcome $name ($email)") }
+            },
+            onLogout = {
+                currentUserEmailState = null
+                currentUserNameState = null
+                scope.launch { snackbarHostState.showSnackbar("Signed Out") }
+            },
+            onDismiss = { isLoginSignupOpen = false }
+        )
+    }
+
+    // While You Were Away (FOMO Digest) Dialog
+    if (isFomoDigestOpen) {
+        com.example.ui.components.FomoDigestDialog(
+            onDismiss = { isFomoDigestOpen = false },
+            onNavigateToTab = { tabName ->
+                isFomoDigestOpen = false
+                if (tabName == "Radio") {
+                    currentNavIndex = com.example.ui.NavDestination.AUDIO_HUB
+                } else if (tabName == "Gazette") {
+                    currentNavIndex = com.example.ui.NavDestination.JOURNAL
+                }
+            }
+        )
+    }
+
+    // Built-in AdBlock + Mesh VPN Dialog
+    if (isAdBlockVpnOpen) {
+        com.example.ui.components.AdBlockVpnDialog(
+            onDismiss = { isAdBlockVpnOpen = false }
         )
     }
 

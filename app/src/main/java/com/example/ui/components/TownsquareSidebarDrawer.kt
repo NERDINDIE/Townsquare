@@ -161,6 +161,9 @@ fun TownsquareSidebarDrawer(
     onOpenPocket: () -> Unit = {},
     onOpenDiagnostics: () -> Unit = {},
     onOpenServerConsole: () -> Unit = {},
+    onOpenLoginSignup: () -> Unit = {},
+    onOpenFomoDigest: () -> Unit = {},
+    onOpenAdBlockVpn: () -> Unit = {},
     onOpenWidgetsDrawer: () -> Unit = {},
     onRefreshApp: () -> Unit = {},
     unreadInboxCount: Int = 0,
@@ -856,7 +859,10 @@ fun TownsquareSidebarDrawer(
                             Triple("⌚ Watchface Maker", "Smartwatch dials & chronographs", onOpenWatchfaceMaker),
                             Triple("📖 Townsquare Pocket", "Clean RSS reader & offline vault", onOpenPocket),
                             Triple("🩺 System Diagnostics", "Glitch watchdog, freeze monitor & vitals", onOpenDiagnostics),
-                            Triple("🖧 Backend Server", "Embedded HTTP/REST & remote control", onOpenServerConsole)
+                            Triple("🖧 Backend Server", "Embedded HTTP/REST & remote control", onOpenServerConsole),
+                            Triple("🔐 Account & SSO", "Townsquare ID, Passkeys & Google SSO", onOpenLoginSignup),
+                            Triple("⚡ FOMO Digest", "While-you-were-away AI recap summary", onOpenFomoDigest),
+                            Triple("🛡️ AdBlock & Mesh VPN", "Shield ads, trackers & encrypted tunnel", onOpenAdBlockVpn)
                         )
 
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
