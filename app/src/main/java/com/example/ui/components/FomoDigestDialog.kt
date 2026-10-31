@@ -98,18 +98,18 @@ fun FomoDigestDialog(
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.94f)
+                .fillMaxWidth(0.96f)
                 .fillMaxHeight(0.88f)
-                .padding(10.dp)
+                .padding(6.dp)
                 .testTag("fomo_digest_dialog"),
             colors = CardDefaults.cardColors(containerColor = DarkBg),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(16.dp),
             border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.6f))
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(18.dp)
+                    .padding(12.dp)
             ) {
                 // Header Banner
                 Row(
@@ -120,7 +120,7 @@ fun FomoDigestDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
+                                .size(34.dp)
                                 .clip(CircleShape)
                                 .background(WarmAmber.copy(alpha = 0.2f)),
                             contentAlignment = Alignment.Center
@@ -129,14 +129,14 @@ fun FomoDigestDialog(
                                 imageVector = Icons.Default.Bolt,
                                 contentDescription = "FOMO Digest",
                                 tint = WarmAmber,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "WHILE YOU WERE AWAY",
+                                    text = "WHILE AWAY",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White,
@@ -149,8 +149,8 @@ fun FomoDigestDialog(
                                     color = WarmAmber
                                 ) {
                                     Text(
-                                        text = "AI RECAP",
-                                        fontSize = 9.sp,
+                                        text = "RECAP",
+                                        fontSize = 8.sp,
                                         fontWeight = FontWeight.Black,
                                         color = DarkBg,
                                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
@@ -158,18 +158,18 @@ fun FomoDigestDialog(
                                 }
                             }
                             Text(
-                                text = "Catch up on top highlights missed during your absence",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                                text = "Key highlights while you were away",
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 11.sp)
                             )
                         }
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray)
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray, modifier = Modifier.size(20.dp))
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Timeframe Chips Selector
                 Row(
@@ -192,27 +192,27 @@ fun FomoDigestDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // AI Executive Briefing Summary Box
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     border = androidx.compose.foundation.BorderStroke(1.dp, WarmAmber.copy(alpha = 0.3f))
                 ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
+                    Column(modifier = Modifier.padding(10.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "⚡ EXECUTIVE RECAP SUMMARY",
+                                text = "⚡ RECAP SUMMARY",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = WarmAmber,
-                                    letterSpacing = 1.sp
+                                    letterSpacing = 0.5.sp
                                 )
                             )
 
@@ -262,22 +262,22 @@ fun FomoDigestDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "HIGHLIGHTS DIGEST",
-                    style = MaterialTheme.typography.labelMedium.copy(
+                    text = "HIGHLIGHTS",
+                    style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // Digest Cards
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     items(digestList) { item ->
                         Card(
@@ -292,9 +292,9 @@ fun FomoDigestDialog(
                                     }
                                 },
                             colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
+                            Column(modifier = Modifier.padding(8.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -329,7 +329,7 @@ fun FomoDigestDialog(
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
 
                                 Text(
                                     text = item.title,
@@ -339,21 +339,21 @@ fun FomoDigestDialog(
                                     )
                                 )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
 
                                 Text(
                                     text = item.snippet,
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray)
+                                    style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray, fontSize = 11.sp)
                                 )
 
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "Source: ${item.source}",
+                                        text = item.source,
                                         style = MaterialTheme.typography.bodySmall.copy(
                                             fontFamily = FontFamily.Monospace,
                                             color = Color.Gray,
@@ -384,20 +384,20 @@ fun FomoDigestDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(44.dp)
                         .testTag("dismiss_fomo_digest_button"),
                     colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = DarkBg),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Icon(Icons.Default.DoneAll, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("MARK DIGEST AS READ & CONTINUE", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.DoneAll, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Mark Read & Continue", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
             }
         }

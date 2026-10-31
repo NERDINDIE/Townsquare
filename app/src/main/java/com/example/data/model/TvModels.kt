@@ -34,13 +34,44 @@ data class TvChannelEntity(
 )
 
 data class TvScheduleItem(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val channelNumber: Int = 1,
+    val dayOfWeek: Int = 0, // 0 = Mon, 1 = Tue, 2 = Wed, 3 = Thu, 4 = Fri, 5 = Sat, 6 = Sun
     val timeSlot: String,
     val title: String,
     val category: String,
     val durationMinutes: Int,
     val synopsis: String,
     val isLiveNow: Boolean = false,
-    val isPrimeTime: Boolean = false
+    val isPrimeTime: Boolean = false,
+    val isRecorded: Boolean = false,
+    val isReminderSet: Boolean = false
+)
+
+data class TvSeriesItem(
+    val id: String,
+    val seriesTitle: String,
+    val episodeTitle: String,
+    val seasonEpisode: String, // e.g. "S3:E4"
+    val channelNumber: Int,
+    val category: String,
+    val synopsis: String,
+    val countdownTargetEpochMs: Long,
+    val airTimeDisplay: String,
+    val bannerEmoji: String,
+    val isSubscribed: Boolean = false
+)
+
+data class TvDvrRecordItem(
+    val id: String,
+    val programTitle: String,
+    val channelName: String,
+    val channelNumber: Int,
+    val category: String,
+    val recordedDate: String,
+    val durationMinutes: Int,
+    val synopsis: String,
+    val fileSizeMb: Int = 420
 )
 
 data class TvOnDemandItem(
@@ -55,3 +86,28 @@ data class TvOnDemandItem(
     val viewsCount: String = "32K views",
     val airDate: String = "Yesterday"
 )
+
+data class TvWatchlistItem(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val showTitle: String,
+    val channelNumber: Int,
+    val channelName: String,
+    val durationMinutes: Int,
+    val category: String,
+    val timeSlot: String,
+    val dayOfWeek: Int = 0,
+    val synopsis: String,
+    val bookmarkedAtEpochMs: Long = System.currentTimeMillis(),
+    val isAlertScheduled: Boolean = true
+)
+
+data class TvWatchedHistoryItem(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val showTitle: String,
+    val channelNumber: Int,
+    val channelName: String,
+    val durationMinutes: Int,
+    val category: String,
+    val watchedAtEpochMs: Long = System.currentTimeMillis()
+)
+

@@ -34,6 +34,8 @@ import com.example.data.model.PartnerSyndicateRepository
 import com.example.data.model.ReadingFontSize
 import com.example.data.model.RetailKioskEntity
 import com.example.data.model.TvChannelEntity
+import com.example.data.model.TvWatchlistItem
+import com.example.data.model.TvWatchedHistoryItem
 import com.example.data.model.UpcomingEditionEntity
 import com.example.data.model.VisualPostEntity
 import com.example.data.model.VoiceNarrationPreset
@@ -452,6 +454,82 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
 
     private val _tvScanlineFxEnabled = MutableStateFlow(false)
     val tvScanlineFxEnabled: StateFlow<Boolean> = _tvScanlineFxEnabled.asStateFlow()
+
+    // TV Watchlist & Watched History State
+    private val _tvWatchlist = MutableStateFlow<List<TvWatchlistItem>>(
+        listOf(
+            TvWatchlistItem(
+                id = "wl_clockmaker",
+                showTitle = "The Clockmaker of Saint-Germain: Pendulum",
+                channelNumber = 5,
+                channelName = "Fifth Programme Drama",
+                durationMinutes = 75,
+                category = "Period Mystery",
+                timeSlot = "20:00 - 21:15",
+                dayOfWeek = 0,
+                synopsis = "Master horologist Laurent uncovers secret diplomatic telegraph lines concealed inside the pendulum cylinder.",
+                isAlertScheduled = true
+            ),
+            TvWatchlistItem(
+                id = "wl_grandmetro",
+                showTitle = "Grand Metro Cup: Semifinal",
+                channelNumber = 4,
+                channelName = "Fourth Programme Sports",
+                durationMinutes = 105,
+                category = "Live Football",
+                timeSlot = "19:15 - 21:00",
+                dayOfWeek = 0,
+                synopsis = "Electric semifinal clash with high stakes between Riverside FC and Highland United.",
+                isAlertScheduled = true
+            ),
+            TvWatchlistItem(
+                id = "wl_philharmonic",
+                showTitle = "Philharmonic Live: Brahms Symphony No. 4",
+                channelNumber = 2,
+                channelName = "Second Programme Arts",
+                durationMinutes = 90,
+                category = "Live Orchestral",
+                timeSlot = "19:30 - 21:00",
+                dayOfWeek = 0,
+                synopsis = "Maestro Julian Rossi leads the Municipal Symphony Orchestra in 4K UHD Dolby 5.1.",
+                isAlertScheduled = true
+            )
+        )
+    )
+    val tvWatchlist: StateFlow<List<TvWatchlistItem>> = _tvWatchlist.asStateFlow()
+
+    private val _tvWatchedHistory = MutableStateFlow<List<TvWatchedHistoryItem>>(
+        listOf(
+            TvWatchedHistoryItem(
+                id = "wh_breakfast",
+                showTitle = "Townsquare Breakfast Live",
+                channelNumber = 1,
+                channelName = "First Programme",
+                durationMinutes = 180,
+                category = "Morning News",
+                watchedAtEpochMs = System.currentTimeMillis() - 4 * 3600 * 1000
+            ),
+            TvWatchedHistoryItem(
+                id = "wh_biomes",
+                showTitle = "Planetary Biomes & Flora",
+                channelNumber = 3,
+                channelName = "Third Programme Discovery",
+                durationMinutes = 120,
+                category = "Nature",
+                watchedAtEpochMs = System.currentTimeMillis() - 26 * 3600 * 1000
+            ),
+            TvWatchedHistoryItem(
+                id = "wh_synth",
+                showTitle = "Modular Synth Summit 2026: Live Set",
+                channelNumber = 6,
+                channelName = "Sixth Programme Youth & Waves",
+                durationMinutes = 130,
+                category = "Electronic Beats",
+                watchedAtEpochMs = System.currentTimeMillis() - 52 * 3600 * 1000
+            )
+        )
+    )
+    val tvWatchedHistory: StateFlow<List<TvWatchedHistoryItem>> = _tvWatchedHistory.asStateFlow()
 
     private val _selectedBulletinCategory = MutableStateFlow<String?>(null)
     val selectedBulletinCategory: StateFlow<String?> = _selectedBulletinCategory.asStateFlow()
@@ -1251,6 +1329,102 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
         viewModelScope.launch {
             repository.toggleTvRecording(channel)
         }
+    }
+
+    // --- TV WATCHLIST & WATCHED HISTORY ACTIONS ---
+    fun bookmarkTvShow(
+        title: String,
+        channelNumber: Int,
+        channelName: String,
+        durationMinutes: Int,
+        category: String,
+        timeSlot: String,
+        dayOfWeek: Int = 0,
+        synopsis: String,
+        scheduleNotification: Boolean = true
+    ): Boolean {
+        val existing = _tvWatchlist.value.find { it.showTitle == title }
+        if (existing != null) {
+            _tvWatchlist.value = _tvWatchlist.value.filterNot { it.id == existing.id }
+            return false
+        }
+
+        val newItem = TvWatchlistItem(
+            showTitle = title,
+            channelNumber = channelNumber,
+            channelName = channelName,
+            durationMinutes = durationMinutes,
+            category = category,
+            timeSlot = timeSlot,
+            dayOfWeek = dayOfWeek,
+            synopsis = synopsis,
+            isAlertScheduled = scheduleNotification
+        )
+        _tvWatchlist.value = listOf(newItem) + _tvWatchlist.value
+
+        if (scheduleNotification) {
+            val now = System.currentTimeMillis()
+            val notif = InboxNotificationItem(
+                id = "tv_alert_${newItem.id}",
+                category = InboxCategory.TV_BROADCAST,
+                title = "📺 Upcoming Broadcast: $title",
+                snippet = "Scheduled for $timeSlot on CH $channelNumber ($channelName). Duration: ${durationMinutes}m. Don't miss this $category broadcast.",
+                timestamp = now,
+                timeAgo = "Just now",
+                sourceLabel = "Townsquare EPG • CH $channelNumber",
+                badgeEmoji = "📺",
+                accentColorHex = 0xFF00D2FF,
+                isRead = false,
+                hasAudio = false,
+                actionType = InboxActionType.OPEN_TV,
+                targetId = "tctv_ch$channelNumber"
+            )
+            _inboxItems.value = listOf(notif) + _inboxItems.value
+        }
+        return true
+    }
+
+    fun removeFromTvWatchlist(id: String) {
+        _tvWatchlist.value = _tvWatchlist.value.filterNot { it.id == id }
+    }
+
+    fun markTvShowAsWatched(item: TvWatchlistItem) {
+        val historyItem = TvWatchedHistoryItem(
+            showTitle = item.showTitle,
+            channelNumber = item.channelNumber,
+            channelName = item.channelName,
+            durationMinutes = item.durationMinutes,
+            category = item.category,
+            watchedAtEpochMs = System.currentTimeMillis()
+        )
+        _tvWatchedHistory.value = listOf(historyItem) + _tvWatchedHistory.value
+        _tvWatchlist.value = _tvWatchlist.value.filterNot { it.id == item.id }
+    }
+
+    fun addTvWatchedRecord(
+        showTitle: String,
+        channelNumber: Int,
+        channelName: String,
+        durationMinutes: Int,
+        category: String
+    ) {
+        val historyItem = TvWatchedHistoryItem(
+            showTitle = showTitle,
+            channelNumber = channelNumber,
+            channelName = channelName,
+            durationMinutes = durationMinutes,
+            category = category,
+            watchedAtEpochMs = System.currentTimeMillis()
+        )
+        _tvWatchedHistory.value = listOf(historyItem) + _tvWatchedHistory.value
+    }
+
+    fun removeTvWatchedHistoryItem(id: String) {
+        _tvWatchedHistory.value = _tvWatchedHistory.value.filterNot { it.id == id }
+    }
+
+    fun clearTvWatchedHistory() {
+        _tvWatchedHistory.value = emptyList()
     }
 
     // 24/7 Live Newsblog Actions

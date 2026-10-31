@@ -111,8 +111,8 @@ fun AudioHubScreen(
     ) {
         // Header
         TownsquareTopBar(
-            title = "Radio & Podcasts",
-            subtitle = "Live analog & digital stations and on-demand audio series",
+            title = "Radio & Audio",
+            subtitle = "Live stations & on-demand audio",
             onOpenSidebar = onOpenSidebar,
             actions = {
                 if (audioState.isPlaying) {

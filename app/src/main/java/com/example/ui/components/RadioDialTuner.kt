@@ -269,15 +269,14 @@ fun RadioDialTuner(
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
-                            text = "ANALOG & DIGITAL FM TUNER",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp
+                            text = "FM Radio Tuner",
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Bold
                             ),
                             color = NeonCyan
                         )
                         Text(
-                            text = "Seek Local Stations • 87.5 - 108.0 MHz",
+                            text = "87.5 – 108.0 MHz",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -554,11 +553,11 @@ fun RadioDialTuner(
             // ANALOG FREQUENCY SCALE RULER (Interactive Canvas)
             // ==========================================
             Text(
-                text = "DRAG TO SCRUB FREQUENCY BAND",
+                text = "FREQUENCY TUNER",
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp,
-                    fontSize = 9.sp
+                    fontSize = 10.sp
                 ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
@@ -567,8 +566,8 @@ fun RadioDialTuner(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .height(68.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .background(Color(0xFF0A0F1A))
                     .border(1.dp, DarkBorder, RoundedCornerShape(12.dp))
                     .pointerInput(parsedStations, currentFreq) {
@@ -747,11 +746,11 @@ fun RadioDialTuner(
             // PRESETS BANK: P1 .. P7 (One-Touch Tuning)
             // ==========================================
             Text(
-                text = "LOCAL STATION PRESETS (ONE-TAP TUNE)",
+                text = "PRESETS",
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp,
-                    fontSize = 9.sp
+                    fontSize = 10.sp
                 ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)

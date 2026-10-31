@@ -1,0 +1,6 @@
+{
+  "summary":  "Implementation plan for the IoT Companion overhaul:\n- Modularizes all embedded device simulations (Smartwatch, E-Ink Bedside Hub, Automotive Cluster) into their own dedicated, isolated component files.\n- Overhauls the IoT Companion UI into a modern, compact interface with a collapsible sandwich menu beside the compact title header.\n- Implements a Universal Bluetooth Device Manager supporting any device type (Audio, Wearables, Automotive, Peripherals, Smart Home, Computing) with device name, type, battery status, RSSI signal gauge, and management settings.",
+  "updatedAt":  "2026-10-30T17:15:04.394216834Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

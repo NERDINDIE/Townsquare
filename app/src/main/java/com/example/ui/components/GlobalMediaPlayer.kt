@@ -1,55 +1,24 @@
 package com.example.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,13 +30,21 @@ import com.example.audio.AudioState
 import com.example.audio.NarrationStyle
 import com.example.audio.VoiceNarrationState
 import com.example.data.model.MediaType
+import com.example.data.model.TvChannelEntity
+import com.example.data.model.TvScheduleItem
+import com.example.ui.components.player.*
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
+import com.example.ui.viewmodel.TvChatMessage
 
 /**
- * Consolidated Global Media Player
- * Handles audio playback (podcasts, radio, dispatches) and AI voice narration
- * within a single unified bar component.
+ * Consolidated Townsquare Global Media Player
+ * Refactored into 5 distinct mode states with dedicated component files:
+ * 1. Audio: Music streaming, podcasts, device audio files (GlobalAudioPlayerMode.kt)
+ * 2. Video: Device video files, video hosting platforms (GlobalVideoPlayerMode.kt)
+ * 3. Image: Image editing, filters, and high-res viewing (GlobalImageViewerMode.kt)
+ * 4. TV: Live TV broadcasts & livestreams with chatting (GlobalTvPlayerMode.kt)
+ * 5. Radio: Radio tuner dial, presets, live recording & subtitles (GlobalRadioPlayerMode.kt)
  */
 @Composable
 fun GlobalMediaPlayer(
@@ -82,9 +59,64 @@ fun GlobalMediaPlayer(
     onPreviousParagraph: () -> Unit,
     onSelectNarrationStyle: (NarrationStyle) -> Unit,
     onSetNarrationSpeed: (Float) -> Unit,
+    activeTvChannel: TvChannelEntity? = null,
+    allTvChannels: List<TvChannelEntity> = emptyList(),
+    isTvPlaying: Boolean = false,
+    isTvMuted: Boolean = false,
+    isTvCaptionsEnabled: Boolean = true,
+    tvStreamQuality: String = "4K UHD 60FPS",
+    tvScanlineFxEnabled: Boolean = false,
+    onToggleTvPlayPause: () -> Unit = {},
+    onToggleTvMute: () -> Unit = {},
+    onToggleTvCaptions: () -> Unit = {},
+    onToggleTvScanlineFx: () -> Unit = {},
+    onSelectTvQuality: (String) -> Unit = {},
+    onNextTvChannel: () -> Unit = {},
+    onPrevTvChannel: () -> Unit = {},
+    onSelectTvChannel: (String) -> Unit = {},
+    onStopTv: () -> Unit = {},
+    onRecordEpisode: (TvScheduleItem) -> Unit = {},
+    onScheduleReminder: (TvScheduleItem) -> Unit = {},
+    chatMessages: List<TvChatMessage> = emptyList(),
+    onSendChatMessage: (String) -> Unit = {},
+    initialMode: GlobalMediaMode? = null,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    // Current Media Player Mode State
+    var currentMode by remember {
+        mutableStateOf(
+            initialMode ?: when {
+                activeTvChannel != null && isTvPlaying -> GlobalMediaMode.TV
+                audioState.currentItem != null -> GlobalMediaMode.AUDIO
+                else -> GlobalMediaMode.AUDIO
+            }
+        )
+    }
+
+    // Auto-sync mode when TV or Audio starts playing
+    LaunchedEffect(isTvPlaying, activeTvChannel) {
+        if (isTvPlaying && activeTvChannel != null) {
+            currentMode = GlobalMediaMode.TV
+        }
+    }
+
+    LaunchedEffect(audioState.currentItem, audioState.isPlaying) {
+        if (audioState.isPlaying && audioState.currentItem != null && !isTvPlaying) {
+            currentMode = GlobalMediaMode.AUDIO
+        }
+    }
+
+    var isPlayerVisible by remember { mutableStateOf(true) }
+    var isExpandedMode by remember { mutableStateOf(false) }
+
+    if (!isPlayerVisible) return
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag("global_media_player_root")
+    ) {
+        // Voice Narration Special Overlay (if currently active)
         if (narrationState.isNarrating) {
             GlobalVoiceNarrationPlayerView(
                 state = narrationState,
@@ -95,197 +127,267 @@ fun GlobalMediaPlayer(
                 onSelectStyle = onSelectNarrationStyle,
                 onSetSpeed = onSetNarrationSpeed
             )
-        } else if (audioState.currentItem != null) {
-            GlobalAudioPlayerView(
-                audioState = audioState,
-                onExpandFullPlayer = onExpandFullPlayer,
-                onTogglePlayPause = onTogglePlayPauseAudio,
-                onClose = onStopAudio
-            )
+            Spacer(modifier = Modifier.height(4.dp))
         }
-    }
-}
 
-@Composable
-private fun GlobalAudioPlayerView(
-    audioState: AudioState,
-    onExpandFullPlayer: () -> Unit,
-    onTogglePlayPause: () -> Unit,
-    onClose: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val current = audioState.currentItem ?: return
-    var isSleepTimerDialogOpen by remember { mutableStateOf(false) }
-
-    if (isSleepTimerDialogOpen) {
-        SleepTimerDialog(
-            onDismiss = { isSleepTimerDialogOpen = false },
-            onSetTimer = { mins, label ->
-                SleepTimerController.startTimer(mins, label)
-            }
-        )
-    }
-
-    AnimatedVisibility(
-        visible = true,
-        enter = slideInVertically(initialOffsetY = { it }),
-        exit = slideOutVertically(targetOffsetY = { it })
-    ) {
         Surface(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .border(1.dp, NeonCyan.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
-                .clickable { onExpandFullPlayer() }
-                .testTag("global_media_player_audio"),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shadowElevation = 8.dp
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = Color(0xFF0B132B),
+            border = BorderStroke(1.dp, currentMode.accentColor.copy(alpha = 0.5f)),
+            shadowElevation = 10.dp
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Thumbnail or Live Audio Visualizer when no cover
-                Box(
+            Column(modifier = Modifier.padding(8.dp)) {
+                // 5-MODE NAVIGATION SWITCHER BAR
+                Row(
                     modifier = Modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    val hasCover = current.imageResName.isNotBlank() || current.type == MediaType.RADIO_STATION.name
-                    if (hasCover) {
-                        val coverRes = if (current.type == MediaType.RADIO_STATION.name) {
-                            R.drawable.img_radio_live
-                        } else {
-                            R.drawable.img_podcast_cover
-                        }
-                        Image(
-                            painter = painterResource(id = coverRes),
-                            contentDescription = "Cover",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        // No cover art available -> Show live audio visualizer (Spectrum / Oscilloscope / VU Meter)
+                    GlobalMediaMode.values().forEach { mode ->
+                        val isSelected = currentMode == mode
+                        val bgColor = if (isSelected) mode.accentColor.copy(alpha = 0.25f) else Color(0xFF1E293B)
+                        val borderColor = if (isSelected) mode.accentColor else Color.Transparent
+                        val contentColor = if (isSelected) mode.accentColor else Color.LightGray
+
                         Box(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color(0xFF0F172A))
-                                .border(1.dp, NeonCyan, RoundedCornerShape(10.dp)),
+                                .weight(1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(bgColor)
+                                .border(1.dp, borderColor, RoundedCornerShape(10.dp))
+                                .clickable {
+                                    currentMode = mode
+                                    isExpandedMode = true
+                                }
+                                .padding(vertical = 6.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Row(
-                                horizontalArrangement = Arrangement.spacedBy(1.5.dp),
-                                verticalAlignment = Alignment.Bottom,
-                                modifier = Modifier.height(28.dp).padding(4.dp)
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
                             ) {
-                                audioState.waveformHeights.take(6).forEach { wave ->
-                                    Box(
-                                        modifier = Modifier
-                                            .width(3.dp)
-                                            .height((wave * 22).dp.coerceAtLeast(4.dp))
-                                            .clip(RoundedCornerShape(1.dp))
-                                            .background(NeonCyan)
-                                    )
-                                }
+                                Text(mode.iconEmoji, fontSize = 12.sp)
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = mode.title,
+                                    fontSize = 11.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = contentColor
+                                )
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.width(10.dp))
-
-                // Titles and dynamic visualizer
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = current.title,
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = if (current.type == MediaType.RADIO_STATION.name)
-                                "📻 ${current.stationFrequency.ifBlank { "Live Station" }}"
-                            else
-                                "🎙️ ${current.authorName}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = NeonCyan,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        if (audioState.isPlaying) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            // Equalizer wave mini
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                verticalAlignment = Alignment.Bottom,
-                                modifier = Modifier.height(12.dp)
-                            ) {
-                                audioState.waveformHeights.take(4).forEach { wave ->
-                                    Box(
-                                        modifier = Modifier
-                                            .width(3.dp)
-                                            .height((wave * 12).dp.coerceAtLeast(3.dp))
-                                            .clip(RoundedCornerShape(1.dp))
-                                            .background(NeonCyan)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Controls
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        onClick = { isSleepTimerDialogOpen = true },
-                        modifier = Modifier.size(32.dp).testTag("global_audio_sleep_timer_button")
-                    ) {
-                        Text(
-                            text = if (SleepTimerController.isTimerActive) "🌙 ${SleepTimerController.remainingSeconds / 60}m" else "🌙",
-                            fontSize = if (SleepTimerController.isTimerActive) 10.sp else 14.sp,
-                            color = if (SleepTimerController.isTimerActive) WarmAmber else MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontWeight = if (SleepTimerController.isTimerActive) FontWeight.Bold else FontWeight.Normal
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    IconButton(
-                        onClick = onTogglePlayPause,
+                // MINI SUMMARY BAR (When not expanded into full mode view)
+                if (!isExpandedMode) {
+                    Row(
                         modifier = Modifier
-                            .size(38.dp)
-                            .background(NeonCyan, CircleShape)
-                            .testTag("global_audio_toggle_button")
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF162032))
+                            .clickable { isExpandedMode = true }
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            imageVector = if (audioState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (audioState.isPlaying) "Pause" else "Play",
-                            tint = Color(0xFF003544),
-                            modifier = Modifier.size(22.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            // Mode Icon Badge
+                            Surface(
+                                shape = CircleShape,
+                                color = currentMode.accentColor.copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, currentMode.accentColor),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(currentMode.iconEmoji, fontSize = 16.sp)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            Column {
+                                val titleText = when (currentMode) {
+                                    GlobalMediaMode.AUDIO -> audioState.currentItem?.title ?: "Townsquare Audio Stream"
+                                    GlobalMediaMode.VIDEO -> "Townsquare 4K Video Showcase"
+                                    GlobalMediaMode.IMAGE -> "Townsquare Visual Wire & Editor"
+                                    GlobalMediaMode.TV -> activeTvChannel?.currentShowTitle ?: "Townsquare Central Live TV"
+                                    GlobalMediaMode.RADIO -> "101.4 FM • Townsquare Central Live"
+                                }
+
+                                val subText = when (currentMode) {
+                                    GlobalMediaMode.AUDIO -> "🎙️ ${audioState.currentItem?.authorName ?: "Music & Podcasts"}"
+                                    GlobalMediaMode.VIDEO -> "🎬 1080p FHD • Townsquare Tube"
+                                    GlobalMediaMode.IMAGE -> "🖼️ Photojournalism & Creative Studio"
+                                    GlobalMediaMode.TV -> "📺 ${activeTvChannel?.name ?: "Channel 1"}"
+                                    GlobalMediaMode.RADIO -> "📻 Stereo FM • Live Broadcast"
+                                }
+
+                                Text(
+                                    text = titleText,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = subText,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = currentMode.accentColor,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+
+                        // Right Action Buttons: Play/Pause, Expand, Close
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(
+                                onClick = {
+                                    when (currentMode) {
+                                        GlobalMediaMode.AUDIO -> onTogglePlayPauseAudio()
+                                        GlobalMediaMode.TV -> onToggleTvPlayPause()
+                                        else -> {}
+                                    }
+                                },
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(currentMode.accentColor)
+                            ) {
+                                val isCurrentlyPlaying = when (currentMode) {
+                                    GlobalMediaMode.AUDIO -> audioState.isPlaying
+                                    GlobalMediaMode.TV -> isTvPlaying
+                                    else -> true
+                                }
+                                Icon(
+                                    imageVector = if (isCurrentlyPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                    contentDescription = "Toggle Play",
+                                    tint = Color(0xFF0F172A),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            IconButton(
+                                onClick = { isExpandedMode = true },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ExpandLess,
+                                    contentDescription = "Expand Mode Player",
+                                    tint = Color.LightGray,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            IconButton(
+                                onClick = {
+                                    onStopAudio()
+                                    onStopTv()
+                                    isPlayerVisible = false
+                                },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Dismiss Player",
+                                    tint = Color.LightGray,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                     }
+                }
 
-                    Spacer(modifier = Modifier.width(4.dp))
+                // EXPANDED MODE VIEW - DEDICATED COMPONENT FILES
+                AnimatedVisibility(
+                    visible = isExpandedMode,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        // Collapse bar handle
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { isExpandedMode = false }
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ExpandMore,
+                                contentDescription = "Minimize to bar",
+                                tint = currentMode.accentColor,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Minimize to Player Bar",
+                                fontSize = 11.sp,
+                                color = currentMode.accentColor,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
 
-                    IconButton(
-                        onClick = onClose,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close Player",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        when (currentMode) {
+                            GlobalMediaMode.AUDIO -> {
+                                GlobalAudioPlayerMode(
+                                    audioState = audioState,
+                                    onTogglePlayPause = onTogglePlayPauseAudio,
+                                    onClose = { isExpandedMode = false },
+                                    onExpandFullPlayer = onExpandFullPlayer
+                                )
+                            }
+                            GlobalMediaMode.VIDEO -> {
+                                GlobalVideoPlayerMode(
+                                    onClose = { isExpandedMode = false }
+                                )
+                            }
+                            GlobalMediaMode.IMAGE -> {
+                                GlobalImageViewerMode(
+                                    onClose = { isExpandedMode = false }
+                                )
+                            }
+                            GlobalMediaMode.TV -> {
+                                GlobalTvPlayerMode(
+                                    activeChannel = activeTvChannel,
+                                    allChannels = allTvChannels,
+                                    isPlaying = isTvPlaying,
+                                    isMuted = isTvMuted,
+                                    isCaptionsEnabled = isTvCaptionsEnabled,
+                                    streamQuality = tvStreamQuality,
+                                    scanlineFxEnabled = tvScanlineFxEnabled,
+                                    chatMessages = chatMessages,
+                                    onSendMessage = onSendChatMessage,
+                                    onTogglePlayPause = onToggleTvPlayPause,
+                                    onToggleMute = onToggleTvMute,
+                                    onToggleCaptions = onToggleTvCaptions,
+                                    onToggleScanlineFx = onToggleTvScanlineFx,
+                                    onSelectQuality = onSelectTvQuality,
+                                    onNextChannel = onNextTvChannel,
+                                    onPrevChannel = onPrevTvChannel,
+                                    onSelectChannel = onSelectTvChannel,
+                                    onClose = { isExpandedMode = false }
+                                )
+                            }
+                            GlobalMediaMode.RADIO -> {
+                                GlobalRadioPlayerMode(
+                                    onClose = { isExpandedMode = false }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -293,6 +395,9 @@ private fun GlobalAudioPlayerView(
     }
 }
 
+/**
+ * Dedicated Voice Narration Player View
+ */
 @Composable
 private fun GlobalVoiceNarrationPlayerView(
     state: VoiceNarrationState,
@@ -304,216 +409,59 @@ private fun GlobalVoiceNarrationPlayerView(
     onSetSpeed: (Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val haptic = LocalHapticFeedback.current
-
-    AnimatedVisibility(
-        visible = state.isNarrating,
-        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    Card(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .testTag("global_media_player_narration"),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF131924)),
+        border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.6f))
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-                .shadow(12.dp, RoundedCornerShape(16.dp))
-                .testTag("global_media_player_narration"),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF131924)
-            ),
-            border = BorderStroke(
-                1.dp,
-                when (state.style) {
-                    NarrationStyle.BREAKING_NEWS -> Color(0xFFE53935)
-                    NarrationStyle.PODCAST -> NeonCyan
-                    NarrationStyle.LITERARY_MAGAZINE -> WarmAmber
-                }.copy(alpha = 0.6f)
-            )
-        ) {
-            Column {
-                // Top Progress indicator
-                val progress = if (state.totalParagraphs > 0) {
-                    ((state.currentParagraphIndex + 1).toFloat() / state.totalParagraphs.toFloat()).coerceIn(0f, 1f)
-                } else 0f
+        Column(modifier = Modifier.padding(10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(state.style.emoji, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "AI Narration • ${state.style.title}",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = NeonCyan
+                    )
+                }
 
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(3.dp),
-                    color = when (state.style) {
-                        NarrationStyle.BREAKING_NEWS -> Color(0xFFE53935)
-                        NarrationStyle.PODCAST -> NeonCyan
-                        NarrationStyle.LITERARY_MAGAZINE -> WarmAmber
-                    },
-                    trackColor = Color(0xFF222B3D)
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Left: Style Avatar + Title & Progress
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = when (state.style) {
-                                NarrationStyle.BREAKING_NEWS -> Color(0xFF4A1010)
-                                NarrationStyle.PODCAST -> Color(0xFF003644)
-                                NarrationStyle.LITERARY_MAGAZINE -> Color(0xFF3B2B11)
-                            },
-                            border = BorderStroke(
-                                1.dp,
-                                when (state.style) {
-                                    NarrationStyle.BREAKING_NEWS -> Color(0xFFE53935)
-                                    NarrationStyle.PODCAST -> NeonCyan
-                                    NarrationStyle.LITERARY_MAGAZINE -> WarmAmber
-                                }
-                            ),
-                            modifier = Modifier.size(38.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(state.style.emoji, fontSize = 16.sp)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = state.style.title,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = when (state.style) {
-                                        NarrationStyle.BREAKING_NEWS -> Color(0xFFFF6B6B)
-                                        NarrationStyle.PODCAST -> NeonCyan
-                                        NarrationStyle.LITERARY_MAGAZINE -> WarmAmber
-                                    }
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "• Sec ${state.currentParagraphIndex + 1}/${state.totalParagraphs}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color.LightGray
-                                )
-                            }
-
-                            Text(
-                                text = state.currentItemTitle.ifBlank { "Townsquare Dispatch" },
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = Color.White,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-
-                            // Animated Waveform Mini
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                modifier = Modifier.padding(top = 2.dp)
-                            ) {
-                                state.waveformHeights.forEach { h ->
-                                    val barHeight = if (state.isPaused) 4.dp else (h * 12).coerceAtLeast(3f).dp
-                                    Box(
-                                        modifier = Modifier
-                                            .width(2.dp)
-                                            .height(barHeight)
-                                            .background(
-                                                color = if (state.isPaused) Color.Gray else NeonCyan,
-                                                shape = RoundedCornerShape(1.dp)
-                                            )
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "${state.speed}x speed",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color.Gray,
-                                    fontSize = 10.sp
-                                )
-                            }
-                        }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onPreviousParagraph, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.SkipPrevious, contentDescription = null, tint = Color.LightGray, modifier = Modifier.size(16.dp))
                     }
-
-                    // Right: Media Controls
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                onPreviousParagraph()
-                            },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.SkipPrevious,
-                                contentDescription = "Previous Section",
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-
-                        // Play/Pause
-                        Surface(
-                            shape = CircleShape,
-                            color = NeonCyan,
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .clickable {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    onTogglePlayPause()
-                                }
-                                .testTag("voice_play_pause_button")
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = if (state.isPaused) Icons.Default.PlayArrow else Icons.Default.Pause,
-                                    contentDescription = if (state.isPaused) "Resume Narration" else "Pause Narration",
-                                    tint = Color(0xFF003442),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-
-                        IconButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                onNextParagraph()
-                            },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.SkipNext,
-                                contentDescription = "Next Section",
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-
-                        IconButton(
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                onStop()
-                            },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Close Player",
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                    IconButton(onClick = onTogglePlayPause, modifier = Modifier.size(28.dp)) {
+                        Icon(
+                            imageVector = if (state.isPaused) Icons.Default.PlayArrow else Icons.Default.Pause,
+                            contentDescription = null,
+                            tint = NeonCyan,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    IconButton(onClick = onNextParagraph, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.SkipNext, contentDescription = null, tint = Color.LightGray, modifier = Modifier.size(16.dp))
+                    }
+                    IconButton(onClick = onStop, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = null, tint = Color.LightGray, modifier = Modifier.size(16.dp))
                     }
                 }
             }
+
+            Text(
+                text = state.currentItemTitle.ifBlank { "Townsquare Dispatch" },
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

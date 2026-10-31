@@ -49,9 +49,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -89,11 +94,13 @@ fun LocalWeatherForecastDialog(
     isOpen: Boolean,
     onClose: () -> Unit,
     initialDistrictId: String = "metro",
+    initialTab: Int = 0,
     modifier: Modifier = Modifier
 ) {
     if (!isOpen) return
 
     val context = LocalContext.current
+    var selectedWeatherTab by remember(isOpen, initialTab) { mutableIntStateOf(initialTab) }
     var selectedDistrictId by remember { mutableStateOf(initialDistrictId) }
     var useCelsius by remember { mutableStateOf(false) }
     var selectedRadarLayer by remember { mutableStateOf("Precipitation") }
@@ -193,107 +200,168 @@ fun LocalWeatherForecastDialog(
                     }
                 }
 
-                // District Selector Chips
-                val districtScroll = rememberScrollState()
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFF0B111E))
-                        .horizontalScroll(districtScroll)
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    LocalWeatherRepository.districts.forEach { (id, name) ->
-                        val isSelected = id == selectedDistrictId
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { selectedDistrictId = id },
-                            label = {
-                                Text(
-                                    text = name,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.LocationOn,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(14.dp),
-                                    tint = if (isSelected) NeonCyan else Color.Gray
-                                )
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = NeonCyan.copy(alpha = 0.2f),
-                                selectedLabelColor = NeonCyan,
-                                containerColor = Color(0xFF161F30),
-                                labelColor = Color.LightGray
-                            ),
-                            border = BorderStroke(
-                                1.dp,
-                                if (isSelected) NeonCyan else Color(0xFF233047)
+                // Mode Tabs: Forecast & Radar vs Weatherman Podcast
+                TabRow(
+                    selectedTabIndex = selectedWeatherTab,
+                    containerColor = Color(0xFF0F172A),
+                    contentColor = NeonCyan,
+                    indicator = { tabPositions ->
+                        if (selectedWeatherTab < tabPositions.size) {
+                            TabRowDefaults.SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedWeatherTab]),
+                                color = NeonCyan
                             )
-                        )
-                    }
+                        }
+                    },
+                    modifier = Modifier.testTag("weather_mode_tab_row")
+                ) {
+                    Tab(
+                        selected = selectedWeatherTab == 0,
+                        onClick = { selectedWeatherTab = 0 },
+                        modifier = Modifier.testTag("tab_weather_forecast"),
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("🌤️", fontSize = 14.sp)
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    "Forecast & Radar",
+                                    fontWeight = if (selectedWeatherTab == 0) FontWeight.Bold else FontWeight.Normal,
+                                    fontSize = 13.sp,
+                                    color = if (selectedWeatherTab == 0) NeonCyan else Color.LightGray
+                                )
+                            }
+                        }
+                    )
+                    Tab(
+                        selected = selectedWeatherTab == 1,
+                        onClick = { selectedWeatherTab = 1 },
+                        modifier = Modifier.testTag("tab_weatherman_podcast"),
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("🎙️", fontSize = 14.sp)
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    "Weatherman Podcast",
+                                    fontWeight = if (selectedWeatherTab == 1) FontWeight.Bold else FontWeight.Normal,
+                                    fontSize = 13.sp,
+                                    color = if (selectedWeatherTab == 1) NeonCyan else Color.LightGray
+                                )
+                            }
+                        }
+                    )
                 }
 
-                // Scrollable Weather Content
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    item { Spacer(modifier = Modifier.height(4.dp)) }
-
-                    // 1. Current Weather Hero Card
-                    item {
-                        WeatherHeroCard(
-                            weather = weather,
-                            useCelsius = useCelsius
-                        )
-                    }
-
-                    // 2. Active Weather Advisories (if any)
-                    if (weather.advisories.isNotEmpty()) {
-                        item {
-                            weather.advisories.forEach { adv ->
-                                WeatherAdvisoryCard(advisory = adv)
-                            }
+                if (selectedWeatherTab == 0) {
+                    // District Selector Chips
+                    val districtScroll = rememberScrollState()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFF0B111E))
+                            .horizontalScroll(districtScroll)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        LocalWeatherRepository.districts.forEach { (id, name) ->
+                            val isSelected = id == selectedDistrictId
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { selectedDistrictId = id },
+                                label = {
+                                    Text(
+                                        text = name,
+                                        fontSize = 12.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.LocationOn,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(14.dp),
+                                        tint = if (isSelected) NeonCyan else Color.Gray
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = NeonCyan.copy(alpha = 0.2f),
+                                    selectedLabelColor = NeonCyan,
+                                    containerColor = Color(0xFF161F30),
+                                    labelColor = Color.LightGray
+                                ),
+                                border = BorderStroke(
+                                    1.dp,
+                                    if (isSelected) NeonCyan else Color(0xFF233047)
+                                )
+                            )
                         }
                     }
 
-                    // 3. Hourly Forecast Section
-                    item {
-                        HourlyForecastSection(
-                            hourlyList = weather.hourlyForecasts,
-                            useCelsius = useCelsius
+                    // Scrollable Weather Content
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        item { Spacer(modifier = Modifier.height(4.dp)) }
+
+                        // 1. Current Weather Hero Card
+                        item {
+                            WeatherHeroCard(
+                                weather = weather,
+                                useCelsius = useCelsius
+                            )
+                        }
+
+                        // 2. Active Weather Advisories (if any)
+                        if (weather.advisories.isNotEmpty()) {
+                            item {
+                                weather.advisories.forEach { adv ->
+                                    WeatherAdvisoryCard(advisory = adv)
+                                }
+                            }
+                        }
+
+                        // 3. Hourly Forecast Section
+                        item {
+                            HourlyForecastSection(
+                                hourlyList = weather.hourlyForecasts,
+                                useCelsius = useCelsius
+                            )
+                        }
+
+                        // 4. 7-Day Extended Outlook
+                        item {
+                            DailyForecastSection(
+                                dailyList = weather.dailyForecasts,
+                                useCelsius = useCelsius
+                            )
+                        }
+
+                        // 5. Atmospheric Metrics Matrix Grid
+                        item {
+                            AtmosphericMetricsGrid(weather = weather)
+                        }
+
+                        // 6. Live Radar & Weather Satellite Simulator
+                        item {
+                            LiveRadarWidget(
+                                districtName = weather.districtName,
+                                selectedLayer = selectedRadarLayer,
+                                onSelectLayer = { selectedRadarLayer = it }
+                            )
+                        }
+
+                        item { Spacer(modifier = Modifier.height(32.dp)) }
+                    }
+                } else {
+                    // Integrated Weatherman Podcast
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        com.example.ui.plus.weather.WeathermanApp(
+                            onBack = { selectedWeatherTab = 0 },
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
-
-                    // 4. 7-Day Extended Outlook
-                    item {
-                        DailyForecastSection(
-                            dailyList = weather.dailyForecasts,
-                            useCelsius = useCelsius
-                        )
-                    }
-
-                    // 5. Atmospheric Metrics Matrix Grid
-                    item {
-                        AtmosphericMetricsGrid(weather = weather)
-                    }
-
-                    // 6. Live Radar & Weather Satellite Simulator
-                    item {
-                        LiveRadarWidget(
-                            districtName = weather.districtName,
-                            selectedLayer = selectedRadarLayer,
-                            onSelectLayer = { selectedRadarLayer = it }
-                        )
-                    }
-
-                    item { Spacer(modifier = Modifier.height(32.dp)) }
                 }
             }
         }

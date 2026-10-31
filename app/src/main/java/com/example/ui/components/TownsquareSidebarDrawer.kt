@@ -267,7 +267,7 @@ fun TownsquareSidebarDrawer(
                             .fillMaxSize()
                             .statusBarsPadding()
                             .navigationBarsPadding()
-                            .padding(20.dp)
+                            .padding(horizontal = 14.dp, vertical = 12.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
                         // Header: Townsquare Logo & Close Button
@@ -681,12 +681,12 @@ fun TownsquareSidebarDrawer(
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
-                                            text = "Letter to Editor Mailbox",
+                                            text = "Letters Mailbox",
                                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
-                                            text = "Direct messages to channel owners",
+                                            text = "Direct editor messages",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -739,12 +739,12 @@ fun TownsquareSidebarDrawer(
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
-                                            text = "Home Screen Widget Drawer",
+                                            text = "Widgets Drawer",
                                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
-                                            text = "Pin TCTV Clock, Radio & Brief to Screen",
+                                            text = "Pin clock, radio & brief",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -827,7 +827,7 @@ fun TownsquareSidebarDrawer(
                                 ) {
                                     Icon(Icons.Default.Refresh, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Refresh Feeds & App Data", color = NeonCyan, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    Text("Refresh Feeds", color = NeonCyan, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 }
                             }
                         }
@@ -843,32 +843,26 @@ fun TownsquareSidebarDrawer(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         val standaloneApps = listOf(
-                            Triple("🛍️ Marketplace", "Buy, sell & catalogs", onOpenMarketplace),
-                            Triple("🗺️ Maps & Travel", "Cartography & guide", onOpenMaps),
-                            Triple("🌍 Townsquares", "World city feeds & transit routes", onOpenTownsquares),
-                            Triple("🎙️ Weatherman", "Personalized weather podcasts", onOpenWeatherman),
-                            Triple("🎮 Arcade Games", "Retro games & arcade", onOpenArcade),
-                            Triple("🗣️ Lingo Lab", "Language & phrasebook", onOpenLingo),
+                            Triple("🛍️ Marketplace", "Buy & sell", onOpenMarketplace),
+                            Triple("🗺️ Maps & Travel", "Guides & routes", onOpenMaps),
+                            Triple("🎮 Arcade Games", "Retro games", onOpenArcade),
+                            Triple("🗣️ Lingo Lab", "Phrasebook", onOpenLingo),
                             Triple("📚 Bookworm", "Library & archives", onOpenBookworm),
-                            Triple("📞 Phone Link", "Satellite & voicemail", onOpenPhone),
-                            Triple("⌚ IoT Companion", "Car dashboard, MP3, remote PC & watch", onOpenIotCompanion),
-                            Triple("📷 AR Vision & HUD", "Civic Geo-AR, scanners & HUD camera", onOpenArCamera),
-                            Triple("📶 Mesh Connectivity", "Off-grid P2P relay & SOS beacon", onOpenMeshNetwork),
-                            Triple("📒 Yellow Pages", "Freelance gigs & skilled trades", onOpenYellowPages),
-                            Triple("📁 File Explorer", "Storage volumes & media vault", onOpenFiles),
-                            Triple("⌚ Watchface Maker", "Smartwatch dials & chronographs", onOpenWatchfaceMaker),
-                            Triple("📖 Townsquare Pocket", "Clean RSS reader & offline vault", onOpenPocket),
-                            Triple("🩺 System Diagnostics", "Glitch watchdog, freeze monitor & vitals", onOpenDiagnostics),
-                            Triple("🖧 Backend Server", "Embedded HTTP/REST & remote control", onOpenServerConsole),
-                            Triple("🔐 Account & SSO", "Townsquare ID, Passkeys & Google SSO", onOpenLoginSignup),
-                            Triple("⚡ FOMO Digest", "While-you-were-away AI recap summary", onOpenFomoDigest),
-                            Triple("🛡️ AdBlock & Mesh VPN", "Shield ads, trackers & encrypted tunnel", onOpenAdBlockVpn)
+                            Triple("📞 Phone Link", "Satellite & dialer", onOpenPhone),
+                            Triple("⌚ IoT Companion", "Remote & devices", onOpenIotCompanion),
+                            Triple("📷 AR Vision & HUD", "Civic AR scanner", onOpenArCamera),
+                            Triple("📁 File Explorer", "Storage & vault", onOpenFiles),
+                            Triple("⌚ Watchface Maker", "Smartwatch dials", onOpenWatchfaceMaker),
+                            Triple("📖 Pocket Reader", "Offline RSS vault", onOpenPocket),
+                            Triple("🖧 Server Console", "Embedded HTTP", onOpenServerConsole),
+                            Triple("🔐 Account & SSO", "Passkeys & login", onOpenLoginSignup),
+                            Triple("⚡ FOMO Digest", "Catch-up recap", onOpenFomoDigest)
                         )
 
-                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             standaloneApps.forEach { (title, subtitle, onClick) ->
                                 Surface(
-                                    shape = RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(10.dp),
                                     color = DarkSurfaceElevated,
                                     border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
                                     modifier = Modifier
@@ -879,20 +873,24 @@ fun TownsquareSidebarDrawer(
                                         }
                                 ) {
                                     Row(
-                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        Column {
+                                        Column(modifier = Modifier.weight(1f, fill = false)) {
                                             Text(
                                                 text = title,
                                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                                color = Color.White
+                                                color = Color.White,
+                                                maxLines = 1,
+                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                             )
                                             Text(
                                                 text = subtitle,
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = Color.Gray
+                                                color = Color.Gray,
+                                                maxLines = 1,
+                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                             )
                                         }
                                         Icon(
@@ -1894,6 +1892,22 @@ fun TownsquareSidebarDrawer(
                                         onUpdateBreakingNewsAlerts = onUpdateBreakingNewsAlerts,
                                         onUpdatePrintKioskAlerts = onUpdatePrintKioskAlerts,
                                         onClearMediaCache = onClearMediaCache
+                                    )
+
+                                    // 9. Connectivity, VPN & System Diagnostics (Moved into Settings)
+                                    com.example.ui.components.settings.ConnectivityAndDiagnosticsSettings(
+                                        onOpenAdBlockVpn = {
+                                            onClose()
+                                            onOpenAdBlockVpn()
+                                        },
+                                        onOpenMeshNetwork = {
+                                            onClose()
+                                            onOpenMeshNetwork()
+                                        },
+                                        onOpenDiagnostics = {
+                                            onClose()
+                                            onOpenDiagnostics()
+                                        }
                                     )
 
                                     Spacer(modifier = Modifier.height(24.dp))

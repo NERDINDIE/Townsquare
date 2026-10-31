@@ -47,11 +47,11 @@ fun EmergencyPagerComponent(
 
     // Emergency Line Options
     val lines = listOf(
-        Pair("Redline 911 Direct", "154.280 MHz - Priority 0"),
-        Pair("Civil Defense & Hazard", "162.550 MHz - NOAA Direct"),
-        Pair("Community SOS Mesh", "99.900 MHz - Local Citizen Line"),
-        Pair("Fire & Rescue Dispatch", "153.890 MHz - Emergency Duty"),
-        Pair("Medical Evac & Trauma", "462.950 MHz - Townsquare Health")
+        Pair("911 Direct", "154.280 MHz • P0"),
+        Pair("Civil Defense", "162.550 MHz • NOAA"),
+        Pair("SOS Mesh", "99.900 MHz • Citizen"),
+        Pair("Fire & Rescue", "153.890 MHz • Duty"),
+        Pair("Medical Evac", "462.950 MHz • Health")
     )
 
     var selectedLineIndex by remember { mutableIntStateOf(0) }
@@ -68,7 +68,7 @@ fun EmergencyPagerComponent(
             listOf(
                 PagerMessage(
                     id = "PAG-9081",
-                    lineName = "Redline 911 Direct",
+                    lineName = "911 Direct",
                     lineFrequency = "154.280 MHz",
                     priority = "CRITICAL SOS",
                     templateName = "Medical Emergency",
@@ -79,7 +79,7 @@ fun EmergencyPagerComponent(
                 ),
                 PagerMessage(
                     id = "PAG-8812",
-                    lineName = "Community SOS Mesh",
+                    lineName = "SOS Mesh",
                     lineFrequency = "99.900 MHz",
                     priority = "HIGH",
                     templateName = "Power Outage Alert",
@@ -93,37 +93,37 @@ fun EmergencyPagerComponent(
     }
 
     val presetTemplates = listOf(
-        "🆘 Medical Emergency: Urgent Assistance Needed",
-        "🚨 Civil Defense: Power Grid Outage / Line Down",
-        "🌊 Flash Flood Alert: Community Shelter Advised",
-        "🔒 Security SOS: Suspicious Intrusion Detected",
-        "✅ All Clear: Status Restored to Normal"
+        "🆘 Medical: Urgent assistance needed",
+        "🚨 Power grid: Outage / line down",
+        "🌊 Flood alert: Shelter advised",
+        "🔒 Security: Intrusion detected",
+        "✅ All clear: Normal status"
     )
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(DarkBg)
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         // Header Banner
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp),
+                .padding(bottom = 8.dp),
             colors = CardDefaults.cardColors(containerColor = CoralRed.copy(alpha = 0.15f)),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(12.dp),
             border = androidx.compose.foundation.BorderStroke(1.dp, CoralRed)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(14.dp),
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(36.dp)
                         .clip(CircleShape)
                         .background(CoralRed),
                     contentAlignment = Alignment.Center
@@ -131,22 +131,23 @@ fun EmergencyPagerComponent(
                     Icon(
                         imageVector = Icons.Default.CellTower,
                         contentDescription = "Pager Line",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "EMERGENCY PAGER LINE",
-                        style = MaterialTheme.typography.titleMedium.copy(
+                        text = "EMERGENCY PAGER",
+                        style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = CoralRed,
-                            letterSpacing = 1.sp
+                            letterSpacing = 0.5.sp
                         )
                     )
                     Text(
-                        text = "Direct high-priority dispatch channel • Active 24/7",
-                        style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray)
+                        text = "Priority dispatch line • 24/7",
+                        style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray, fontSize = 11.sp)
                     )
                 }
                 if (pagerBeepActive) {
@@ -162,32 +163,32 @@ fun EmergencyPagerComponent(
 
         LazyColumn(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Line Selection Card
             item {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(10.dp)
                 ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
+                    Column(modifier = Modifier.padding(10.dp)) {
                         Text(
-                            text = "SELECT SPECIAL EMERGENCY LINE",
-                            style = MaterialTheme.typography.labelMedium.copy(
+                            text = "SELECT EMERGENCY LINE",
+                            style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = NeonCyan
                             ),
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 6.dp)
                         )
                         lines.forEachIndexed { idx, line ->
                             val isSelected = (idx == selectedLineIndex)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(6.dp))
                                     .background(if (isSelected) NeonCyan.copy(alpha = 0.2f) else Color.Transparent)
                                     .clickable { selectedLineIndex = idx }
-                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    .padding(horizontal = 8.dp, vertical = 5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -203,7 +204,8 @@ fun EmergencyPagerComponent(
                                         text = line.second,
                                         style = MaterialTheme.typography.bodySmall.copy(
                                             fontFamily = FontFamily.Monospace,
-                                            color = Color.Gray
+                                            color = Color.Gray,
+                                            fontSize = 11.sp
                                         )
                                     )
                                 }
@@ -221,24 +223,24 @@ fun EmergencyPagerComponent(
             // Quick Preset Templates
             item {
                 Text(
-                    text = "QUICK EMERGENCY TEMPLATES",
+                    text = "TEMPLATES",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray
                     )
                 )
-                Spacer(modifier = Modifier.height(6.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     presetTemplates.forEach { template ->
                         AssistChip(
                             onClick = { customText = template },
-                            label = { Text(template, fontSize = 12.sp, color = Color.White) },
+                            label = { Text(template, fontSize = 11.sp, color = Color.White) },
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.Send,
                                     contentDescription = null,
                                     tint = CoralRed,
-                                    modifier = Modifier.size(14.dp)
+                                    modifier = Modifier.size(12.dp)
                                 )
                             },
                             colors = AssistChipDefaults.assistChipColors(containerColor = DarkCardBg)
@@ -251,28 +253,28 @@ fun EmergencyPagerComponent(
             item {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(10.dp)
                 ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
+                    Column(modifier = Modifier.padding(10.dp)) {
                         Text(
-                            text = "PAGER MESSAGE CONTENT",
-                            style = MaterialTheme.typography.labelMedium.copy(
+                            text = "MESSAGE CONTENT",
+                            style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
                         OutlinedTextField(
                             value = customText,
                             onValueChange = { customText = it },
-                            placeholder = { Text("Enter emergency broadcast alert details...", color = Color.Gray) },
+                            placeholder = { Text("Emergency alert details...", color = Color.Gray, fontSize = 12.sp) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(90.dp),
+                                .height(78.dp),
                             shape = RoundedCornerShape(8.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -285,7 +287,7 @@ fun EmergencyPagerComponent(
                                     onCheckedChange = { attachLocation = it },
                                     colors = CheckboxDefaults.colors(checkedColor = NeonCyan)
                                 )
-                                Text("Attach GPS Coordinates", style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray))
+                                Text("Attach GPS", style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray, fontSize = 11.sp))
                             }
 
                             // Priority Selector

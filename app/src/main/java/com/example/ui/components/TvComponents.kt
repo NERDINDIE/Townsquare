@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -147,12 +148,12 @@ fun TvBroadcastPlayer(
         modifier = modifier
             .fillMaxWidth()
             .then(if (isFullscreen) Modifier.fillMaxSize() else Modifier.aspectRatio(16f / 9f))
-            .clip(if (isFullscreen) RoundedCornerShape(0.dp) else RoundedCornerShape(16.dp))
+            .clip(if (isFullscreen) RoundedCornerShape(0.dp) else RoundedCornerShape(20.dp))
             .background(DarkBg)
             .border(
                 width = if (isFullscreen) 0.dp else 1.dp,
-                color = channelColor.copy(alpha = 0.3f),
-                shape = if (isFullscreen) RoundedCornerShape(0.dp) else RoundedCornerShape(16.dp)
+                color = channelColor.copy(alpha = 0.2f),
+                shape = if (isFullscreen) RoundedCornerShape(0.dp) else RoundedCornerShape(20.dp)
             )
             .testTag("tv_broadcast_player_${channel.id}")
     ) {
@@ -172,12 +173,12 @@ fun TvBroadcastPlayer(
                 drawOffAirTestCard(size.width, size.height, channel.name)
             }
 
-            // Vintage CRT Scanline Effect Overlay
+            // Modern cinematic subtle scanline overlay (only if enabled)
             if (scanlineFxEnabled) {
-                val step = 4f
+                val step = 6f
                 for (y in 0 until size.height.toInt() step step.toInt()) {
                     drawLine(
-                        color = Color.Black.copy(alpha = 0.25f),
+                        color = Color.Black.copy(alpha = 0.15f),
                         start = Offset(0f, y.toFloat()),
                         end = Offset(size.width, y.toFloat()),
                         strokeWidth = 1f
@@ -262,6 +263,7 @@ fun TvBroadcastPlayer(
 
         // 2. Top Watermark & Status Overlay
 
+        // 2. Top Watermark & Status Overlay (Modern Sleek Capsule Design)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -270,80 +272,87 @@ fun TvBroadcastPlayer(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Live Status & Callsign Bug
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            Surface(
+                color = Color.Black.copy(alpha = 0.55f),
+                shape = RoundedCornerShape(20.dp),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f))
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(
-                            if (isPlaying) Color(0xFFFF3B30).copy(alpha = pulseAlpha) else Color.Gray,
-                            CircleShape
-                        )
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = if (isPlaying) "LIVE" else "PAUSED",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp
-                    ),
-                    color = if (isPlaying) Color.White else Color.LightGray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "${channel.callsign} • CH ${channel.channelNumber}",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = channelColor
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(7.dp)
+                            .background(
+                                if (isPlaying) Color(0xFFFF3B30).copy(alpha = pulseAlpha) else Color.Gray,
+                                CircleShape
+                            )
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (isPlaying) "LIVE" else "PAUSED",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 0.8.sp,
+                            fontSize = 10.sp
+                        ),
+                        color = if (isPlaying) Color.White else Color.LightGray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "${channel.callsign} • CH ${channel.channelNumber}",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 11.sp),
+                        color = channelColor
+                    )
+                }
             }
 
-            // Resolution & Stream Quality Badge
+            // Stream Quality & Audio Badges
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Surface(
-                    color = Color.Black.copy(alpha = 0.7f),
-                    shape = RoundedCornerShape(6.dp),
+                    color = Color.Black.copy(alpha = 0.55f),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
                     modifier = Modifier.clickable { showQualityDialog = true }
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Hd,
                             contentDescription = "Stream Quality",
                             tint = NeonCyan,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = streamQuality,
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.SemiBold),
                             color = Color.White
                         )
                     }
                 }
 
-                // Scanline Filter Button
+                // FX Filter Pill
                 Surface(
-                    color = if (scanlineFxEnabled) channelColor.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.6f),
-                    shape = RoundedCornerShape(6.dp),
+                    color = if (scanlineFxEnabled) channelColor.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.55f),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, if (scanlineFxEnabled) channelColor.copy(alpha = 0.4f) else Color.White.copy(alpha = 0.12f)),
                     modifier = Modifier.clickable { onToggleScanlineFx() }
                 ) {
                     Text(
-                        text = "CRT FX",
+                        text = if (scanlineFxEnabled) "CRT ON" else "CRT OFF",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontSize = 10.sp,
                             fontWeight = if (scanlineFxEnabled) FontWeight.Bold else FontWeight.Normal
                         ),
                         color = if (scanlineFxEnabled) channelColor else Color.LightGray,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }

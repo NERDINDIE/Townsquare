@@ -86,6 +86,7 @@ fun TownsquareInboxDialog(
     onPlayAudioBrief: () -> Unit,
     onOpenWeather: () -> Unit,
     onOpenBulletin: (String) -> Unit = {},
+    onOpenTv: ((String?) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     if (!isOpen) return
@@ -345,6 +346,10 @@ fun TownsquareInboxDialog(
                                         InboxActionType.OPEN_WEATHER -> onOpenWeather()
                                         InboxActionType.OPEN_BULLETIN -> item.targetId?.let { onOpenBulletin(it) } ?: onOpenFullBrief()
                                         InboxActionType.OPEN_ARTICLE -> onOpenFullBrief()
+                                        InboxActionType.OPEN_TV -> {
+                                            onClose()
+                                            onOpenTv?.invoke(item.targetId)
+                                        }
                                         InboxActionType.NONE -> {}
                                     }
                                 }
@@ -479,6 +484,7 @@ private fun InboxNotificationCard(
                                 InboxActionType.OPEN_WEATHER -> "View Weather"
                                 InboxActionType.OPEN_BULLETIN -> "View Dispatch"
                                 InboxActionType.OPEN_ARTICLE -> "Open Story"
+                                InboxActionType.OPEN_TV -> "Tune Channel ▶"
                                 InboxActionType.NONE -> "View"
                             }
                             Text(

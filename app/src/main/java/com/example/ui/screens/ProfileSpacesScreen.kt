@@ -88,6 +88,14 @@ fun ProfileSpacesScreen(
     onOpenSettings: () -> Unit = {},
     onOpenVoiceBuilder: () -> Unit = {},
     onSelectSpace: (Long) -> Unit = {},
+    tvWatchlist: List<com.example.data.model.TvWatchlistItem> = emptyList(),
+    tvWatchedHistory: List<com.example.data.model.TvWatchedHistoryItem> = emptyList(),
+    onRemoveFromTvWatchlist: (String) -> Unit = {},
+    onMarkTvShowAsWatched: (com.example.data.model.TvWatchlistItem) -> Unit = {},
+    onRemoveFromTvHistory: (String) -> Unit = {},
+    onClearTvHistory: () -> Unit = {},
+    onTuneTvChannel: (Int) -> Unit = {},
+    onOpenTvGuide: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) } // 0: All, 1: Posts, 2: Newsletters, 3: Articles, 4: Audio, 5: Bookmarks
@@ -309,6 +317,7 @@ fun ProfileSpacesScreen(
                     ) {
                         val profileModules = listOf(
                             Pair(0, "🖼️ Works"),
+                            Pair(6, "📺 TV Watchlist"),
                             Pair(1, "💳 Finance"),
                             Pair(2, "🫀 Health"),
                             Pair(3, "🏛️ State Pass"),
@@ -405,6 +414,19 @@ fun ProfileSpacesScreen(
                             com.example.ui.screens.profile.CollectionTrackerSection(modifier = Modifier.fillMaxWidth())
                         }
                     }
+                }
+            } else if (mainProfileModule == 6) {
+                item {
+                    TvWatchlistProfileModule(
+                        watchlist = tvWatchlist,
+                        watchedHistory = tvWatchedHistory,
+                        onRemoveFromWatchlist = onRemoveFromTvWatchlist,
+                        onMarkAsWatched = onMarkTvShowAsWatched,
+                        onRemoveFromHistory = onRemoveFromTvHistory,
+                        onClearHistory = onClearTvHistory,
+                        onTuneTvChannel = onTuneTvChannel,
+                        onOpenTvGuide = onOpenTvGuide
+                    )
                 }
             } else {
                 // Default: Published Works Content Wall

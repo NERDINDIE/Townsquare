@@ -215,22 +215,22 @@ fun MainFeedScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(10.dp),
+                    .padding(horizontal = 14.dp, vertical = 2.dp),
+                shape = RoundedCornerShape(8.dp),
                 color = Color(0xFF00222B),
                 border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f))
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CloudDone, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.Default.CloudDone, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Column {
-                            Text("Offline Mode Active", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = NeonCyan)
-                            Text("Showing saved articles, publications & bookmarks", style = MaterialTheme.typography.bodySmall, color = Color.LightGray, fontSize = 11.sp)
+                            Text("Offline Mode", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = NeonCyan)
+                            Text("Saved publications & bookmarks", style = MaterialTheme.typography.bodySmall, color = Color.LightGray, fontSize = 10.sp)
                         }
                     }
                     TextButton(onClick = onToggleOfflineMode) {
@@ -246,7 +246,7 @@ fun MainFeedScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                placeholder = { Text("Search stories, channels, podcasts, radio stations...") },
+                placeholder = { Text("Search stories, podcasts, radio...", fontSize = 13.sp) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = NeonCyan) },
                 trailingIcon = {
                     if (searchQuery.isNotBlank()) {
@@ -257,15 +257,15 @@ fun MainFeedScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .padding(horizontal = 14.dp, vertical = 2.dp)
                     .testTag("feed_search_input"),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = NeonCyan,
                     unfocusedBorderColor = DarkBorder
                 )
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
         }
 
         NewsTicker(
@@ -294,15 +294,15 @@ fun MainFeedScreen(
             androidx.compose.material3.Tab(
                 selected = !isForYouFeed,
                 onClick = { onToggleForYouFeed(false) },
-                text = { Text("Latest Dispatch", fontWeight = if (!isForYouFeed) FontWeight.Bold else FontWeight.Medium) }
+                text = { Text("Latest", fontWeight = if (!isForYouFeed) FontWeight.Bold else FontWeight.Medium, fontSize = 12.sp) }
             )
             androidx.compose.material3.Tab(
                 selected = isForYouFeed,
                 onClick = { onToggleForYouFeed(true) },
-                text = { Text("For You", fontWeight = if (isForYouFeed) FontWeight.Bold else FontWeight.Medium) }
+                text = { Text("For You", fontWeight = if (isForYouFeed) FontWeight.Bold else FontWeight.Medium, fontSize = 12.sp) }
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         // Main Feed with Pull-To-Refresh Box
         PullToRefreshBox(

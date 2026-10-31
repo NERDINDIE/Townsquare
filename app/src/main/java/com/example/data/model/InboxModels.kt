@@ -4,6 +4,7 @@ enum class InboxCategory(val label: String, val emoji: String) {
     ALL("All", "📬"),
     BRIEFS("Briefs", "☀️"),
     ALERTS("Alerts", "🚨"),
+    TV_BROADCAST("TV Broadcasts", "📺"),
     DISPATCHES("Dispatches", "📍"),
     EDITORIAL("Editorial", "✍️")
 }
@@ -14,6 +15,7 @@ enum class InboxActionType {
     OPEN_ARTICLE,
     OPEN_BULLETIN,
     OPEN_WEATHER,
+    OPEN_TV,
     NONE
 }
 

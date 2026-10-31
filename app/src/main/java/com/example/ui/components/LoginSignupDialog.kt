@@ -51,21 +51,21 @@ fun LoginSignupDialog(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .wrapContentHeight()
-                .padding(12.dp),
+                .padding(8.dp),
             colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(16.dp),
             border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f))
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Header Icon
                 Box(
                     modifier = Modifier
-                        .size(56.dp)
+                        .size(42.dp)
                         .clip(CircleShape)
                         .background(NeonCyan.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
@@ -74,15 +74,15 @@ fun LoginSignupDialog(
                         imageVector = if (currentUserEmail != null) Icons.Default.AccountCircle else Icons.Default.Lock,
                         contentDescription = null,
                         tint = NeonCyan,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = if (currentUserEmail != null) "Account Management" else (if (isSignUp) "Create Townsquare ID" else "Sign In to Townsquare OS"),
-                    style = MaterialTheme.typography.titleLarge.copy(
+                    text = if (currentUserEmail != null) "Account" else (if (isSignUp) "Create Account" else "Sign In"),
+                    style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     ),
@@ -90,10 +90,10 @@ fun LoginSignupDialog(
                 )
 
                 Text(
-                    text = if (currentUserEmail != null) "Logged in as $currentUserEmail" else "Access your synced channels, subscriptions, and creator media spaces across devices.",
-                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                    text = if (currentUserEmail != null) "Logged in as $currentUserEmail" else "Sync channels, subscriptions & media spaces.",
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 11.sp),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
+                    modifier = Modifier.padding(top = 2.dp, bottom = 10.dp)
                 )
 
                 if (currentUserEmail != null) {
@@ -195,24 +195,24 @@ fun LoginSignupDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     HorizontalDivider(color = DarkBorder)
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Single Sign-On (SSO) Options
                     Text(
-                        text = "SINGLE SIGN-ON (SSO)",
+                        text = "SSO SIGN-IN",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = Color.Gray,
-                            letterSpacing = 1.sp
+                            letterSpacing = 0.5.sp
                         )
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         // Google SSO
                         OutlinedButton(
@@ -221,11 +221,11 @@ fun LoginSignupDialog(
                                 onDismiss()
                             },
                             modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 6.dp)
                         ) {
-                            Icon(Icons.Default.Public, contentDescription = null, modifier = Modifier.size(16.dp), tint = NeonCyan)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Google SSO", fontSize = 11.sp)
+                            Icon(Icons.Default.Public, contentDescription = null, modifier = Modifier.size(14.dp), tint = NeonCyan)
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text("Google", fontSize = 11.sp)
                         }
 
                         // Passkey / Biometric SSO
@@ -235,10 +235,10 @@ fun LoginSignupDialog(
                                 onDismiss()
                             },
                             modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 6.dp)
                         ) {
-                            Icon(Icons.Default.Fingerprint, contentDescription = null, modifier = Modifier.size(16.dp), tint = WarmAmber)
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(Icons.Default.Fingerprint, contentDescription = null, modifier = Modifier.size(14.dp), tint = WarmAmber)
+                            Spacer(modifier = Modifier.width(3.dp))
                             Text("Passkey", fontSize = 11.sp)
                         }
 
@@ -249,11 +249,11 @@ fun LoginSignupDialog(
                                 onDismiss()
                             },
                             modifier = Modifier.weight(1f),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 6.dp)
                         ) {
-                            Icon(Icons.Default.VerifiedUser, contentDescription = null, modifier = Modifier.size(16.dp), tint = MintTeal)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Citizen ID", fontSize = 11.sp)
+                            Icon(Icons.Default.VerifiedUser, contentDescription = null, modifier = Modifier.size(14.dp), tint = MintTeal)
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text("Citizen", fontSize = 11.sp)
                         }
                     }
                 }

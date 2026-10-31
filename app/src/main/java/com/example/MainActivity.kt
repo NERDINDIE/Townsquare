@@ -216,6 +216,8 @@ fun TownsquareApp(
     val tvSelectedTab by viewModel.tvSelectedTab.collectAsState()
     val tvScanlineFxEnabled by viewModel.tvScanlineFxEnabled.collectAsState()
     val tvChatMessages by viewModel.tvChatMessages.collectAsState()
+    val tvWatchlist by viewModel.tvWatchlist.collectAsState()
+    val tvWatchedHistory by viewModel.tvWatchedHistory.collectAsState()
     val selectedBulletinCategory by viewModel.selectedBulletinCategory.collectAsState()
     val isReportBulletinDialogVisible by viewModel.isReportBulletinDialogVisible.collectAsState()
     val isRefreshingFeed by viewModel.isRefreshingFeed.collectAsState()
@@ -315,6 +317,8 @@ fun TownsquareApp(
     val inboxItems by viewModel.inboxItems.collectAsState()
     val unreadInboxCount by viewModel.unreadInboxCount.collectAsState()
     var isWeatherForecastOpen by remember { mutableStateOf(false) }
+    var weatherForecastInitialTab by remember { mutableIntStateOf(0) }
+    var communityInitialTab by remember { mutableIntStateOf(0) }
     var isInboxOpen by remember { mutableStateOf(false) }
     var isEmergencyHubOpen by remember { mutableStateOf(false) }
     var isVoiceBuilderOpen by remember { mutableStateOf(false) }
@@ -396,7 +400,7 @@ fun TownsquareApp(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "⚡ SKIN OVERRIDE ACTIVE: $skinId",
+                            text = "⚡ SKIN: $skinId",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = NeonCyan
@@ -433,7 +437,8 @@ fun TownsquareApp(
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surface)
                 ) {
-                    // Global Media Player
+                    // Global Media Player (consolidated audio, narration, and foldable TV streaming)
+                    val activeTvChannel = allTvChannels.find { it.id == activeTvChannelId } ?: allTvChannels.firstOrNull()
                     GlobalMediaPlayer(
                         audioState = audioState,
                         narrationState = narrationState,
@@ -445,7 +450,37 @@ fun TownsquareApp(
                         onNextParagraph = { viewModel.nextNarrationParagraph() },
                         onPreviousParagraph = { viewModel.previousNarrationParagraph() },
                         onSelectNarrationStyle = { viewModel.setNarrationStyle(it) },
-                        onSetNarrationSpeed = { viewModel.setNarrationSpeed(it) }
+                        onSetNarrationSpeed = { viewModel.setNarrationSpeed(it) },
+                        activeTvChannel = activeTvChannel,
+                        allTvChannels = allTvChannels,
+                        isTvPlaying = isTvPlaying,
+                        isTvMuted = isTvMuted,
+                        isTvCaptionsEnabled = isTvCaptionsEnabled,
+                        tvStreamQuality = tvStreamQuality,
+                        tvScanlineFxEnabled = tvScanlineFxEnabled,
+                        onToggleTvPlayPause = { viewModel.toggleTvPlayPause() },
+                        onToggleTvMute = { viewModel.toggleTvMute() },
+                        onToggleTvCaptions = { viewModel.toggleTvCaptions() },
+                        onToggleTvScanlineFx = { viewModel.toggleTvScanlineFx() },
+                        onSelectTvQuality = { viewModel.setTvStreamQuality(it) },
+                        onNextTvChannel = { viewModel.nextTvChannel() },
+                        onPrevTvChannel = { viewModel.previousTvChannel() },
+                        onSelectTvChannel = { viewModel.selectTvChannel(it) },
+                        onStopTv = {
+                            if (isTvPlaying) viewModel.toggleTvPlayPause()
+                        },
+                        onRecordEpisode = { item ->
+                            scope.launch {
+                                snackbarHostState.showSnackbar("⏺️ Saved '${item.title}' to DVR library for infinite viewing")
+                            }
+                        },
+                        onScheduleReminder = { item ->
+                            scope.launch {
+                                snackbarHostState.showSnackbar("⏰ Reminder set for '${item.title}'")
+                            }
+                        },
+                        chatMessages = tvChatMessages[activeTvChannelId] ?: emptyList(),
+                        onSendChatMessage = { msg -> viewModel.sendTvChatMessage(activeTvChannelId, "You", msg) }
                     )
                 }
             }
@@ -638,6 +673,18 @@ fun TownsquareApp(
                             },
                             onShareBroadcast = { channel ->
                                 ShareHelper.shareTvBroadcast(context, channel)
+                            },
+                            tvWatchlist = tvWatchlist,
+                            onToggleWatchlist = { title, chNum, chName, duration, cat, slot, day, syn ->
+                                val added = viewModel.bookmarkTvShow(title, chNum, chName, duration, cat, slot, day, syn)
+                                scope.launch {
+                                    val action = if (added) "🔖 Added '$title' to Watchlist (Inbox alert created)" else "Removed '$title' from Watchlist"
+                                    snackbarHostState.showSnackbar(action)
+                                }
+                                added
+                            },
+                            onOpenProfileWatchlist = {
+                                currentNavIndex = NavDestination.SPACES
                             }
                         )
                     }
@@ -762,13 +809,28 @@ fun TownsquareApp(
                             onToggleSavedOffline = { viewModel.toggleSavedOffline(it) },
                             onOpenSettings = { isSettingsVisible = true },
                             onOpenVoiceBuilder = { isVoiceBuilderOpen = true },
-                            onSelectSpace = { spaceId -> activeMediaSpaceId = spaceId }
+                            onSelectSpace = { spaceId -> activeMediaSpaceId = spaceId },
+                            tvWatchlist = tvWatchlist,
+                            tvWatchedHistory = tvWatchedHistory,
+                            onRemoveFromTvWatchlist = { viewModel.removeFromTvWatchlist(it) },
+                            onMarkTvShowAsWatched = { viewModel.markTvShowAsWatched(it) },
+                            onRemoveFromTvHistory = { viewModel.removeTvWatchedHistoryItem(it) },
+                            onClearTvHistory = { viewModel.clearTvWatchedHistory() },
+                            onTuneTvChannel = { chNum ->
+                                viewModel.tuneChannelByNumber(chNum)
+                                currentNavIndex = NavDestination.TV_STREAMING
+                            },
+                            onOpenTvGuide = {
+                                viewModel.setTvTab("TV_GUIDE")
+                                currentNavIndex = NavDestination.TV_STREAMING
+                            }
                         )
                     }
                     NavDestination.COMMUNITY -> {
                         com.example.ui.screens.CommunityScreen(
                             onOpenSidebar = { viewModel.openSidebar() },
-                            onBack = { currentNavIndex = NavDestination.FEED }
+                            onBack = { currentNavIndex = NavDestination.FEED },
+                            initialTab = communityInitialTab
                         )
                     }
                     NavDestination.FUNNIES -> {
@@ -886,7 +948,10 @@ fun TownsquareApp(
         onOpenBroadsheetCover = { isBroadsheetViewOpen = true },
         onOpenMultitaskingBrowser = { currentNavIndex = NavDestination.BROWSER },
         onOpenEmergencyHub = { isEmergencyHubOpen = true },
-        onOpenWeather = { isWeatherForecastOpen = true },
+        onOpenWeather = {
+            weatherForecastInitialTab = 0
+            isWeatherForecastOpen = true
+        },
         onOpenInbox = { isInboxOpen = true },
         onOpenModeration = { isModerationDashboardOpen = true },
         onOpenMonetization = { isCreatorMonetizationOpen = true },
@@ -902,11 +967,20 @@ fun TownsquareApp(
         onOpenBookworm = { isBookwormOpen = true },
         onOpenPhone = { isPhoneOpen = true },
         onOpenIotCompanion = { isIotCompanionOpen = true },
-        onOpenTownsquares = { isTownsquaresOpen = true },
-        onOpenWeatherman = { isWeathermanOpen = true },
+        onOpenTownsquares = {
+            communityInitialTab = 1
+            currentNavIndex = NavDestination.COMMUNITY
+        },
+        onOpenWeatherman = {
+            weatherForecastInitialTab = 1
+            isWeatherForecastOpen = true
+        },
         onOpenArCamera = { isArCameraOpen = true },
         onOpenMeshNetwork = { isMeshNetworkOpen = true },
-        onOpenYellowPages = { isYellowPagesOpen = true },
+        onOpenYellowPages = {
+            communityInitialTab = 2
+            currentNavIndex = NavDestination.COMMUNITY
+        },
         onOpenFiles = { isFilesOpen = true },
         onOpenWatchfaceMaker = { isWatchfaceMakerOpen = true },
         onOpenPocket = { isPocketOpen = true },
@@ -1251,7 +1325,8 @@ fun TownsquareApp(
     // 0a. Local Weather Forecast Dialog
     LocalWeatherForecastDialog(
         isOpen = isWeatherForecastOpen,
-        onClose = { isWeatherForecastOpen = false }
+        onClose = { isWeatherForecastOpen = false },
+        initialTab = weatherForecastInitialTab
     )
 
     // 0b. Townsquare Inbox Dialog
@@ -1278,6 +1353,13 @@ fun TownsquareApp(
         onOpenBulletin = { bulletinId ->
             isInboxOpen = false
             currentNavIndex = NavDestination.FEED
+        },
+        onOpenTv = { targetId ->
+            isInboxOpen = false
+            if (targetId != null) {
+                viewModel.selectTvChannel(targetId)
+            }
+            currentNavIndex = NavDestination.TV_STREAMING
         }
     )
 

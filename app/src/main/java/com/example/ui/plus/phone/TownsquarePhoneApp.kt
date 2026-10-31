@@ -195,7 +195,7 @@ fun TownsquarePhoneApp(
             // Tabs Selector
             ScrollableTabRow(
                 selectedTabIndex = selectedTab,
-                edgePadding = 12.dp,
+                edgePadding = 6.dp,
                 containerColor = DarkSurfaceVariant,
                 contentColor = NeonCyan,
                 indicator = { tabPositions ->
@@ -209,20 +209,20 @@ fun TownsquarePhoneApp(
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.Dialpad, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("Keypad", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.Dialpad, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("Keypad", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("Recents", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("Recents", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Default.Contacts, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("Contacts (${contacts.size})", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.Contacts, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("Contacts (${contacts.size})", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = selectedTab == 3,
@@ -234,34 +234,34 @@ fun TownsquarePhoneApp(
                                 Badge(containerColor = WarmAmber) { Text("$unreadCount") }
                             }
                         }) {
-                            Icon(Icons.Default.Voicemail, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Voicemail, contentDescription = null, modifier = Modifier.size(16.dp))
                         }
                     },
-                    text = { Text("Visual Voicemail", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    text = { Text("Voicemail", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = selectedTab == 4,
                     onClick = { selectedTab = 4 },
-                    icon = { Icon(Icons.Default.SatelliteAlt, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("Satellite Link", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.SatelliteAlt, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("Satellite", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = selectedTab == 5,
                     onClick = { selectedTab = 5 },
-                    icon = { Icon(Icons.Default.CellTower, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("Masthead Radar", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.CellTower, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("Radar", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = selectedTab == 6,
                     onClick = { selectedTab = 6 },
-                    icon = { Icon(Icons.Default.SmartToy, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text("AI Deflector", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    icon = { Icon(Icons.Default.SmartToy, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                    text = { Text("AI Guard", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                 )
                 Tab(
                     selected = selectedTab == 7,
                     onClick = { selectedTab = 7 },
-                    icon = { Icon(Icons.Default.CellTower, contentDescription = null, modifier = Modifier.size(18.dp), tint = CoralRed) },
-                    text = { Text("Emergency Pager", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = CoralRed) }
+                    icon = { Icon(Icons.Default.CellTower, contentDescription = null, modifier = Modifier.size(16.dp), tint = CoralRed) },
+                    text = { Text("Pager", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = CoralRed) }
                 )
             }
 

@@ -70,18 +70,18 @@ fun AdBlockVpnDialog(
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.94f)
+                .fillMaxWidth(0.96f)
                 .fillMaxHeight(0.90f)
-                .padding(10.dp)
+                .padding(6.dp)
                 .testTag("adblock_vpn_dialog"),
             colors = CardDefaults.cardColors(containerColor = DarkBg),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(16.dp),
             border = androidx.compose.foundation.BorderStroke(1.dp, MintTeal.copy(alpha = 0.6f))
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(18.dp)
+                    .padding(12.dp)
             ) {
                 // Header
                 Row(
@@ -92,7 +92,7 @@ fun AdBlockVpnDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
+                                .size(34.dp)
                                 .clip(CircleShape)
                                 .background(if (isVpnConnected) MintTeal.copy(alpha = 0.2f) else CoralRed.copy(alpha = 0.2f)),
                             contentAlignment = Alignment.Center
@@ -101,14 +101,14 @@ fun AdBlockVpnDialog(
                                 imageVector = if (isVpnConnected) Icons.Default.VpnLock else Icons.Default.LockOpen,
                                 contentDescription = "VPN Shield",
                                 tint = if (isVpnConnected) MintTeal else CoralRed,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "TOWNSQUARE SHIELD",
+                                    text = "SHIELD",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White,
@@ -122,7 +122,7 @@ fun AdBlockVpnDialog(
                                 ) {
                                     Text(
                                         text = "ADBLOCK + VPN",
-                                        fontSize = 9.sp,
+                                        fontSize = 8.sp,
                                         fontWeight = FontWeight.Black,
                                         color = DarkBg,
                                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
@@ -130,22 +130,22 @@ fun AdBlockVpnDialog(
                                 }
                             }
                             Text(
-                                text = "Built-in ad removal & encrypted mesh network tunnel",
-                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                                text = "Ad blocker & encrypted mesh tunnel",
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 11.sp)
                             )
                         }
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray)
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray, modifier = Modifier.size(20.dp))
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // VPN Connection Control Card
                     item {
@@ -153,7 +153,7 @@ fun AdBlockVpnDialog(
                             colors = CardDefaults.cardColors(
                                 containerColor = if (isVpnConnected) MintTeal.copy(alpha = 0.12f) else DarkCardBg
                             ),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(12.dp),
                             border = androidx.compose.foundation.BorderStroke(
                                 1.dp,
                                 if (isVpnConnected) MintTeal else Color.Gray.copy(alpha = 0.3f)
@@ -162,7 +162,7 @@ fun AdBlockVpnDialog(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp),
+                                    .padding(12.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Row(
@@ -172,15 +172,15 @@ fun AdBlockVpnDialog(
                                 ) {
                                     Column {
                                         Text(
-                                            text = if (isVpnConnected) "ENCRYPTED VPN ACTIVE" else "VPN DISCONNECTED",
+                                            text = if (isVpnConnected) "VPN ACTIVE" else "VPN DISCONNECTED",
                                             style = MaterialTheme.typography.titleSmall.copy(
                                                 fontWeight = FontWeight.Bold,
                                                 color = if (isVpnConnected) MintTeal else CoralRed
                                             )
                                         )
                                         Text(
-                                            text = if (isVpnConnected) "Virtual IP: 10.244.18.99 (AES-256 Encrypted)" else "Your real IP address is exposed",
-                                            style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray)
+                                            text = if (isVpnConnected) "Virtual IP: 10.244.18.99 • AES-256" else "Real IP exposed",
+                                            style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray, fontSize = 11.sp)
                                         )
                                     }
 
@@ -244,18 +244,18 @@ fun AdBlockVpnDialog(
                     item {
                         Card(
                             colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
+                            Column(modifier = Modifier.padding(10.dp)) {
                                 Text(
-                                    text = "SELECT MESH VPN NODE",
+                                    text = "VPN RELAYS",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = MintTeal,
-                                        letterSpacing = 1.sp
+                                        letterSpacing = 0.5.sp
                                     )
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
                                 nodes.forEachIndexed { idx, node ->
                                     val isSel = selectedNodeIndex == idx
                                     Row(
@@ -307,9 +307,9 @@ fun AdBlockVpnDialog(
                     item {
                         Card(
                             colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
+                            Column(modifier = Modifier.padding(10.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -317,16 +317,16 @@ fun AdBlockVpnDialog(
                                 ) {
                                     Column {
                                         Text(
-                                            text = "AD & TRACKER BLOCKER",
+                                            text = "AD & TRACKER SHIELD",
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 fontWeight = FontWeight.Bold,
                                                 color = NeonCyan,
-                                                letterSpacing = 1.sp
+                                                letterSpacing = 0.5.sp
                                             )
                                         )
                                         Text(
                                             text = "DNS filtering & cosmetic ad stripping",
-                                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 11.sp)
                                         )
                                     }
 
@@ -341,7 +341,7 @@ fun AdBlockVpnDialog(
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
 
                                 // Telemetry Counters
                                 Row(
@@ -349,16 +349,16 @@ fun AdBlockVpnDialog(
                                     horizontalArrangement = Arrangement.SpaceAround
                                 ) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text("$adsBlockedCount", fontWeight = FontWeight.Bold, color = NeonCyan, fontSize = 18.sp)
-                                        Text("Ads Blocked", fontSize = 11.sp, color = Color.Gray)
+                                        Text("$adsBlockedCount", fontWeight = FontWeight.Bold, color = NeonCyan, fontSize = 16.sp)
+                                        Text("Ads Blocked", fontSize = 10.sp, color = Color.Gray)
                                     }
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text("$trackersBlockedCount", fontWeight = FontWeight.Bold, color = WarmAmber, fontSize = 18.sp)
-                                        Text("Trackers Neutralized", fontSize = 11.sp, color = Color.Gray)
+                                        Text("$trackersBlockedCount", fontWeight = FontWeight.Bold, color = WarmAmber, fontSize = 16.sp)
+                                        Text("Trackers", fontSize = 10.sp, color = Color.Gray)
                                     }
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text("${String.format("%.1f", dataSavedMb)} MB", fontWeight = FontWeight.Bold, color = MintTeal, fontSize = 18.sp)
-                                        Text("Data Saved", fontSize = 11.sp, color = Color.Gray)
+                                        Text("${String.format("%.1f", dataSavedMb)} MB", fontWeight = FontWeight.Bold, color = MintTeal, fontSize = 16.sp)
+                                        Text("Data Saved", fontSize = 10.sp, color = Color.Gray)
                                     }
                                 }
                             }
@@ -369,18 +369,18 @@ fun AdBlockVpnDialog(
                     item {
                         Card(
                             colors = CardDefaults.cardColors(containerColor = DarkCardBg),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
+                            Column(modifier = Modifier.padding(10.dp)) {
                                 Text(
-                                    text = "ADVANCED PRIVACY RULES",
+                                    text = "PRIVACY RULES",
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = Color.Gray,
-                                        letterSpacing = 1.sp
+                                        letterSpacing = 0.5.sp
                                     )
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -389,7 +389,7 @@ fun AdBlockVpnDialog(
                                 ) {
                                     Column {
                                         Text("Network Kill Switch", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
-                                        Text("Block internet if VPN disconnects unexpectedly", style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 10.sp))
+                                        Text("Block internet on unexpected drop", style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 10.sp))
                                     }
                                     Switch(
                                         checked = killSwitchEnabled,
@@ -398,7 +398,7 @@ fun AdBlockVpnDialog(
                                     )
                                 }
 
-                                HorizontalDivider(color = DarkBorder, modifier = Modifier.padding(vertical = 8.dp))
+                                HorizontalDivider(color = DarkBorder, modifier = Modifier.padding(vertical = 6.dp))
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -407,7 +407,7 @@ fun AdBlockVpnDialog(
                                 ) {
                                     Column {
                                         Text("Malicious Domain Filter", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
-                                        Text("Block phishing and malware telemetry sites", style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 10.sp))
+                                        Text("Block phishing and malware sites", style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray, fontSize = 10.sp))
                                     }
                                     Switch(
                                         checked = malwareProtection,
@@ -421,14 +421,14 @@ fun AdBlockVpnDialog(
                 }
 
                 if (statusLog != null) {
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = statusLog!!,
-                        style = MaterialTheme.typography.bodySmall.copy(color = MintTeal, fontFamily = FontFamily.Monospace)
+                        style = MaterialTheme.typography.bodySmall.copy(color = MintTeal, fontFamily = FontFamily.Monospace, fontSize = 11.sp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
                     onClick = {
@@ -439,14 +439,14 @@ fun AdBlockVpnDialog(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(44.dp)
                         .testTag("flush_adblock_rules_button"),
                     colors = ButtonDefaults.buttonColors(containerColor = MintTeal, contentColor = DarkBg),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("FLUSH PRIVACY FILTERS & OPTIMIZE", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Flush Filters", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
             }
         }

@@ -32,6 +32,13 @@ import com.example.ui.theme.DarkSurfaceElevated
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
 
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import com.example.ui.plus.townsquares.TownsquaresApp
+import com.example.ui.plus.yellowpages.TownsquareYellowPagesApp
+
 data class FandomHub(
     val id: String,
     val name: String,
@@ -58,9 +65,18 @@ data class CommunityPost(
 @Composable
 fun CommunityScreen(
     onOpenSidebar: () -> Unit,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    initialTab: Int = 0
 ) {
-    BackHandler { onBack() }
+    var selectedCommunityTab by remember(initialTab) { mutableIntStateOf(initialTab) }
+
+    BackHandler {
+        if (selectedCommunityTab != 0) {
+            selectedCommunityTab = 0
+        } else {
+            onBack()
+        }
+    }
     val context = LocalContext.current
 
     // Fandom Hubs State
@@ -118,8 +134,23 @@ fun CommunityScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("Community Wire & Fandom Hubs", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                        Text("Civic Discussions & Fan Guilds", style = MaterialTheme.typography.labelSmall, color = NeonCyan)
+                        Text(
+                            text = when (selectedCommunityTab) {
+                                1 -> "Townsquares Global"
+                                2 -> "Townsquare Yellow Pages"
+                                else -> "Community Wire"
+                            },
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Text(
+                            text = when (selectedCommunityTab) {
+                                1 -> "Global City Feeds, Guides & Transit"
+                                2 -> "Local Services, Freelance Gigs & Trades"
+                                else -> "Civic Discussions & Fan Guilds"
+                            },
+                            style = MaterialTheme.typography.labelSmall,
+                            color = NeonCyan
+                        )
                     }
                 },
                 navigationIcon = {
@@ -128,24 +159,28 @@ fun CommunityScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { isSearchVisible = !isSearchVisible }) {
-                        Icon(
-                            imageVector = if (isSearchVisible) Icons.Default.Close else Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
+                    if (selectedCommunityTab == 0) {
+                        IconButton(onClick = { isSearchVisible = !isSearchVisible }) {
+                            Icon(
+                                imageVector = if (isSearchVisible) Icons.Default.Close else Icons.Default.Search,
+                                contentDescription = "Search"
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { isCreatePostOpen = true },
-                containerColor = NeonCyan,
-                contentColor = Color(0xFF003544),
-                modifier = Modifier.testTag("new_community_post_fab")
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "New Post")
+            if (selectedCommunityTab == 0) {
+                FloatingActionButton(
+                    onClick = { isCreatePostOpen = true },
+                    containerColor = NeonCyan,
+                    contentColor = Color(0xFF003544),
+                    modifier = Modifier.testTag("new_community_post_fab")
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "New Post")
+                }
             }
         }
     ) { padding ->
@@ -155,6 +190,77 @@ fun CommunityScreen(
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            // Top Civic Navigation Tabs
+            TabRow(
+                selectedTabIndex = selectedCommunityTab,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = NeonCyan,
+                indicator = { tabPositions ->
+                    if (selectedCommunityTab < tabPositions.size) {
+                        TabRowDefaults.SecondaryIndicator(
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedCommunityTab]),
+                            color = NeonCyan
+                        )
+                    }
+                },
+                modifier = Modifier.testTag("community_tabs_row")
+            ) {
+                Tab(
+                    selected = selectedCommunityTab == 0,
+                    onClick = { selectedCommunityTab = 0 },
+                    modifier = Modifier.testTag("community_tab_discussions"),
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("💬", fontSize = 13.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                "Discussions",
+                                fontWeight = if (selectedCommunityTab == 0) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 12.sp,
+                                color = if (selectedCommunityTab == 0) NeonCyan else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                )
+                Tab(
+                    selected = selectedCommunityTab == 1,
+                    onClick = { selectedCommunityTab = 1 },
+                    modifier = Modifier.testTag("community_tab_townsquares"),
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🏙️", fontSize = 13.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                "Townsquares",
+                                fontWeight = if (selectedCommunityTab == 1) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 12.sp,
+                                color = if (selectedCommunityTab == 1) NeonCyan else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                )
+                Tab(
+                    selected = selectedCommunityTab == 2,
+                    onClick = { selectedCommunityTab = 2 },
+                    modifier = Modifier.testTag("community_tab_yellow_pages"),
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("📒", fontSize = 13.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                "Yellow Pages",
+                                fontWeight = if (selectedCommunityTab == 2) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 12.sp,
+                                color = if (selectedCommunityTab == 2) NeonCyan else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                )
+            }
+
+            when (selectedCommunityTab) {
+                0 -> {
+                    Column(modifier = Modifier.fillMaxSize()) {
             // Search field
             AnimatedVisibility(visible = isSearchVisible) {
                 Surface(
@@ -315,6 +421,25 @@ fun CommunityScreen(
                             context.startActivity(Intent.createChooser(sendIntent, "Share Dispatch"))
                         }
                     )
+                }
+            }
+                    }
+                }
+                1 -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        TownsquaresApp(
+                            onBack = { selectedCommunityTab = 0 },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+                2 -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        TownsquareYellowPagesApp(
+                            onBack = { selectedCommunityTab = 0 },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
         }
