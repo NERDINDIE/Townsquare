@@ -1,6 +1,7 @@
 package com.example.ui.plus.mail
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -49,6 +50,8 @@ fun TownsquareMailboxApp(
     var composeSubject by remember { mutableStateOf("") }
     var composeBody by remember { mutableStateOf("") }
     var composeAttachmentName by remember { mutableStateOf<String?>(null) }
+    var selectedStampEmoji by remember { mutableStateOf("📮") }
+    var selectedStampTitle by remember { mutableStateOf("Harbor Lighthouse First Day Issue") }
 
     val folders = listOf(
         Pair(MailFolder.INBOX, "Inbox"),
@@ -67,12 +70,12 @@ fun TownsquareMailboxApp(
 
     fun sendEmail() {
         val newEmail = EmailItem(
-            senderName = "You (Townsquare Citizen)",
+            senderName = "You (Townsquare Citizen) [$selectedStampEmoji Affixed]",
             senderEmail = "citizen@townsquare.media",
             recipientEmail = composeTo.ifBlank { "editor@townsquare.media" },
             subject = composeSubject.ifBlank { "(No Subject)" },
-            snippet = composeBody.take(120),
-            body = composeBody,
+            snippet = "[$selectedStampEmoji $selectedStampTitle] ${composeBody.take(100)}",
+            body = "Affixed Stamp: $selectedStampEmoji $selectedStampTitle\n\n$composeBody",
             timestamp = "Just now",
             folder = MailFolder.SENT,
             isUnread = false,
@@ -555,6 +558,42 @@ fun TownsquareMailboxApp(
                             maxLines = 8,
                             modifier = Modifier.fillMaxWidth()
                         )
+
+                        // Affix Collected / Custom Postal Stamp
+                        Text("Affix Collected / Custom Postal Stamp:", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = WarmAmber)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            val collectibleStamps = listOf(
+                                Pair("📮", "Harbor Lighthouse"),
+                                Pair("🏛️", "Gutenberg Signet"),
+                                Pair("⭐", "Civic Crest"),
+                                Pair("🏆", "Custom Stamp")
+                            )
+                            collectibleStamps.forEach { (emoji, title) ->
+                                val isSel = selectedStampEmoji == emoji
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isSel) WarmAmber.copy(alpha = 0.25f) else DarkSurfaceElevated,
+                                    border = BorderStroke(1.dp, if (isSel) WarmAmber else DarkBorder),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable {
+                                            selectedStampEmoji = emoji
+                                            selectedStampTitle = title
+                                        }
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(6.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(emoji, fontSize = 18.sp)
+                                        Text(title, fontSize = 8.sp, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    }
+                                }
+                            }
+                        }
 
                         // Attachment Simulation Option
                         Row(

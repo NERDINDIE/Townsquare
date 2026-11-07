@@ -151,6 +151,7 @@ fun TownsquareSidebarDrawer(
     onOpenBookworm: () -> Unit = {},
     onOpenPhone: () -> Unit = {},
     onOpenIotCompanion: () -> Unit = {},
+    onOpenHorizon3D: () -> Unit = {},
     onOpenTownsquares: () -> Unit = {},
     onOpenWeatherman: () -> Unit = {},
     onOpenArCamera: () -> Unit = {},
@@ -834,75 +835,70 @@ fun TownsquareSidebarDrawer(
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // Standalone Apps Section
-                        Text(
-                            text = "STANDALONE CIVIC APPS",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                            color = NeonCyan
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        var isStandaloneAppsMenuOpen by remember { mutableStateOf(false) }
 
-                        val standaloneApps = listOf(
-                            Triple("🛍️ Marketplace", "Buy & sell", onOpenMarketplace),
-                            Triple("🗺️ Maps & Travel", "Guides & routes", onOpenMaps),
-                            Triple("🎮 Arcade Games", "Retro games", onOpenArcade),
-                            Triple("🗣️ Lingo Lab", "Phrasebook", onOpenLingo),
-                            Triple("📚 Bookworm", "Library & archives", onOpenBookworm),
-                            Triple("📞 Phone Link", "Satellite & dialer", onOpenPhone),
-                            Triple("⌚ IoT Companion", "Remote & devices", onOpenIotCompanion),
-                            Triple("📷 AR Vision & HUD", "Civic AR scanner", onOpenArCamera),
-                            Triple("📁 File Explorer", "Storage & vault", onOpenFiles),
-                            Triple("⌚ Watchface Maker", "Smartwatch dials", onOpenWatchfaceMaker),
-                            Triple("📖 Pocket Reader", "Offline RSS vault", onOpenPocket),
-                            Triple("🖧 Server Console", "Embedded HTTP", onOpenServerConsole),
-                            Triple("🔐 Account & SSO", "Passkeys & login", onOpenLoginSignup),
-                            Triple("⚡ FOMO Digest", "Catch-up recap", onOpenFomoDigest)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { isStandaloneAppsMenuOpen = !isStandaloneAppsMenuOpen }
+                                .padding(vertical = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "STANDALONE CIVIC APPS (${14})",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+                                color = NeonCyan
+                            )
+                            Icon(
+                                imageVector = if (isStandaloneAppsMenuOpen) Icons.Default.Close else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = NeonCyan,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
 
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            standaloneApps.forEach { (title, subtitle, onClick) ->
-                                Surface(
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = DarkSurfaceElevated,
-                                    border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            onClose()
-                                            onClick()
-                                        }
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Column(modifier = Modifier.weight(1f, fill = false)) {
-                                            Text(
-                                                text = title,
-                                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                                color = Color.White,
-                                                maxLines = 1,
-                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                            )
-                                            Text(
-                                                text = subtitle,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = Color.Gray,
-                                                maxLines = 1,
-                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                            )
-                                        }
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                            contentDescription = null,
-                                            tint = NeonCyan,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
+                        GlobalSandwichMenu(
+                            isOpen = isStandaloneAppsMenuOpen,
+                            title = "Civic Apps & Utilities Suite",
+                            items = listOf(
+                                SandwichMenuItem("marketplace", "Marketplace", "Buy & sell", "🛍️"),
+                                SandwichMenuItem("maps", "Maps & Travel", "Guides & routes", "🗺️"),
+                                SandwichMenuItem("arcade", "Arcade Games", "Retro games", "🎮"),
+                                SandwichMenuItem("lingo", "Lingo Lab", "Phrasebook", "🗣️"),
+                                SandwichMenuItem("bookworm", "Bookworm", "Library & archives", "📚"),
+                                SandwichMenuItem("phone", "Phone Link", "Satellite & dialer", "📞"),
+                                SandwichMenuItem("iot", "IoT Companion", "Remote & devices", "⌚"),
+                                SandwichMenuItem("ar", "AR Vision & HUD", "Civic AR scanner", "📷"),
+                                SandwichMenuItem("files", "File Explorer", "Storage & vault", "📁"),
+                                SandwichMenuItem("watchface", "Watchface Maker", "Smartwatch dials", "⌚"),
+                                SandwichMenuItem("pocket", "Pocket Reader", "Offline RSS vault", "📖"),
+                                SandwichMenuItem("server", "Server Console", "Embedded HTTP", "🖧"),
+                                SandwichMenuItem("auth", "Account & SSO", "Passkeys & login", "🔐"),
+                                SandwichMenuItem("fomo", "FOMO Digest", "Catch-up recap", "⚡"),
+                                SandwichMenuItem("horizon3d", "Townsquare Horizon 3D", "Open world 3D engine & game", "🎮")
+                            ),
+                            onSelectItem = { menuItem ->
+                                onClose()
+                                when (menuItem.id) {
+                                    "marketplace" -> onOpenMarketplace()
+                                    "maps" -> onOpenMaps()
+                                    "arcade" -> onOpenArcade()
+                                    "lingo" -> onOpenLingo()
+                                    "bookworm" -> onOpenBookworm()
+                                    "phone" -> onOpenPhone()
+                                    "iot" -> onOpenIotCompanion()
+                                    "ar" -> onOpenArCamera()
+                                    "files" -> onOpenFiles()
+                                    "watchface" -> onOpenWatchfaceMaker()
+                                    "pocket" -> onOpenPocket()
+                                    "server" -> onOpenServerConsole()
+                                    "auth" -> onOpenLoginSignup()
+                                    "fomo" -> onOpenFomoDigest()
+                                    "horizon3d" -> onOpenHorizon3D()
                                 }
                             }
-                        }
+                        )
 
                         Spacer(modifier = Modifier.height(14.dp))
 

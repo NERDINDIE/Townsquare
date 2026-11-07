@@ -138,6 +138,19 @@ object MediaDiscoveryChannels {
             followersCount = 78400,
             morningBriefHighlight = "Canal Harbor FC edges Metropolis Athletic 2-1 in thrilling 78th-minute cup derby at the Basin Stadium.",
             iconEmoji = "🏆"
+        ),
+
+        // 11. Sonic Waveforms / Music news, album reviews, vinyl
+        MediaChannelEntity(
+            id = "channel_sonic_waveforms",
+            name = "🎵 Sonic Waveforms",
+            description = "Dedicated music news, album reviews, live radio broadcast song tracking, vinyl pressings, and artist interviews.",
+            category = "Music News & Streaming",
+            bannerColorHex = 0xFF00D2FF, // Neon Cyan
+            isFollowed = true,
+            followersCount = 61400,
+            morningBriefHighlight = "Independent label showcase highlights rare analog synth sessions recorded live at Studio B.",
+            iconEmoji = "🎵"
         )
     )
 
@@ -145,6 +158,39 @@ object MediaDiscoveryChannels {
      * Generates rich initial story dispatches for the 9 new channels.
      */
     fun getNewChannelsMediaItems(now: Long = System.currentTimeMillis()): List<MediaItemEntity> = listOf(
+        // Sonic Waveforms
+        MediaItemEntity(
+            type = MediaType.NEWSPAPER_MAGAZINE.name,
+            title = "Analog Synth Revival: Inside Studio B's Direct-to-Tape Mastering Sessions",
+            subtitle = "Why independent musicians are abandoning digital plug-ins for vintage 24-track analog tape recorders.",
+            authorName = "Miles Vance",
+            authorHandle = "@miles_waves",
+            channelId = "channel_sonic_waveforms",
+            channelName = "🎵 Sonic Waveforms",
+            bodyText = """The rhythmic click of the Studer A800 24-track tape machine signals the start of another take in Studio B. In an era dominated by cloud collaboration and pristine digital plug-ins, a passionate faction of Townsquare musicians is returning to the tactile imperfections of pure analog tape.
+            
+Producer Julian Hayes points to the warm tape saturation and natural compression that occurs when magnetic particles reach their saturation ceiling. 'Digital is mathematically perfect,' Hayes says, 'but analog breathes. It has a soul and a heartbeat that connects directly to the listener.'""",
+            readTimeMinutes = 4,
+            likesCount = 312,
+            timestamp = now - 1500000L,
+            tags = "#music #vinyl #synth #analog #sonicwaveforms #audio"
+        ),
+        MediaItemEntity(
+            type = MediaType.PODCAST_EPISODE.name,
+            title = "Sonic Waveforms Podcast #42: The Evolution of Ambient Soundscapes",
+            subtitle = "A 45-minute deep dive into generative electronic music and field recordings from the alpine ridge.",
+            authorName = "Sonic Waveforms Wire",
+            authorHandle = "@sonic_waveforms",
+            channelId = "channel_sonic_waveforms",
+            channelName = "🎵 Sonic Waveforms",
+            bodyText = "Exploring generative tape loops and environmental acoustic recordings across the commonwealth.",
+            durationSeconds = 2700,
+            mediaUrl = "https://audio.townsquare.local/sonic_waveforms_ep42.mp3",
+            timestamp = now - 3200000L,
+            likesCount = 184,
+            tags = "#podcast #ambient #electronic #music"
+        ),
+
         // Silver Screen
         MediaItemEntity(
             type = MediaType.NEWSPAPER_MAGAZINE.name,

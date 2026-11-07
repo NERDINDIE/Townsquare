@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/ic_app_icon"
+        android:drawable="@drawable/airwaves_app_icon_1793467163307"
         android:gravity="center" />
 </layer-list>

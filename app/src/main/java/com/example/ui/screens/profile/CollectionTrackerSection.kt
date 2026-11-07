@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.*
@@ -45,8 +46,19 @@ fun CollectionTrackerSection(
 ) {
     var selectedCategory by remember { mutableStateOf("ALL") }
     var isAddItemOpen by remember { mutableStateOf(false) }
+    var isStampConverterOpen by remember { mutableStateOf(false) }
     var viewingItem by remember { mutableStateOf<CollectionItem?>(null) }
     var successToast by remember { mutableStateOf<String?>(null) }
+
+    var customStamps by remember {
+        mutableStateOf(
+            listOf(
+                PostalStamp("st_1", "Harbor Lighthouse First Day Issue", "📮", "$2.00", 0xFF00D2FFL, false, "2026"),
+                PostalStamp("st_2", "Gutenberg Centenary Signet", "🏛️", "50c", 0xFFFFB300L, false, "2025"),
+                PostalStamp("st_3", "City Hall Civic Crest", "⭐", "$5.00", 0xFFA855F7L, true, "2026")
+            )
+        )
+    }
 
     // New item form state
     var newName by remember { mutableStateOf("") }
@@ -228,7 +240,7 @@ fun CollectionTrackerSection(
             }
         }
 
-        // Action row: Category filter + Add Collectible
+        // Action row: Category filter + Add Collectible + Stamp Converter
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -240,15 +252,28 @@ fun CollectionTrackerSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Button(
-                onClick = { isAddItemOpen = true },
-                colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = Color(0xFF003544)),
-                shape = RoundedCornerShape(10.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Log Artifact", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Button(
+                    onClick = { isStampConverterOpen = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = WarmAmber, contentColor = Color.Black),
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Stamp Converter", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                }
+
+                Button(
+                    onClick = { isAddItemOpen = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = Color(0xFF003544)),
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Log", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
 
@@ -294,6 +319,77 @@ fun CollectionTrackerSection(
                     }
                 }
             }
+        }
+
+        if (selectedCategory == "ALL" || selectedCategory == "Stamps & Postcards") {
+            Text(
+                text = "📮 COLLECTIBLE & CUSTOM STAMPS ALBUM (${customStamps.size})",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Black,
+                color = WarmAmber,
+                letterSpacing = 0.5.sp
+            )
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(customStamps) { stamp ->
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(stamp.colorHex).copy(alpha = 0.2f),
+                        border = BorderStroke(1.5.dp, Color(stamp.colorHex)),
+                        modifier = Modifier.width(140.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = Color(stamp.colorHex).copy(alpha = 0.3f),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(stamp.emojiOrIcon, fontSize = 20.sp)
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stamp.title,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "Value: ${stamp.valueDenomination}",
+                                fontSize = 9.sp,
+                                color = Color(stamp.colorHex),
+                                fontWeight = FontWeight.Black
+                            )
+                            if (stamp.isCustom) {
+                                Surface(
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = NeonCyan.copy(alpha = 0.2f),
+                                    modifier = Modifier.padding(top = 4.dp)
+                                ) {
+                                    Text("CUSTOM STAMP", fontSize = 7.sp, fontWeight = FontWeight.Bold, color = NeonCyan, modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        if (isStampConverterOpen) {
+            StampConverterComponent(
+                onSaveStamp = { newStamp ->
+                    customStamps = listOf(newStamp) + customStamps
+                    isStampConverterOpen = false
+                    successToast = "Successfully converted image to stamp '${newStamp.title}'!"
+                },
+                onDismiss = { isStampConverterOpen = false }
+            )
         }
 
         // Collection Items Grid / List

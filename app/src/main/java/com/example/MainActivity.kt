@@ -330,6 +330,7 @@ fun TownsquareApp(
     var isLegalNoticeOpen by remember { mutableStateOf(false) }
     var isWidgetsDrawerOpen by remember { mutableStateOf(false) }
     var isIotCompanionOpen by remember { mutableStateOf(false) }
+    var isHorizon3DOpen by remember { mutableStateOf(false) }
     var isMarketplaceOpen by remember { mutableStateOf(false) }
     var isMapsOpen by remember { mutableStateOf(false) }
     var isArcadeOpen by remember { mutableStateOf(false) }
@@ -480,7 +481,9 @@ fun TownsquareApp(
                             }
                         },
                         chatMessages = tvChatMessages[activeTvChannelId] ?: emptyList(),
-                        onSendChatMessage = { msg -> viewModel.sendTvChatMessage(activeTvChannelId, "You", msg) }
+                        onSendChatMessage = { msg -> viewModel.sendTvChatMessage(activeTvChannelId, "You", msg) },
+                        allMediaItems = allItems,
+                        onPlayAudioItem = { viewModel.playAudio(it) }
                     )
                 }
             }
@@ -967,6 +970,7 @@ fun TownsquareApp(
         onOpenBookworm = { isBookwormOpen = true },
         onOpenPhone = { isPhoneOpen = true },
         onOpenIotCompanion = { isIotCompanionOpen = true },
+        onOpenHorizon3D = { isHorizon3DOpen = true },
         onOpenTownsquares = {
             communityInitialTab = 1
             currentNavIndex = NavDestination.COMMUNITY
@@ -1062,6 +1066,18 @@ fun TownsquareApp(
         ) {
             com.example.ui.plus.iot.TownsquareIotCompanionApp(
                 onBack = { isIotCompanionOpen = false }
+            )
+        }
+    }
+
+    // 0-Horizon 3D. Open World Game & Engine
+    if (isHorizon3DOpen) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { isHorizon3DOpen = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            com.example.ui.plus.game3d.TownsquareHorizonGameApp(
+                onBack = { isHorizon3DOpen = false }
             )
         }
     }

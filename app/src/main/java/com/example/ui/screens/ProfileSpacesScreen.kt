@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,6 +67,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material.icons.filled.Mic
 import com.example.ui.components.MediaCardItem
+import com.example.ui.components.GlobalSandwichMenu
+import com.example.ui.components.SandwichMenuItem
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.Menu
 import com.example.ui.theme.DarkBorder
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
@@ -299,52 +304,81 @@ fun ProfileSpacesScreen(
                 }
             }
 
-            // Unified Personal Profile Subapp Modules
+            // Central Sandwich Menu for Profile Modules Navigation
             item {
-                Column {
-                    Text(
-                        text = "UNIFIED PERSONAL PROFILE MODULES",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.1.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                var isProfileMenuOpen by remember { mutableStateOf(false) }
+                val profileModules = listOf(
+                    Triple(0, "🖼️ Works", "Creative works & publications"),
+                    Triple(6, "📺 TV Watchlist", "Saved shows & EPG reminders"),
+                    Triple(1, "💳 Finance", "Personal budgeting & accounts"),
+                    Triple(2, "🫀 Health", "Health & well-being telemetry"),
+                    Triple(3, "🏛️ State Pass", "Civic identity & credentials"),
+                    Triple(4, "💼 Business ERP", "Commercial workspace & ledgers"),
+                    Triple(5, "🏺 Collections", "Curated artifacts & archives")
+                )
+                val currentModule = profileModules.find { it.first == mainProfileModule } ?: profileModules[0]
+
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFF131D2E),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { isProfileMenuOpen = !isProfileMenuOpen }
+                            .testTag("profile_sandwich_menu_toggle")
                     ) {
-                        val profileModules = listOf(
-                            Pair(0, "🖼️ Works"),
-                            Pair(6, "📺 TV Watchlist"),
-                            Pair(1, "💳 Finance"),
-                            Pair(2, "🫀 Health"),
-                            Pair(3, "🏛️ State Pass"),
-                            Pair(4, "💼 Business ERP"),
-                            Pair(5, "🏺 Collections")
-                        )
-                        items(profileModules) { (modId, label) ->
-                            val isSelected = mainProfileModule == modId
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = if (isSelected) NeonCyan else MaterialTheme.colorScheme.surfaceVariant,
-                                modifier = Modifier
-                                    .height(38.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable { mainProfileModule = modId }
-                                    .testTag("profile_module_tab_$modId")
-                            ) {
-                                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 12.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(currentModule.second.take(2), fontSize = 20.sp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
                                     Text(
-                                        text = label,
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = if (isSelected) Color(0xFF003544) else MaterialTheme.colorScheme.onSurface
+                                        text = currentModule.second.drop(3),
+                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = currentModule.third,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = NeonCyan
                                     )
                                 }
                             }
+                            Icon(
+                                imageVector = if (isProfileMenuOpen) Icons.Default.ExpandLess else Icons.Default.Menu,
+                                contentDescription = "Toggle Modules Menu",
+                                tint = NeonCyan
+                            )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    GlobalSandwichMenu(
+                        isOpen = isProfileMenuOpen,
+                        title = "PROFILE SUBAPP MODULES",
+                        items = profileModules.map { (id, label, desc) ->
+                            SandwichMenuItem(
+                                id = id.toString(),
+                                title = label.drop(3),
+                                description = desc,
+                                iconEmoji = label.take(2),
+                                accentColor = NeonCyan,
+                                isSelected = mainProfileModule == id
+                            )
+                        },
+                        onSelectItem = { menuItem ->
+                            mainProfileModule = menuItem.id.toInt()
+                            isProfileMenuOpen = false
+                        }
+                    )
                 }
             }
 

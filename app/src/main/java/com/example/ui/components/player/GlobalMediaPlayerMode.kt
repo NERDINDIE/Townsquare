@@ -42,6 +42,18 @@ enum class GlobalMediaMode(
         iconEmoji = "📻",
         description = "Radio dials, saved stations, recording & subtitles",
         accentColor = WarmAmber
+    ),
+    WAVES(
+        title = "Waves",
+        iconEmoji = "🌊",
+        description = "Townsquare Waves streaming & live song recognition",
+        accentColor = Color(0xFF00D2FF)
+    ),
+    AUDIOBOOK(
+        title = "Audiobook",
+        iconEmoji = "📚",
+        description = "Audiobooks with digital replica & translation",
+        accentColor = Color(0xFFFFB300)
     )
 }
 

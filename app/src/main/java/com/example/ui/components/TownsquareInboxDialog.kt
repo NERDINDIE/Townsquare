@@ -444,6 +444,28 @@ private fun InboxNotificationCard(
 
             Spacer(modifier = Modifier.height(6.dp))
 
+            if (item.category == InboxCategory.TV_BROADCAST) {
+                Surface(
+                    shape = RoundedCornerShape(6.dp),
+                    color = Color(0xFF30D158).copy(alpha = 0.2f),
+                    border = BorderStroke(1.dp, Color(0xFF30D158).copy(alpha = 0.5f)),
+                    modifier = Modifier.padding(bottom = 6.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "📡", fontSize = 11.sp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "AIRING TONIGHT 8:00 PM • LIVE CH. 1",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 10.sp),
+                            color = Color(0xFF30D158)
+                        )
+                    }
+                }
+            }
+
             Text(
                 text = item.title,
                 style = MaterialTheme.typography.titleSmall.copy(

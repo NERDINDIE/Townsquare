@@ -41,6 +41,11 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Close
+import com.example.ui.components.GlobalSandwichMenu
+import com.example.ui.components.SandwichMenuItem
+import com.example.ui.screens.discovery.TownsquarePeepsView
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -65,6 +70,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -278,40 +284,116 @@ fun MainFeedScreen(
             onHeadlineClick = { selectedHeadline = it }
         )
 
-        // Curation Feed Toggles
-        androidx.compose.material3.TabRow(
-            selectedTabIndex = if (isForYouFeed) 1 else 0,
-            containerColor = Color.Transparent,
-            contentColor = NeonCyan,
-            indicator = { tabPositions ->
-                androidx.compose.material3.TabRowDefaults.SecondaryIndicator(
-                    Modifier.tabIndicatorOffset(tabPositions[if (isForYouFeed) 1 else 0]),
-                    color = NeonCyan
-                )
-            },
-            divider = { androidx.compose.material3.HorizontalDivider(color = DarkBorder) }
+        // Homepage Sandwich Menu for Feed Modes (Main Civic Feed vs Townsquare Peeps)
+        var isHomeMenuOpen by remember { mutableStateOf(false) }
+        var selectedHomeMode by remember { mutableIntStateOf(0) } // 0 = Main Civic Feed, 1 = Townsquare Peeps
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 6.dp)
+                .clickable { isHomeMenuOpen = !isHomeMenuOpen }
+                .testTag("homepage_sandwich_menu_toggle"),
+            shape = RoundedCornerShape(10.dp),
+            color = Color(0xFF131D2E),
+            border = BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f))
         ) {
-            androidx.compose.material3.Tab(
-                selected = !isForYouFeed,
-                onClick = { onToggleForYouFeed(false) },
-                text = { Text("Latest", fontWeight = if (!isForYouFeed) FontWeight.Bold else FontWeight.Medium, fontSize = 12.sp) }
-            )
-            androidx.compose.material3.Tab(
-                selected = isForYouFeed,
-                onClick = { onToggleForYouFeed(true) },
-                text = { Text("For You", fontWeight = if (isForYouFeed) FontWeight.Bold else FontWeight.Medium, fontSize = 12.sp) }
-            )
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(if (selectedHomeMode == 0) "📰" else "🐥", fontSize = 18.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            text = if (selectedHomeMode == 0) "Mode: Main Civic Feed" else "Mode: Townsquare Peeps Stream",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = if (selectedHomeMode == 0) "Latest stories, bulletins & outlets" else "Short-form verified news & audio bites",
+                            fontSize = 10.sp,
+                            color = DarkTextSecondary
+                        )
+                    }
+                }
+                Icon(
+                    imageVector = if (isHomeMenuOpen) Icons.Default.Close else Icons.Default.Menu,
+                    contentDescription = null,
+                    tint = NeonCyan,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
+
+        GlobalSandwichMenu(
+            isOpen = isHomeMenuOpen,
+            title = "HOMEPAGE DISCOVERY SUITE",
+            items = listOf(
+                SandwichMenuItem(
+                    id = "feed",
+                    title = "Main Civic Feed",
+                    description = "Latest stories, bulletins & outlets",
+                    iconEmoji = "📰",
+                    isSelected = selectedHomeMode == 0
+                ),
+                SandwichMenuItem(
+                    id = "peeps",
+                    title = "Townsquare Peeps",
+                    description = "Short-form verified news & audio bites",
+                    iconEmoji = "🐥",
+                    isSelected = selectedHomeMode == 1
+                )
+            ),
+            onSelectItem = { item ->
+                selectedHomeMode = if (item.id == "feed") 0 else 1
+                isHomeMenuOpen = false
+            },
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 2.dp)
+        )
+
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Main Feed with Pull-To-Refresh Box
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier
-                .fillMaxSize()
-                .testTag("feed_pull_to_refresh_box")
-        ) {
+        if (selectedHomeMode == 1) {
+            TownsquarePeepsView(modifier = Modifier.fillMaxSize())
+        } else {
+            // Curation Feed Toggles
+            androidx.compose.material3.TabRow(
+                selectedTabIndex = if (isForYouFeed) 1 else 0,
+                containerColor = Color.Transparent,
+                contentColor = NeonCyan,
+                indicator = { tabPositions ->
+                    androidx.compose.material3.TabRowDefaults.SecondaryIndicator(
+                        Modifier.tabIndicatorOffset(tabPositions[if (isForYouFeed) 1 else 0]),
+                        color = NeonCyan
+                    )
+                },
+                divider = { androidx.compose.material3.HorizontalDivider(color = DarkBorder) }
+            ) {
+                androidx.compose.material3.Tab(
+                    selected = !isForYouFeed,
+                    onClick = { onToggleForYouFeed(false) },
+                    text = { Text("Latest", fontWeight = if (!isForYouFeed) FontWeight.Bold else FontWeight.Medium, fontSize = 12.sp) }
+                )
+                androidx.compose.material3.Tab(
+                    selected = isForYouFeed,
+                    onClick = { onToggleForYouFeed(true) },
+                    text = { Text("For You", fontWeight = if (isForYouFeed) FontWeight.Bold else FontWeight.Medium, fontSize = 12.sp) }
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Main Feed with Pull-To-Refresh Box
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag("feed_pull_to_refresh_box")
+            ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -656,6 +738,7 @@ fun MainFeedScreen(
                 }
             }
         }
+      }
         
         if (selectedHeadline != null) {
             ModalBottomSheet(

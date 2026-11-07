@@ -108,6 +108,21 @@ object InboxSeedHelper {
                 isRead = true,
                 hasAudio = false,
                 actionType = InboxActionType.NONE
+            ),
+            InboxNotificationItem(
+                id = "inbox_tv_broadcast_1",
+                category = InboxCategory.TV_BROADCAST,
+                title = "Watchlist Reminder: Evening News Hour on TCTV-1",
+                snippet = "Bookmarked show 'Townsquare Evening Wire' is airing tonight at 8:00 PM. Set reminder or tune in directly.",
+                timestamp = now - 20 * 60 * 1000,
+                timeAgo = "20m ago",
+                sourceLabel = "TCTV-1 Live Broadcast",
+                badgeEmoji = "📺",
+                accentColorHex = 0xFF30D158,
+                isRead = false,
+                hasAudio = false,
+                actionType = InboxActionType.OPEN_TV,
+                targetId = "tctv_1"
             )
         )
     }

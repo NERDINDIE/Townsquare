@@ -2,7 +2,6 @@ package com.example.ui.components
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,35 +15,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.R
 import com.example.audio.AudioState
 import com.example.audio.NarrationStyle
 import com.example.audio.VoiceNarrationState
+import com.example.data.model.MediaItemEntity
 import com.example.data.model.MediaType
 import com.example.data.model.TvChannelEntity
 import com.example.data.model.TvScheduleItem
 import com.example.ui.components.player.*
+import com.example.ui.plus.waves.TownsquareWavesApp
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
 import com.example.ui.viewmodel.TvChatMessage
 
 /**
- * Consolidated Townsquare Global Media Player
- * Refactored into 5 distinct mode states with dedicated component files:
- * 1. Audio: Music streaming, podcasts, device audio files (GlobalAudioPlayerMode.kt)
- * 2. Video: Device video files, video hosting platforms (GlobalVideoPlayerMode.kt)
- * 3. Image: Image editing, filters, and high-res viewing (GlobalImageViewerMode.kt)
- * 4. TV: Live TV broadcasts & livestreams with chatting (GlobalTvPlayerMode.kt)
- * 5. Radio: Radio tuner dial, presets, live recording & subtitles (GlobalRadioPlayerMode.kt)
+ * Consolidated Townsquare Global Media Player with Modular Components,
+ * Radio Dial Skin, Compact Sandwich Menu List, Townsquare Waves Integration,
+ * and Audiobook Digital Replica Mode with Multilingual Support.
  */
 @Composable
 fun GlobalMediaPlayer(
@@ -79,10 +72,11 @@ fun GlobalMediaPlayer(
     onScheduleReminder: (TvScheduleItem) -> Unit = {},
     chatMessages: List<TvChatMessage> = emptyList(),
     onSendChatMessage: (String) -> Unit = {},
+    allMediaItems: List<MediaItemEntity> = emptyList(),
+    onPlayAudioItem: (MediaItemEntity) -> Unit = {},
     initialMode: GlobalMediaMode? = null,
     modifier: Modifier = Modifier
 ) {
-    // Current Media Player Mode State
     var currentMode by remember {
         mutableStateOf(
             initialMode ?: when {
@@ -93,7 +87,6 @@ fun GlobalMediaPlayer(
         )
     }
 
-    // Auto-sync mode when TV or Audio starts playing
     LaunchedEffect(isTvPlaying, activeTvChannel) {
         if (isTvPlaying && activeTvChannel != null) {
             currentMode = GlobalMediaMode.TV
@@ -111,12 +104,14 @@ fun GlobalMediaPlayer(
 
     if (!isPlayerVisible) return
 
+    val radioStations = remember(allMediaItems) { allMediaItems.filter { it.type == MediaType.RADIO_STATION.name } }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .testTag("global_media_player_root")
     ) {
-        // Voice Narration Special Overlay (if currently active)
+        // Voice Narration Overlay
         if (narrationState.isNarrating) {
             GlobalVoiceNarrationPlayerView(
                 state = narrationState,
@@ -140,50 +135,40 @@ fun GlobalMediaPlayer(
             shadowElevation = 10.dp
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
-                // 5-MODE NAVIGATION SWITCHER BAR
+                // COMPACT SANDWICH MENU BAR (Replacing old tabs)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 6.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    GlobalMediaMode.values().forEach { mode ->
-                        val isSelected = currentMode == mode
-                        val bgColor = if (isSelected) mode.accentColor.copy(alpha = 0.25f) else Color(0xFF1E293B)
-                        val borderColor = if (isSelected) mode.accentColor else Color.Transparent
-                        val contentColor = if (isSelected) mode.accentColor else Color.LightGray
+                    GlobalPlayerSandwichMenu(
+                        currentMode = currentMode,
+                        onSelectMode = { mode ->
+                            currentMode = mode
+                            isExpandedMode = true
+                        }
+                    )
 
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(bgColor)
-                                .border(1.dp, borderColor, RoundedCornerShape(10.dp))
-                                .clickable {
-                                    currentMode = mode
-                                    isExpandedMode = true
-                                }
-                                .padding(vertical = 6.dp),
-                            contentAlignment = Alignment.Center
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = currentMode.accentColor.copy(alpha = 0.2f),
+                            modifier = Modifier.padding(horizontal = 4.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(mode.iconEmoji, fontSize = 12.sp)
-                                Spacer(modifier = Modifier.width(3.dp))
-                                Text(
-                                    text = mode.title,
-                                    fontSize = 11.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = contentColor
-                                )
-                            }
+                            Text(
+                                text = currentMode.title,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = currentMode.accentColor,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
                         }
                     }
                 }
 
-                // MINI SUMMARY BAR (When not expanded into full mode view)
+                // MINI SUMMARY BAR
                 if (!isExpandedMode) {
                     Row(
                         modifier = Modifier
@@ -199,7 +184,6 @@ fun GlobalMediaPlayer(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.weight(1f)
                         ) {
-                            // Mode Icon Badge
                             Surface(
                                 shape = CircleShape,
                                 color = currentMode.accentColor.copy(alpha = 0.2f),
@@ -220,6 +204,8 @@ fun GlobalMediaPlayer(
                                     GlobalMediaMode.IMAGE -> "Townsquare Visual Wire & Editor"
                                     GlobalMediaMode.TV -> activeTvChannel?.currentShowTitle ?: "Townsquare Central Live TV"
                                     GlobalMediaMode.RADIO -> "101.4 FM • Townsquare Central Live"
+                                    GlobalMediaMode.WAVES -> "Townsquare Waves • Live Radio & Streaming"
+                                    GlobalMediaMode.AUDIOBOOK -> audioState.currentItem?.title ?: "Townsquare Audiobook Replica"
                                 }
 
                                 val subText = when (currentMode) {
@@ -227,7 +213,9 @@ fun GlobalMediaPlayer(
                                     GlobalMediaMode.VIDEO -> "🎬 1080p FHD • Townsquare Tube"
                                     GlobalMediaMode.IMAGE -> "🖼️ Photojournalism & Creative Studio"
                                     GlobalMediaMode.TV -> "📺 ${activeTvChannel?.name ?: "Channel 1"}"
-                                    GlobalMediaMode.RADIO -> "📻 Stereo FM • Live Broadcast"
+                                    GlobalMediaMode.RADIO -> "📻 Stereo FM • Radio Dial Skin"
+                                    GlobalMediaMode.WAVES -> "🌊 Live Song Recognition & Catalog"
+                                    GlobalMediaMode.AUDIOBOOK -> "📚 Digital Replica & Multilingual Support"
                                 }
 
                                 Text(
@@ -247,12 +235,11 @@ fun GlobalMediaPlayer(
                             }
                         }
 
-                        // Right Action Buttons: Play/Pause, Expand, Close
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(
                                 onClick = {
                                     when (currentMode) {
-                                        GlobalMediaMode.AUDIO -> onTogglePlayPauseAudio()
+                                        GlobalMediaMode.AUDIO, GlobalMediaMode.AUDIOBOOK -> onTogglePlayPauseAudio()
                                         GlobalMediaMode.TV -> onToggleTvPlayPause()
                                         else -> {}
                                     }
@@ -263,7 +250,7 @@ fun GlobalMediaPlayer(
                                     .background(currentMode.accentColor)
                             ) {
                                 val isCurrentlyPlaying = when (currentMode) {
-                                    GlobalMediaMode.AUDIO -> audioState.isPlaying
+                                    GlobalMediaMode.AUDIO, GlobalMediaMode.AUDIOBOOK -> audioState.isPlaying
                                     GlobalMediaMode.TV -> isTvPlaying
                                     else -> true
                                 }
@@ -308,14 +295,13 @@ fun GlobalMediaPlayer(
                     }
                 }
 
-                // EXPANDED MODE VIEW - DEDICATED COMPONENT FILES
+                // EXPANDED MODE VIEW
                 AnimatedVisibility(
                     visible = isExpandedMode,
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        // Collapse bar handle
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -383,7 +369,27 @@ fun GlobalMediaPlayer(
                                 )
                             }
                             GlobalMediaMode.RADIO -> {
-                                GlobalRadioPlayerMode(
+                                RadioDialPlayerSkin(
+                                    radioStations = radioStations,
+                                    audioState = audioState,
+                                    onPlayStation = { onPlayAudioItem(it) },
+                                    onTogglePlayPause = onTogglePlayPauseAudio,
+                                    onClose = { isExpandedMode = false }
+                                )
+                            }
+                            GlobalMediaMode.WAVES -> {
+                                TownsquareWavesApp(
+                                    items = allMediaItems,
+                                    audioState = audioState,
+                                    onPlayAudio = { onPlayAudioItem(it) },
+                                    onBack = { isExpandedMode = false },
+                                    modifier = Modifier.height(400.dp)
+                                )
+                            }
+                            GlobalMediaMode.AUDIOBOOK -> {
+                                AudiobookReplicaPlayer(
+                                    audioState = audioState,
+                                    onTogglePlayPause = onTogglePlayPauseAudio,
                                     onClose = { isExpandedMode = false }
                                 )
                             }
@@ -395,9 +401,6 @@ fun GlobalMediaPlayer(
     }
 }
 
-/**
- * Dedicated Voice Narration Player View
- */
 @Composable
 private fun GlobalVoiceNarrationPlayerView(
     state: VoiceNarrationState,
