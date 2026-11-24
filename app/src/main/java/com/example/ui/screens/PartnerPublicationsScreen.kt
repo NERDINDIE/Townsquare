@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.ui.components.AirwavesBrandIcon
+import com.example.ui.components.AirwavesBrandIconType
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmark
@@ -92,18 +94,15 @@ fun PartnerPublicationsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable { onOpenSidebar() }
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onOpenSidebar) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menu",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Spacer(modifier = Modifier.width(4.dp))
-                Column {
+                AirwavesBrandIcon(
+                    iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                    size = 32.dp,
+                    onOpenSidebar = onOpenSidebar
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(modifier = Modifier.clickable { onOpenSidebar() }) {
                     Text(
                         text = "Partner Syndicate",
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),

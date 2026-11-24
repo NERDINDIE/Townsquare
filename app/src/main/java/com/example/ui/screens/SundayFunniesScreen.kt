@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.ui.components.AirwavesBrandIcon
+import com.example.ui.components.AirwavesBrandIconType
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmark
@@ -134,9 +136,14 @@ fun SundayFunniesScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onOpenSidebar, modifier = Modifier.testTag("funnies_sidebar_button")) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Open Drawer Sidebar")
-                    }
+                    AirwavesBrandIcon(
+                        iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                        size = 32.dp,
+                        onOpenSidebar = onOpenSidebar,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .testTag("funnies_sidebar_button")
+                    )
                 },
                 actions = {
                     Button(

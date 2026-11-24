@@ -28,7 +28,8 @@ data class SandwichMenuItem(
     val id: String,
     val title: String,
     val description: String,
-    val iconEmoji: String,
+    val iconEmoji: String = "",
+    val brandIconType: AirwavesBrandIconType? = null,
     val accentColor: Color = NeonCyan,
     val isSelected: Boolean = false
 )
@@ -98,7 +99,17 @@ fun GlobalSandwichMenu(
                                 modifier = Modifier.padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(item.iconEmoji, fontSize = 20.sp)
+                                if (item.brandIconType != null) {
+                                    AirwavesBrandIcon(
+                                        iconType = item.brandIconType,
+                                        size = 26.dp,
+                                        iconColor = if (item.isSelected) item.accentColor else NeonCyan,
+                                        circleColor = if (item.isSelected) item.accentColor.copy(alpha = 0.2f) else Color(0xFF0F172A),
+                                        borderColor = if (item.isSelected) item.accentColor else Color(0xFF334155)
+                                    )
+                                } else {
+                                    Text(item.iconEmoji, fontSize = 20.sp)
+                                }
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Column {
                                     Text(

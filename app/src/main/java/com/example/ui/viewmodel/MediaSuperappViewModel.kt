@@ -5,7 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.audio.AudioPlayerManager
 import com.example.audio.AudioState
+import com.example.audio.EqContentCategory
 import com.example.audio.NarrationStyle
+import com.example.audio.OutputGearProfile
 import com.example.audio.VoiceNarrationManager
 import com.example.audio.VoiceNarrationState
 import com.example.data.local.AppDatabase
@@ -848,6 +850,67 @@ class MediaSuperappViewModel(application: Application) : AndroidViewModel(applic
 
     fun seekPreviousRadioStation(stations: List<MediaItemEntity>) {
         audioPlayer.seekPreviousStation(stations)
+    }
+
+    // Simultaneous EQ Controls
+    fun syncEqContextHint(category: EqContentCategory, title: String? = null, tags: String = "") {
+        audioPlayer.syncContentContext(category, title, tags)
+    }
+
+    fun toggleSimultaneousEq() {
+        audioPlayer.toggleSimultaneousEq()
+    }
+
+    fun toggleEqBypassCompare() {
+        audioPlayer.toggleBypassCompare()
+    }
+
+    fun setEqAutoContentAdapt(enabled: Boolean) {
+        audioPlayer.setAutoContentAdapt(enabled)
+    }
+
+    fun setEqGearCompensationEnabled(enabled: Boolean) {
+        audioPlayer.setGearCompensationEnabled(enabled)
+    }
+
+    fun setEqAutoHeadroom(enabled: Boolean) {
+        audioPlayer.setAutoHeadroomEnabled(enabled)
+    }
+
+    fun setEqCompensationIntensity(intensity: Float) {
+        audioPlayer.setCompensationIntensity(intensity)
+    }
+
+    fun selectEqContentCategory(category: EqContentCategory?) {
+        audioPlayer.setCategoryOverride(category)
+    }
+
+    fun selectEqOutputGear(profile: OutputGearProfile) {
+        audioPlayer.selectOutputGearProfile(profile)
+    }
+
+    fun detectConnectedAudioGear() {
+        audioPlayer.detectConnectedOutputGear()
+    }
+
+    fun updateEqGearZone(bassBiasDb: Float? = null, midBiasDb: Float? = null, trebleBiasDb: Float? = null) {
+        audioPlayer.updateGearColorationZone(bassBiasDb, midBiasDb, trebleBiasDb)
+    }
+
+    fun updateEqGearSignatureBand(bandIndex: Int, colorationDb: Float) {
+        audioPlayer.updateGearSignatureBand(bandIndex, colorationDb)
+    }
+
+    fun updateEqManualTrimBand(bandIndex: Int, trimDb: Float) {
+        audioPlayer.updateManualTrimBand(bandIndex, trimDb)
+    }
+
+    fun resetEqManualTrim() {
+        audioPlayer.resetManualTrim()
+    }
+
+    fun resetEqGearCompensation() {
+        audioPlayer.resetGearCompensation()
     }
 
     fun createNewContent(

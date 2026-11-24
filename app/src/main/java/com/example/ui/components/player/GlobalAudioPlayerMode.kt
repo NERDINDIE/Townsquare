@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.audio.AudioState
+import com.example.audio.EqContentCategory
 import com.example.data.model.MediaItemEntity
 import com.example.data.model.MediaType
 import com.example.ui.components.SleepTimerController
@@ -48,12 +49,22 @@ fun GlobalAudioPlayerMode(
     onTogglePlayPause: () -> Unit,
     onClose: () -> Unit,
     onExpandFullPlayer: () -> Unit,
+    onPlayAudioItem: (MediaItemEntity) -> Unit = {},
+    onOpenEq: () -> Unit = {},
+    onSyncEqContext: (EqContentCategory, String?) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     var selectedAudioSubTab by remember { mutableIntStateOf(0) } // 0: Now Playing, 1: Music Streaming, 2: Podcasts, 3: Device Files
     var isSleepTimerDialogOpen by remember { mutableStateOf(false) }
     var playbackSpeed by remember { mutableFloatStateOf(audioState.speed.coerceAtLeast(1.0f)) }
     var isQueueExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedAudioSubTab) {
+        when (selectedAudioSubTab) {
+            1 -> onSyncEqContext(EqContentCategory.MUSIC, "Townsquare Music Streaming")
+            2 -> onSyncEqContext(EqContentCategory.PODCAST, "Townsquare On-Demand Podcast")
+        }
+    }
 
     // Sample Device Audio Files for device scanning demonstration
     val deviceAudioFiles = remember {
@@ -116,7 +127,12 @@ fun GlobalAudioPlayerMode(
                     )
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    SimultaneousEqCompactBadge(
+                        eqState = audioState.simultaneousEq,
+                        onClick = onOpenEq
+                    )
+
                     // Sleep timer
                     IconButton(
                         onClick = { isSleepTimerDialogOpen = true },
@@ -298,7 +314,20 @@ fun GlobalAudioPlayerMode(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "🎛️ ${audioState.simultaneousEq.optimizationReason}",
+                        fontSize = 10.sp,
+                        color = Color(0xFF34D399),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenEq() }
+                            .padding(vertical = 2.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     // Secondary controls: Speed changer & Queue toggle
                     Row(
@@ -392,13 +421,28 @@ fun GlobalAudioPlayerMode(
                             Pair("Neo-Wave Cyber Jazz", "Downtown Chill Lounge • 320kbps"),
                             Pair("Acoustic Town Hall Sessions", "Live Singer-Songwriter Ensemble • Lossless"),
                             Pair("Midnight Lo-Fi Civic Beats", "Townsquare Creative Commons • Stereo")
-                        ).forEach { (streamTitle, streamSub) ->
+                        ).forEachIndexed { idx, (streamTitle, streamSub) ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color(0xFF1E293B))
-                                    .clickable { onTogglePlayPause() }
+                                    .clickable {
+                                        onPlayAudioItem(
+                                            MediaItemEntity(
+                                                id = 9100L + idx,
+                                                type = MediaType.SONG.name,
+                                                title = streamTitle,
+                                                subtitle = streamSub,
+                                                authorName = "Townsquare Waves Music",
+                                                channelId = "waves_music",
+                                                channelName = "Waves Music",
+                                                bodyText = streamSub,
+                                                durationSeconds = 240,
+                                                tags = streamTitle
+                                            )
+                                        )
+                                    }
                                     .padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -431,7 +475,7 @@ fun GlobalAudioPlayerMode(
                     // PODCASTS TAB
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = "Top On-Demand Podcasts & Chapter Scrubbing",
+                            text = "Top On-Demand Podcasts & Detected Songs",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                             color = NeonCyan
                         )
@@ -439,36 +483,98 @@ fun GlobalAudioPlayerMode(
                             Triple("Townsquare Voices Ep. 84", "45 mins", "Urban planning & the new civic hub"),
                             Triple("Tech Pioneers Dispatch", "28 mins", "Decentralized mesh networks in modern cities"),
                             Triple("Heritage & Historic Echoes", "52 mins", "Remembering the Great Steam Rail of 1920")
-                        ).forEach { (podTitle, podDur, podDesc) ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(Color(0xFF1E293B))
-                                    .clickable { onTogglePlayPause() }
-                                    .padding(10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                        ).forEachIndexed { idx, (podTitle, podDur, podDesc) ->
+                            val podcastId = "pod_$idx"
+                            val detectedSongs = com.example.ui.plus.waves.SongDetectionEngine.getPodcastDetectedSongs(podcastId)
+                            Card(
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+                                border = BorderStroke(1.dp, Color(0xFF334155)),
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                                    Icon(
-                                        imageVector = Icons.Default.Podcasts,
-                                        contentDescription = null,
-                                        tint = WarmAmber,
-                                        modifier = Modifier.size(20.dp)
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                onPlayAudioItem(
+                                                    MediaItemEntity(
+                                                        id = 9200L + idx,
+                                                        type = MediaType.PODCAST_EPISODE.name,
+                                                        title = podTitle,
+                                                        subtitle = podDesc,
+                                                        authorName = "Townsquare Editorial Desk",
+                                                        channelId = "waves_podcasts",
+                                                        channelName = "Waves Podcasts",
+                                                        bodyText = podDesc,
+                                                        durationSeconds = 2400,
+                                                        tags = "podcast"
+                                                    )
+                                                )
+                                            },
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                            Icon(
+                                                imageVector = Icons.Default.Podcasts,
+                                                contentDescription = null,
+                                                tint = WarmAmber,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            Column {
+                                                Text(podTitle, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                                                Text("$podDur • $podDesc", color = Color.LightGray, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                            }
+                                        }
+                                        Icon(
+                                            imageVector = Icons.Default.PlayCircle,
+                                            contentDescription = "Play Episode",
+                                            tint = WarmAmber,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "DETECTED SONGS IN EPISODE (TIMESTAMPS):",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, fontSize = 9.sp),
+                                        color = NeonCyan
                                     )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(podTitle, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                                        Text("$podDur • $podDesc", color = Color.LightGray, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    detectedSongs.forEach { ds ->
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 2.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Surface(
+                                                    shape = RoundedCornerShape(4.dp),
+                                                    color = NeonCyan.copy(alpha = 0.2f)
+                                                ) {
+                                                    Text(
+                                                        text = ds.timestampText,
+                                                        fontSize = 9.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = NeonCyan,
+                                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = "${ds.title} — ${ds.artist}",
+                                                    fontSize = 11.sp,
+                                                    color = Color.White
+                                                )
+                                            }
+                                            Text(ds.albumArtEmoji, fontSize = 12.sp)
+                                        }
                                     }
                                 }
-                                Icon(
-                                    imageVector = Icons.Default.PlayCircle,
-                                    contentDescription = "Play Episode",
-                                    tint = WarmAmber,
-                                    modifier = Modifier.size(24.dp)
-                                )
                             }
                         }
                     }
@@ -499,13 +605,29 @@ fun GlobalAudioPlayerMode(
                             }
                         }
 
-                        deviceAudioFiles.forEach { track ->
+                        deviceAudioFiles.forEachIndexed { idx, track ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color(0xFF1E293B))
-                                    .clickable { onTogglePlayPause() }
+                                    .clickable {
+                                        val isVoiceDoc = track.title.contains("Council", ignoreCase = true) || track.format.contains("Voice", ignoreCase = true)
+                                        onPlayAudioItem(
+                                            MediaItemEntity(
+                                                id = 9300L + idx,
+                                                type = if (isVoiceDoc) MediaType.PODCAST_EPISODE.name else MediaType.SONG.name,
+                                                title = track.title,
+                                                subtitle = "${track.artist} • ${track.format}",
+                                                authorName = track.artist,
+                                                channelId = "device_files",
+                                                channelName = track.album,
+                                                bodyText = track.fileName,
+                                                durationSeconds = track.durationSeconds,
+                                                tags = track.title
+                                            )
+                                        )
+                                    }
                                     .padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween

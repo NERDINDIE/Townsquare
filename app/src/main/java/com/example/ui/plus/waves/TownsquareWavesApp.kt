@@ -137,50 +137,93 @@ fun TownsquareWavesApp(
             }
         }
 
-        // Main Stream Feed
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+        var selectedTab by remember { mutableIntStateOf(0) } // 0: Waves Stream Feed, 1: Physical Media Vault
+
+        // Tab Row
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = Color(0xFF0F172A),
+            contentColor = NeonCyan,
+            divider = {}
         ) {
-            // Radio Ticker with Song Recognition
-            item {
-                Text(
-                    text = "LIVE BROADCASTS & SONG DETECTION",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
-                    color = NeonCyan
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                WavesRadioTicker(
-                    radioStations = radioStations,
-                    onSelectStation = { onPlayAudio(it) },
-                    onOpenRadioList = {
-                        radioStations.firstOrNull()?.let { onPlayAudio(it) }
-                    }
-                )
-            }
+            Tab(
+                selected = selectedTab == 0,
+                onClick = { selectedTab = 0 },
+                text = { Text("🌊 Waves Feed", fontWeight = FontWeight.Bold, fontSize = 13.sp) }
+            )
+            Tab(
+                selected = selectedTab == 1,
+                onClick = { selectedTab = 1 },
+                text = { Text("📦 Physical Media Vault", fontWeight = FontWeight.Bold, fontSize = 13.sp) }
+            )
+        }
 
-            // Catalog Grids & Podcast Song Lists
-            item {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "WAVES STREAMING CATALOG & PODCASTS",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
-                    color = WarmAmber
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                WavesGridCatalog(
-                    songs = songs,
-                    playlists = playlists,
-                    podcasts = podcasts,
-                    onPlayAudio = onPlayAudio
-                )
-            }
+        if (selectedTab == 1) {
+            com.example.ui.components.media.PhysicalMediaVaultSection(
+                onPlayInPlayer = { vaultItem ->
+                    val mediaEntity = MediaItemEntity(
+                        id = (1000..9999).random().toLong(),
+                        title = vaultItem.title,
+                        subtitle = vaultItem.description,
+                        authorName = vaultItem.creatorOrArtist,
+                        type = when (vaultItem.format) {
+                            com.example.data.model.PhysicalMediaFormat.VINYL, com.example.data.model.PhysicalMediaFormat.CASSETTE_TAPE, com.example.data.model.PhysicalMediaFormat.DISC_ALBUM -> MediaType.SONG.name
+                            com.example.data.model.PhysicalMediaFormat.DISC_MOVIE, com.example.data.model.PhysicalMediaFormat.VHS_TAPE, com.example.data.model.PhysicalMediaFormat.MOVIE_REEL, com.example.data.model.PhysicalMediaFormat.BOOK_PDF -> MediaType.PODCAST_EPISODE.name
+                        },
+                        channelId = "physical_vault",
+                        channelName = "Physical Vault",
+                        bodyText = vaultItem.description,
+                        mediaUrl = vaultItem.audioSampleUrl
+                    )
+                    onPlayAudio(mediaEntity)
+                }
+            )
+        } else {
+            // Main Stream Feed
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                // Radio Ticker with Song Recognition
+                item {
+                    Text(
+                        text = "LIVE BROADCASTS & SONG DETECTION",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
+                        color = NeonCyan
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    WavesRadioTicker(
+                        radioStations = radioStations,
+                        onSelectStation = { onPlayAudio(it) },
+                        onOpenRadioList = {
+                            radioStations.firstOrNull()?.let { onPlayAudio(it) }
+                        }
+                    )
+                }
 
-            item {
-                Spacer(modifier = Modifier.height(60.dp))
+                // Catalog Grids & Podcast Song Lists
+                item {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "WAVES STREAMING CATALOG & PODCASTS",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
+                        color = WarmAmber
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    WavesGridCatalog(
+                        songs = songs,
+                        playlists = playlists,
+                        podcasts = podcasts,
+                        onPlayAudio = onPlayAudio
+                    )
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
             }
         }
     }

@@ -130,15 +130,11 @@ fun LocalWeatherForecastDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            color = WarmAmber.copy(alpha = 0.2f),
-                            shape = CircleShape,
-                            modifier = Modifier.size(38.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(text = weather.condition.iconEmoji, fontSize = 20.sp)
-                            }
-                        }
+                        AirwavesBrandIcon(
+                            iconType = AirwavesBrandIconType.FORECAST,
+                            size = 38.dp,
+                            onOpenSidebar = onClose
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(

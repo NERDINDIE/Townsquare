@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoAlbum
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.*
+import com.example.ui.components.AirwavesBrandIcon
+import com.example.ui.components.AirwavesBrandIconType
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,13 +73,13 @@ fun PlaygroundScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = onOpenSidebar,
+                        AirwavesBrandIcon(
+                            iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                            size = 36.dp,
+                            onOpenSidebar = onOpenSidebar,
                             modifier = Modifier.testTag("playground_sidebar_button")
-                        ) {
-                            Icon(imageVector = Icons.Default.Menu, contentDescription = "Open Sidebar")
-                        }
-                        Spacer(modifier = Modifier.width(4.dp))
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Surface(
                             shape = CircleShape,
                             color = WarmAmber,

@@ -439,6 +439,23 @@ fun TownsquareApp(
                         .background(MaterialTheme.colorScheme.surface)
                 ) {
                     // Global Media Player (consolidated audio, narration, and foldable TV streaming)
+                    val eqCallbacks = remember(viewModel) {
+                        com.example.ui.components.player.SimultaneousEqCallbacks(
+                            onToggleEq = { viewModel.toggleSimultaneousEq() },
+                            onToggleBypassCompare = { viewModel.toggleEqBypassCompare() },
+                            onSetAutoContentAdapt = { viewModel.setEqAutoContentAdapt(it) },
+                            onSetGearCompensationEnabled = { viewModel.setEqGearCompensationEnabled(it) },
+                            onSetAutoHeadroom = { viewModel.setEqAutoHeadroom(it) },
+                            onSetCompensationIntensity = { viewModel.setEqCompensationIntensity(it) },
+                            onSelectContentCategory = { viewModel.selectEqContentCategory(it) },
+                            onSelectOutputGear = { viewModel.selectEqOutputGear(it) },
+                            onDetectOutputGear = { viewModel.detectConnectedAudioGear() },
+                            onUpdateGearZone = { b, m, t -> viewModel.updateEqGearZone(b, m, t) },
+                            onUpdateManualTrimBand = { idx, trim -> viewModel.updateEqManualTrimBand(idx, trim) },
+                            onResetManualTrim = { viewModel.resetEqManualTrim() },
+                            onResetGearCompensation = { viewModel.resetEqGearCompensation() }
+                        )
+                    }
                     val activeTvChannel = allTvChannels.find { it.id == activeTvChannelId } ?: allTvChannels.firstOrNull()
                     GlobalMediaPlayer(
                         audioState = audioState,
@@ -483,7 +500,9 @@ fun TownsquareApp(
                         chatMessages = tvChatMessages[activeTvChannelId] ?: emptyList(),
                         onSendChatMessage = { msg -> viewModel.sendTvChatMessage(activeTvChannelId, "You", msg) },
                         allMediaItems = allItems,
-                        onPlayAudioItem = { viewModel.playAudio(it) }
+                        onPlayAudioItem = { viewModel.playAudio(it) },
+                        eqCallbacks = eqCallbacks,
+                        onSyncEqContext = { category, title -> viewModel.syncEqContextHint(category, title) }
                     )
                 }
             }
@@ -826,6 +845,17 @@ fun TownsquareApp(
                             onOpenTvGuide = {
                                 viewModel.setTvTab("TV_GUIDE")
                                 currentNavIndex = NavDestination.TV_STREAMING
+                            },
+                            onOpenWebUrl = { targetUrl ->
+                                val existingTab = browserTabs.find { it.url == targetUrl }
+                                if (existingTab != null) {
+                                    activeBrowserTabId = existingTab.id
+                                } else {
+                                    val newTab = WebTabItem(url = targetUrl, title = targetUrl.take(24))
+                                    browserTabs = browserTabs + newTab
+                                    activeBrowserTabId = newTab.id
+                                }
+                                currentNavIndex = NavDestination.BROWSER
                             }
                         )
                     }
@@ -833,7 +863,8 @@ fun TownsquareApp(
                         com.example.ui.screens.CommunityScreen(
                             onOpenSidebar = { viewModel.openSidebar() },
                             onBack = { currentNavIndex = NavDestination.FEED },
-                            initialTab = communityInitialTab
+                            initialTab = communityInitialTab,
+                            onPlayAudio = { viewModel.playAudio(it) }
                         )
                     }
                     NavDestination.FUNNIES -> {
@@ -1393,6 +1424,23 @@ fun TownsquareApp(
 
     // 1. Full Audio Player Bottom Sheet
     if (isFullPlayerVisible && audioState.currentItem != null) {
+        val fullSheetEqCallbacks = remember(viewModel) {
+            com.example.ui.components.player.SimultaneousEqCallbacks(
+                onToggleEq = { viewModel.toggleSimultaneousEq() },
+                onToggleBypassCompare = { viewModel.toggleEqBypassCompare() },
+                onSetAutoContentAdapt = { viewModel.setEqAutoContentAdapt(it) },
+                onSetGearCompensationEnabled = { viewModel.setEqGearCompensationEnabled(it) },
+                onSetAutoHeadroom = { viewModel.setEqAutoHeadroom(it) },
+                onSetCompensationIntensity = { viewModel.setEqCompensationIntensity(it) },
+                onSelectContentCategory = { viewModel.selectEqContentCategory(it) },
+                onSelectOutputGear = { viewModel.selectEqOutputGear(it) },
+                onDetectOutputGear = { viewModel.detectConnectedAudioGear() },
+                onUpdateGearZone = { b, m, t -> viewModel.updateEqGearZone(b, m, t) },
+                onUpdateManualTrimBand = { idx, trim -> viewModel.updateEqManualTrimBand(idx, trim) },
+                onResetManualTrim = { viewModel.resetEqManualTrim() },
+                onResetGearCompensation = { viewModel.resetEqGearCompensation() }
+            )
+        }
         FullAudioPlayerSheet(
             audioState = audioState,
             onTogglePlayPause = { viewModel.togglePlayPause() },
@@ -1400,7 +1448,8 @@ fun TownsquareApp(
             onSpeedChange = { viewModel.setAudioSpeed(it) },
             onSkipForward = { viewModel.skipAudioForward() },
             onSkipBackward = { viewModel.skipAudioBackward() },
-            onDismiss = { isFullPlayerVisible = false }
+            onDismiss = { isFullPlayerVisible = false },
+            eqCallbacks = fullSheetEqCallbacks
         )
     }
 

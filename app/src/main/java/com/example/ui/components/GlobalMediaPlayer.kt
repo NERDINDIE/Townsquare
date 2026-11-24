@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.audio.AudioState
+import com.example.audio.EqContentCategory
 import com.example.audio.NarrationStyle
 import com.example.audio.VoiceNarrationState
 import com.example.data.model.MediaItemEntity
@@ -29,7 +30,6 @@ import com.example.data.model.MediaType
 import com.example.data.model.TvChannelEntity
 import com.example.data.model.TvScheduleItem
 import com.example.ui.components.player.*
-import com.example.ui.plus.waves.TownsquareWavesApp
 import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.WarmAmber
 import com.example.ui.viewmodel.TvChatMessage
@@ -75,6 +75,8 @@ fun GlobalMediaPlayer(
     allMediaItems: List<MediaItemEntity> = emptyList(),
     onPlayAudioItem: (MediaItemEntity) -> Unit = {},
     initialMode: GlobalMediaMode? = null,
+    eqCallbacks: SimultaneousEqCallbacks = SimultaneousEqCallbacks(),
+    onSyncEqContext: (EqContentCategory, String?) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     var currentMode by remember {
@@ -99,10 +101,30 @@ fun GlobalMediaPlayer(
         }
     }
 
+    LaunchedEffect(currentMode) {
+        when (currentMode) {
+            GlobalMediaMode.RADIO -> onSyncEqContext(EqContentCategory.RADIO, "FM Stereo Radio Broadcast")
+            GlobalMediaMode.AUDIOBOOK -> onSyncEqContext(EqContentCategory.AUDIOBOOK, "Townsquare Audiobook Replica")
+            GlobalMediaMode.AUDIO -> if (audioState.currentItem == null) {
+                onSyncEqContext(EqContentCategory.MUSIC, "Townsquare Audio Stream")
+            }
+            else -> {}
+        }
+    }
+
     var isPlayerVisible by remember { mutableStateOf(true) }
     var isExpandedMode by remember { mutableStateOf(false) }
+    var isSimultaneousEqSheetOpen by remember { mutableStateOf(false) }
 
     if (!isPlayerVisible) return
+
+    if (isSimultaneousEqSheetOpen) {
+        SimultaneousEqModalSheet(
+            eqState = audioState.simultaneousEq,
+            callbacks = eqCallbacks,
+            onDismiss = { isSimultaneousEqSheetOpen = false }
+        )
+    }
 
     val radioStations = remember(allMediaItems) { allMediaItems.filter { it.type == MediaType.RADIO_STATION.name } }
 
@@ -151,11 +173,19 @@ fun GlobalMediaPlayer(
                         }
                     )
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        SimultaneousEqCompactBadge(
+                            eqState = audioState.simultaneousEq,
+                            onClick = { isSimultaneousEqSheetOpen = true }
+                        )
+
                         Surface(
                             shape = RoundedCornerShape(6.dp),
                             color = currentMode.accentColor.copy(alpha = 0.2f),
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 2.dp)
                         ) {
                             Text(
                                 text = currentMode.title,
@@ -204,7 +234,6 @@ fun GlobalMediaPlayer(
                                     GlobalMediaMode.IMAGE -> "Townsquare Visual Wire & Editor"
                                     GlobalMediaMode.TV -> activeTvChannel?.currentShowTitle ?: "Townsquare Central Live TV"
                                     GlobalMediaMode.RADIO -> "101.4 FM • Townsquare Central Live"
-                                    GlobalMediaMode.WAVES -> "Townsquare Waves • Live Radio & Streaming"
                                     GlobalMediaMode.AUDIOBOOK -> audioState.currentItem?.title ?: "Townsquare Audiobook Replica"
                                 }
 
@@ -214,7 +243,6 @@ fun GlobalMediaPlayer(
                                     GlobalMediaMode.IMAGE -> "🖼️ Photojournalism & Creative Studio"
                                     GlobalMediaMode.TV -> "📺 ${activeTvChannel?.name ?: "Channel 1"}"
                                     GlobalMediaMode.RADIO -> "📻 Stereo FM • Radio Dial Skin"
-                                    GlobalMediaMode.WAVES -> "🌊 Live Song Recognition & Catalog"
                                     GlobalMediaMode.AUDIOBOOK -> "📚 Digital Replica & Multilingual Support"
                                 }
 
@@ -333,7 +361,10 @@ fun GlobalMediaPlayer(
                                     audioState = audioState,
                                     onTogglePlayPause = onTogglePlayPauseAudio,
                                     onClose = { isExpandedMode = false },
-                                    onExpandFullPlayer = onExpandFullPlayer
+                                    onExpandFullPlayer = onExpandFullPlayer,
+                                    onPlayAudioItem = onPlayAudioItem,
+                                    onOpenEq = { isSimultaneousEqSheetOpen = true },
+                                    onSyncEqContext = onSyncEqContext
                                 )
                             }
                             GlobalMediaMode.VIDEO -> {
@@ -374,23 +405,17 @@ fun GlobalMediaPlayer(
                                     audioState = audioState,
                                     onPlayStation = { onPlayAudioItem(it) },
                                     onTogglePlayPause = onTogglePlayPauseAudio,
-                                    onClose = { isExpandedMode = false }
-                                )
-                            }
-                            GlobalMediaMode.WAVES -> {
-                                TownsquareWavesApp(
-                                    items = allMediaItems,
-                                    audioState = audioState,
-                                    onPlayAudio = { onPlayAudioItem(it) },
-                                    onBack = { isExpandedMode = false },
-                                    modifier = Modifier.height(400.dp)
+                                    onClose = { isExpandedMode = false },
+                                    onOpenEq = { isSimultaneousEqSheetOpen = true }
                                 )
                             }
                             GlobalMediaMode.AUDIOBOOK -> {
                                 AudiobookReplicaPlayer(
                                     audioState = audioState,
                                     onTogglePlayPause = onTogglePlayPauseAudio,
-                                    onClose = { isExpandedMode = false }
+                                    onClose = { isExpandedMode = false },
+                                    onOpenEq = { isSimultaneousEqSheetOpen = true },
+                                    onSetAutoHeadroom = eqCallbacks.onSetAutoHeadroom
                                 )
                             }
                         }

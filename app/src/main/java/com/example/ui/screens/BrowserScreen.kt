@@ -40,6 +40,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.font.FontFamily
 import com.example.ui.plus.extensions.Android10SoundEffects
+import com.example.ui.components.AirwavesBrandIcon
+import com.example.ui.components.AirwavesBrandIconType
 import com.example.ui.components.DEFAULT_BOOKMARKS
 import com.example.ui.components.WebTabItem
 import com.example.ui.theme.NeonCyan
@@ -66,24 +68,13 @@ fun BrowserTopBar(
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // App Sidebar Drawer Trigger (T Logo)
-            Surface(
-                shape = RoundedCornerShape(10.dp),
-                color = NeonCyan,
-                modifier = Modifier
-                    .size(34.dp)
-                    .clickable { onOpenSidebar() }
-                    .testTag("browser_sidebar_trigger")
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "T",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF003544)
-                    )
-                }
-            }
+            // App Sidebar Drawer Trigger (Airwaves Circular T Logo Button)
+            AirwavesBrandIcon(
+                iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                size = 34.dp,
+                onOpenSidebar = onOpenSidebar,
+                modifier = Modifier.testTag("browser_sidebar_trigger")
+            )
 
             Spacer(modifier = Modifier.width(8.dp))
 

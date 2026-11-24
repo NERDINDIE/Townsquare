@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.FormatQuote
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Sync
@@ -167,6 +168,68 @@ fun NewsblogScreen(
                 }
             }
         )
+
+        var isFacsimileOpen by remember { mutableStateOf(false) }
+
+        // Hourly Facsimile Thermal Broadsheet Dialog
+        com.example.ui.components.FacsimileBroadsheetDialog(
+            isOpen = isFacsimileOpen,
+            onClose = { isFacsimileOpen = false }
+        )
+
+        // Hourly Facsimile Thermal Wire Strip Banner (Moved from Tools drawer)
+        Surface(
+            color = Color(0xFF1E1810),
+            border = BorderStroke(1.dp, com.example.ui.theme.WarmAmber.copy(alpha = 0.5f)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 2.dp)
+                .clickable { isFacsimileOpen = true }
+                .testTag("newsblog_open_facsimile_button"),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Print,
+                        contentDescription = null,
+                        tint = com.example.ui.theme.WarmAmber,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            text = "Hourly Facsimile Wire Slip",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Retro thermal paper teleprinter dispatch (120 RPM)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = com.example.ui.theme.WarmAmber.copy(alpha = 0.8f),
+                            fontSize = 10.sp
+                        )
+                    }
+                }
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = com.example.ui.theme.WarmAmber
+                ) {
+                    Text(
+                        text = "VIEW SLIP",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 8.sp),
+                        color = Color(0xFF261800),
+                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                    )
+                }
+            }
+        }
 
         // Live Ticker Banner
         Surface(

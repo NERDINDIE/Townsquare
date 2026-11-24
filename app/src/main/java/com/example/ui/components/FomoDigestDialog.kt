@@ -45,6 +45,35 @@ fun FomoDigestDialog(
     onDismiss: () -> Unit,
     onNavigateToTab: (String) -> Unit = {}
 ) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.96f)
+                .fillMaxHeight(0.88f)
+                .padding(6.dp)
+                .testTag("fomo_digest_dialog"),
+            colors = CardDefaults.cardColors(containerColor = DarkBg),
+            shape = RoundedCornerShape(16.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.6f))
+        ) {
+            FomoDigestContentView(
+                onDismiss = onDismiss,
+                onNavigateToTab = onNavigateToTab,
+                modifier = Modifier.fillMaxSize().padding(12.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun FomoDigestContentView(
+    modifier: Modifier = Modifier,
+    onDismiss: (() -> Unit)? = null,
+    onNavigateToTab: (String) -> Unit = {}
+) {
     val coroutineScope = rememberCoroutineScope()
     var selectedTimeframe by remember { mutableStateOf("Last 4 Hours") }
     var isReadingAudio by remember { mutableStateOf(false) }
@@ -92,25 +121,9 @@ fun FomoDigestDialog(
         )
     }
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+    Column(
+        modifier = modifier
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(0.96f)
-                .fillMaxHeight(0.88f)
-                .padding(6.dp)
-                .testTag("fomo_digest_dialog"),
-            colors = CardDefaults.cardColors(containerColor = DarkBg),
-            shape = RoundedCornerShape(16.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.6f))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp)
-            ) {
                 // Header Banner
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -164,8 +177,10 @@ fun FomoDigestDialog(
                         }
                     }
 
-                    IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray, modifier = Modifier.size(20.dp))
+                    if (onDismiss != null) {
+                        IconButton(onClick = onDismiss) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray, modifier = Modifier.size(20.dp))
+                        }
                     }
                 }
 
@@ -284,7 +299,7 @@ fun FomoDigestDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    onDismiss()
+                                    onDismiss?.invoke()
                                     if (item.category == "Live Radio") {
                                         onNavigateToTab("Radio")
                                     } else {
@@ -387,7 +402,7 @@ fun FomoDigestDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = onDismiss,
+                    onClick = { onDismiss?.invoke() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(44.dp)
@@ -397,9 +412,7 @@ fun FomoDigestDialog(
                 ) {
                     Icon(Icons.Default.DoneAll, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Mark Read & Continue", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                    Text(if (onDismiss != null) "Mark Read & Continue" else "Caught Up • All Stories Read", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
             }
-        }
-    }
 }

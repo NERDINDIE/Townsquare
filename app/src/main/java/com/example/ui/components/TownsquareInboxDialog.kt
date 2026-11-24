@@ -121,20 +121,11 @@ fun TownsquareInboxDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            color = NeonCyan.copy(alpha = 0.2f),
-                            shape = CircleShape,
-                            modifier = Modifier.size(38.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.Mail,
-                                    contentDescription = null,
-                                    tint = NeonCyan,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
+                        AirwavesBrandIcon(
+                            iconType = AirwavesBrandIconType.UNIFIED_INBOX,
+                            size = 38.dp,
+                            onOpenSidebar = onClose
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -210,10 +201,12 @@ fun TownsquareInboxDialog(
                 ) {
                     val inboxModes = listOf(
                         Pair(0, "🔔 Alerts ($unreadCount)"),
+                        Pair(6, "🚨 Emergency Alerts"),
                         Pair(1, "📬 Postal Mailbox"),
                         Pair(2, "📞 Phone & Voicemail"),
                         Pair(3, "⚡ Live Cross-App Highlights"),
-                        Pair(4, "📰 Subscribed Newsletters")
+                        Pair(4, "📰 Subscribed Newsletters"),
+                        Pair(5, "✨ FOMO Digest")
                     )
                     inboxModes.forEach { (modeId, label) ->
                         val isSelected = mainInboxMode == modeId
@@ -225,7 +218,7 @@ fun TownsquareInboxDialog(
                                     text = label,
                                     fontSize = 12.sp,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (isSelected) NeonCyan else Color.LightGray
+                                    color = if (isSelected) (if (modeId == 6) Color(0xFFFF5252) else NeonCyan) else Color.LightGray
                                 )
                             },
                             modifier = Modifier.testTag("inbox_tab_$modeId")
@@ -253,6 +246,22 @@ fun TownsquareInboxDialog(
                     SubscribedNewslettersView(
                         modifier = Modifier.weight(1f)
                     )
+                } else if (mainInboxMode == 5) {
+                    FomoDigestContentView(
+                        onDismiss = { mainInboxMode = 0 },
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                    )
+                } else if (mainInboxMode == 6) {
+                    // Emergency Alert Hub embedded inside Inbox
+                    Box(modifier = Modifier.weight(1f)) {
+                        com.example.ui.components.EmergencyAlertsHubDialog(
+                            isOpen = true,
+                            onClose = { mainInboxMode = 0 }
+                        )
+                    }
                 } else {
                     // Category Filter Bar
                     ScrollableTabRow(

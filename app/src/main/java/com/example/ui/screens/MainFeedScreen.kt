@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notifications
@@ -43,11 +44,18 @@ import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Add
+import com.example.ui.components.AirwavesBrandIcon
+import com.example.ui.components.AirwavesBrandIconType
 import com.example.ui.components.GlobalSandwichMenu
 import com.example.ui.components.SandwichMenuItem
 import com.example.ui.screens.discovery.TownsquarePeepsView
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,6 +78,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -131,7 +140,8 @@ fun MainFeedScreen(
     onReportContent: ((MediaItemEntity) -> Unit)? = null,
     onOpenFullBrief: () -> Unit,
     onPlayAudioBrief: () -> Unit,
-    onOpenSettings: () -> Unit = {},
+    onOpenProfile: () -> Unit = {},
+    onOpenSettings: () -> Unit = onOpenProfile,
     onSelectChannel: ((String) -> Unit)? = null,
     onNavigateToTv: (() -> Unit)? = null,
     onOpenSidebar: () -> Unit = {},
@@ -183,10 +193,13 @@ fun MainFeedScreen(
                                 }
                             }
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Mail,
-                                contentDescription = "Inbox",
-                                tint = if (unreadInboxCount > 0) NeonCyan else MaterialTheme.colorScheme.onBackground
+                            AirwavesBrandIcon(
+                                iconType = AirwavesBrandIconType.UNIFIED_INBOX,
+                                size = 26.dp,
+                                iconColor = if (unreadInboxCount > 0) NeonCyan else MaterialTheme.colorScheme.onBackground,
+                                circleColor = Color.Transparent,
+                                borderColor = if (unreadInboxCount > 0) NeonCyan.copy(alpha = 0.5f) else Color.Transparent,
+                                contentDescription = "Inbox"
                             )
                         }
                     }
@@ -203,12 +216,12 @@ fun MainFeedScreen(
                     }
 
                     IconButton(
-                        onClick = onOpenSettings,
-                        modifier = Modifier.testTag("toggle_settings_button")
+                        onClick = onOpenProfile,
+                        modifier = Modifier.testTag("main_profile_button")
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Profile",
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -247,30 +260,540 @@ fun MainFeedScreen(
         }
 
 
-        // Search bar (collapsible)
+        // Network state check: if device is offline (or user toggled offline mode), Teletext is on by default
+        val isInternetConnected = com.example.util.rememberIsConnectedToInternet()
+        val isDeviceOffline = !isInternetConnected || isOfflineMode
+
+        // Homepage Sandwich Menu for Feed Modes (0 = Main Civic Feed, 1 = Peeps, 2 = Pocket Reader, 3 = Offline Teletext)
+        var isHomeMenuOpen by remember { mutableStateOf(false) }
+        var selectedHomeMode by remember { mutableIntStateOf(if (isDeviceOffline) 3 else 0) }
+
+        // Automatically switch to Teletext mode when internet is disconnected or offline mode is toggled
+        androidx.compose.runtime.LaunchedEffect(isDeviceOffline) {
+            if (isDeviceOffline) {
+                selectedHomeMode = 3
+            }
+        }
+
+        // Search bar (collapsible with Stories, Song Search, Browser View, and Brainrot/Slop Detector)
+        var searchCategoryTab by remember { mutableIntStateOf(0) } // 0 = Stories & Feeds, 1 = Song Search, 2 = Browser View Tabs
+        var recognizedListening by remember { mutableStateOf(false) }
+        var identifiedLiveTrack by remember { mutableStateOf<com.example.ui.plus.waves.RecognizedSong?>(null) }
+        var isSlopDetectorOpen by remember { mutableStateOf(false) }
+        var isFactCheckCenterOpen by remember { mutableStateOf(false) }
+
+        // Brainrot & Slop Detector Dialog triggerable directly from the Search view
+        com.example.ui.components.browser.BrainrotSlopDetectorDialog(
+            isOpen = isSlopDetectorOpen,
+            initialUrlOrTitle = searchQuery,
+            onDismissRequest = { isSlopDetectorOpen = false }
+        )
+
+        // AI Fact-Checking Center Dialog triggerable directly from the Search view
+        com.example.ui.components.FactCheckingHubDialog(
+            isOpen = isFactCheckCenterOpen,
+            onClose = { isFactCheckCenterOpen = false }
+        )
+
+        // In-Search Browser Tabs View State
+        var searchBrowserTabs by remember {
+            mutableStateOf(
+                listOf(
+                    com.example.ui.components.WebTabItem(id = "tab_1", url = "https://news.google.com", title = "Townsquare Press Wire"),
+                    com.example.ui.components.WebTabItem(id = "tab_2", url = "https://wikipedia.org", title = "Civic Wikipedia"),
+                    com.example.ui.components.WebTabItem(id = "tab_3", url = "bbs://townsquare.local", title = "Townsquare BBS Terminal 📟")
+                )
+            )
+        }
+        var activeSearchTabId by remember { mutableStateOf("tab_1") }
+        var searchBrowserUrlInput by remember { mutableStateOf("https://news.google.com") }
+
         if (searchVisible) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChange,
-                placeholder = { Text("Search stories, podcasts, radio...", fontSize = 13.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = NeonCyan) },
-                trailingIcon = {
-                    if (searchQuery.isNotBlank()) {
-                        IconButton(onClick = { onSearchQueryChange("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
-                        }
-                    }
-                },
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp, vertical = 2.dp)
-                    .testTag("feed_search_input"),
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonCyan,
-                    unfocusedBorderColor = DarkBorder
-                )
-            )
+            ) {
+                // Search Category Switcher Chips (Feeds, Song Search, Browser View, Brainrot Detector)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (searchCategoryTab == 0) NeonCyan else Color(0xFF131D2E),
+                        border = BorderStroke(1.dp, if (searchCategoryTab == 0) NeonCyan else DarkBorder),
+                        modifier = Modifier
+                            .clickable { searchCategoryTab = 0 }
+                            .testTag("search_tab_all_feeds")
+                    ) {
+                        Text(
+                            text = "🌐 Stories & Feeds",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (searchCategoryTab == 0) Color(0xFF003544) else Color.LightGray,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                        )
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (searchCategoryTab == 1) NeonCyan else Color(0xFF131D2E),
+                        border = BorderStroke(1.dp, if (searchCategoryTab == 1) NeonCyan else DarkBorder),
+                        modifier = Modifier
+                            .clickable { searchCategoryTab = 1 }
+                            .testTag("search_tab_song_search")
+                    ) {
+                        Text(
+                            text = "🎵 Song Search",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (searchCategoryTab == 1) Color(0xFF003544) else Color.LightGray,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                        )
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (searchCategoryTab == 2) NeonCyan else Color(0xFF131D2E),
+                        border = BorderStroke(1.dp, if (searchCategoryTab == 2) NeonCyan else DarkBorder),
+                        modifier = Modifier
+                            .clickable { searchCategoryTab = 2 }
+                            .testTag("search_tab_browser_view")
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Text(
+                                text = "💻 Browser Tabs (${searchBrowserTabs.size})",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (searchCategoryTab == 2) Color(0xFF003544) else Color.LightGray
+                            )
+                        }
+                    }
+
+                    // Brainrot / Slop Detector Quick Scan Chip
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color(0xFFEF4444).copy(alpha = 0.2f),
+                        border = BorderStroke(1.dp, Color(0xFFEF4444)),
+                        modifier = Modifier
+                            .clickable { isSlopDetectorOpen = true }
+                            .testTag("search_trigger_brainrot_detector")
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text("🛡️ Slop Detector", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFCA5A5))
+                        }
+                    }
+
+                    // AI Fact-Checking Center Chip (Moved from Tools drawer)
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color(0xFF30D158).copy(alpha = 0.2f),
+                        border = BorderStroke(1.dp, Color(0xFF30D158)),
+                        modifier = Modifier
+                            .clickable { isFactCheckCenterOpen = true }
+                            .testTag("search_trigger_fact_check_center")
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text("✅ AI Fact Check", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF86EFAC))
+                        }
+                    }
+
+                    if (searchCategoryTab == 1) {
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = if (recognizedListening) WarmAmber else Color(0xFF1B2838),
+                            border = BorderStroke(1.dp, if (recognizedListening) WarmAmber else NeonCyan.copy(alpha = 0.5f)),
+                            modifier = Modifier
+                                .clickable {
+                                    recognizedListening = true
+                                    identifiedLiveTrack = com.example.ui.plus.waves.SongDetectionEngine.getRadioLiveDetectedSong("88.5 MHz")
+                                }
+                                .testTag("search_identify_live_airwave_song")
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = if (recognizedListening) "🎧 Listening..." else "🎧 Identify Live",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (recognizedListening) Color.Black else NeonCyan
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (searchCategoryTab != 2) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = onSearchQueryChange,
+                        placeholder = {
+                            Text(
+                                if (searchCategoryTab == 1) "Search song title, artist, genre, lyrics snippet..." else "Search stories, podcasts, radio...",
+                                fontSize = 13.sp
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = if (searchCategoryTab == 1) Icons.Default.MusicNote else Icons.Default.Search,
+                                contentDescription = null,
+                                tint = NeonCyan
+                            )
+                        },
+                        trailingIcon = {
+                            if (searchQuery.isNotBlank()) {
+                                IconButton(onClick = { onSearchQueryChange("") }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("feed_search_input"),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = NeonCyan,
+                            unfocusedBorderColor = DarkBorder
+                        )
+                    )
+                }
+
+                // If in Song Search mode, show live matching song tracks with Play buttons
+                if (searchCategoryTab == 1) {
+                    val matchingSongs = remember(searchQuery) {
+                        com.example.ui.plus.waves.SongDetectionEngine.searchSongs(searchQuery)
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                            .background(Color(0xFF0F172A), RoundedCornerShape(10.dp))
+                            .border(1.dp, NeonCyan.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                            .padding(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "AIRWAVE CATALOG & FM BROADCAST TRACKS (${matchingSongs.size})",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = NeonCyan
+                            )
+                            if (identifiedLiveTrack != null) {
+                                Text(
+                                    text = "LIVE DETECTED ✨",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = WarmAmber
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        matchingSongs.take(4).forEach { song ->
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xFF1E293B),
+                                border = BorderStroke(1.dp, if (identifiedLiveTrack?.id == song.id) WarmAmber else Color(0xFF334155)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 3.dp)
+                                    .clickable { onPlayAudio(song.toMediaItemEntity()) }
+                                    .testTag("song_result_${song.id}")
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Surface(
+                                            shape = RoundedCornerShape(6.dp),
+                                            color = Color(0xFF0B132B),
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Text(song.albumArtEmoji, fontSize = 16.sp)
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Column {
+                                            Text(
+                                                text = song.title,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White
+                                            )
+                                            Text(
+                                                text = "${song.artist} • ${song.genre} • ${song.bitrate}",
+                                                fontSize = 10.sp,
+                                                color = DarkTextSecondary
+                                            )
+                                        }
+                                    }
+
+                                    IconButton(
+                                        onClick = { onPlayAudio(song.toMediaItemEntity()) },
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .testTag("play_song_${song.id}")
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.PlayArrow,
+                                            contentDescription = "Play Song",
+                                            tint = NeonCyan
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // If in Browser Tabs View mode, show tabs bar and live WebView directly inside search
+                if (searchCategoryTab == 2) {
+                    val activeTab = searchBrowserTabs.find { it.id == activeSearchTabId } ?: searchBrowserTabs.firstOrNull()
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                            .background(Color(0xFF0F172A), RoundedCornerShape(12.dp))
+                            .border(1.dp, NeonCyan.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                            .padding(8.dp)
+                            .testTag("search_browser_view_container")
+                    ) {
+                        // Browser Tab Strip
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            searchBrowserTabs.forEach { tab ->
+                                val isActive = tab.id == activeSearchTabId
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isActive) Color(0xFF1E293B) else Color(0xFF0B132B),
+                                    border = BorderStroke(1.dp, if (isActive) NeonCyan else Color(0xFF334155)),
+                                    modifier = Modifier
+                                        .clickable {
+                                            activeSearchTabId = tab.id
+                                            searchBrowserUrlInput = tab.url
+                                        }
+                                        .testTag("search_browser_tab_${tab.id}")
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(text = "🌐", fontSize = 11.sp)
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = tab.title.take(18),
+                                            fontSize = 11.sp,
+                                            fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+                                            color = if (isActive) Color.White else Color.LightGray
+                                        )
+                                        if (searchBrowserTabs.size > 1) {
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Close tab",
+                                                tint = Color.Gray,
+                                                modifier = Modifier
+                                                    .size(12.dp)
+                                                    .clickable {
+                                                        val filtered = searchBrowserTabs.filterNot { it.id == tab.id }
+                                                        searchBrowserTabs = filtered
+                                                        if (activeSearchTabId == tab.id) {
+                                                            activeSearchTabId = filtered.first().id
+                                                            searchBrowserUrlInput = filtered.first().url
+                                                        }
+                                                    }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Add Tab Button
+                            Surface(
+                                shape = CircleShape,
+                                color = Color(0xFF1E293B),
+                                border = BorderStroke(1.dp, Color(0xFF334155)),
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .clickable {
+                                        val newId = "tab_${System.currentTimeMillis()}"
+                                        val newTab = com.example.ui.components.WebTabItem(
+                                            id = newId,
+                                            url = "https://news.google.com",
+                                            title = "New Tab"
+                                        )
+                                        searchBrowserTabs = searchBrowserTabs + newTab
+                                        activeSearchTabId = newId
+                                        searchBrowserUrlInput = newTab.url
+                                    }
+                                    .testTag("search_browser_add_tab")
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(imageVector = Icons.Default.Add, contentDescription = "New Tab", tint = NeonCyan, modifier = Modifier.size(14.dp))
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        // URL Address Bar & Slop Audit Quick Action
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = searchBrowserUrlInput,
+                                onValueChange = { searchBrowserUrlInput = it },
+                                placeholder = { Text("https:// or search web address", fontSize = 12.sp) },
+                                singleLine = true,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(48.dp)
+                                    .testTag("search_browser_url_input"),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = NeonCyan,
+                                    unfocusedBorderColor = Color(0xFF334155),
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White
+                                )
+                            )
+
+                            Button(
+                                onClick = {
+                                    var formatted = searchBrowserUrlInput.trim()
+                                    if (!formatted.startsWith("http://") && !formatted.startsWith("https://") && !formatted.startsWith("bbs://")) {
+                                        formatted = if (formatted.contains(".") && !formatted.contains(" ")) "https://$formatted" else "https://www.google.com/search?q=${java.net.URLEncoder.encode(formatted, "UTF-8")}"
+                                    }
+                                    searchBrowserUrlInput = formatted
+                                    searchBrowserTabs = searchBrowserTabs.map {
+                                        if (it.id == activeSearchTabId) it.copy(url = formatted, title = formatted.take(24)) else it
+                                    }
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = Color(0xFF003544)),
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                                modifier = Modifier.height(44.dp)
+                            ) {
+                                Text("Go", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            // Quick Slop Audit for current URL
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFEF4444).copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, Color(0xFFEF4444)),
+                                modifier = Modifier
+                                    .height(44.dp)
+                                    .clickable {
+                                        isSlopDetectorOpen = true
+                                    }
+                                    .testTag("search_browser_audit_slop_button")
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("🛡️ Audit", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFCA5A5))
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        // WebView Content Window directly inside the Search button drawer/sheet
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(380.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            color = Color(0xFF020617),
+                            border = BorderStroke(1.dp, Color(0xFF1E293B))
+                        ) {
+                            if (activeTab != null) {
+                                if (activeTab.url.startsWith("bbs://")) {
+                                    com.example.ui.screens.TownsquareBbsTerminalView(
+                                        onNavigateUrl = { newUrl ->
+                                            searchBrowserUrlInput = newUrl
+                                            searchBrowserTabs = searchBrowserTabs.map {
+                                                if (it.id == activeTab.id) it.copy(url = newUrl) else it
+                                            }
+                                        }
+                                    )
+                                } else {
+                                    key(activeTab.id, activeTab.url) {
+                                        androidx.compose.ui.viewinterop.AndroidView(
+                                            factory = { ctx ->
+                                                android.webkit.WebView(ctx).apply {
+                                                    setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
+                                                    settings.apply {
+                                                        javaScriptEnabled = true
+                                                        domStorageEnabled = true
+                                                        loadWithOverviewMode = true
+                                                        useWideViewPort = true
+                                                        cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
+                                                    }
+                                                    webViewClient = object : android.webkit.WebViewClient() {
+                                                        override fun onPageFinished(view: android.webkit.WebView?, url: String?) {
+                                                            super.onPageFinished(view, url)
+                                                            url?.let { finishedUrl ->
+                                                                val pageTitle = view?.title ?: "Web Page"
+                                                                searchBrowserUrlInput = finishedUrl
+                                                                searchBrowserTabs = searchBrowserTabs.map {
+                                                                    if (it.id == activeTab.id) it.copy(url = finishedUrl, title = pageTitle) else it
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    loadUrl(activeTab.url)
+                                                }
+                                            },
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(4.dp))
         }
 
@@ -283,10 +806,6 @@ fun MainFeedScreen(
             ),
             onHeadlineClick = { selectedHeadline = it }
         )
-
-        // Homepage Sandwich Menu for Feed Modes (Main Civic Feed vs Townsquare Peeps)
-        var isHomeMenuOpen by remember { mutableStateOf(false) }
-        var selectedHomeMode by remember { mutableIntStateOf(0) } // 0 = Main Civic Feed, 1 = Townsquare Peeps
 
         Surface(
             modifier = Modifier
@@ -304,19 +823,37 @@ fun MainFeedScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(if (selectedHomeMode == 0) "📰" else "🐥", fontSize = 18.sp)
+                    Text(
+                        when (selectedHomeMode) {
+                            1 -> "🐥"
+                            2 -> "📖"
+                            3 -> "📟"
+                            else -> "📰"
+                        },
+                        fontSize = 18.sp
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
-                            text = if (selectedHomeMode == 0) "Mode: Main Civic Feed" else "Mode: Townsquare Peeps Stream",
+                            text = when (selectedHomeMode) {
+                                1 -> "Mode: Townsquare Peeps Stream"
+                                2 -> "Mode: Pocket Reader Vault"
+                                3 -> "Mode: Offline Teletext Airwave Decoder"
+                                else -> "Mode: Main Civic Feed"
+                            },
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                         Text(
-                            text = if (selectedHomeMode == 0) "Latest stories, bulletins & outlets" else "Short-form verified news & audio bites",
+                            text = when (selectedHomeMode) {
+                                1 -> "Short-form verified news & audio bites"
+                                2 -> "Offline reading list & synchronized RSS vault"
+                                3 -> if (isDeviceOffline) "Active (No Internet Connection - Broadcast Feed)" else "Airwave broadcast & VBI signal reception"
+                                else -> "Latest stories, bulletins & outlets"
+                            },
                             fontSize = 10.sp,
-                            color = DarkTextSecondary
+                            color = if (selectedHomeMode == 3 && isDeviceOffline) WarmAmber else DarkTextSecondary
                         )
                     }
                 }
@@ -346,10 +883,31 @@ fun MainFeedScreen(
                     description = "Short-form verified news & audio bites",
                     iconEmoji = "🐥",
                     isSelected = selectedHomeMode == 1
+                ),
+                SandwichMenuItem(
+                    id = "pocket",
+                    title = "Pocket Reader",
+                    description = "Offline reading list & longform vault",
+                    iconEmoji = "📖",
+                    isSelected = selectedHomeMode == 2
+                ),
+                SandwichMenuItem(
+                    id = "teletext",
+                    title = "Offline Teletext",
+                    description = "Broadcast airwave decoder (Default when offline)",
+                    iconEmoji = "📟",
+                    brandIconType = AirwavesBrandIconType.OFFLINE,
+                    isSelected = selectedHomeMode == 3
                 )
             ),
             onSelectItem = { item ->
-                selectedHomeMode = if (item.id == "feed") 0 else 1
+                selectedHomeMode = when (item.id) {
+                    "feed" -> 0
+                    "peeps" -> 1
+                    "pocket" -> 2
+                    "teletext" -> 3
+                    else -> 0
+                }
                 isHomeMenuOpen = false
             },
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 2.dp)
@@ -359,6 +917,16 @@ fun MainFeedScreen(
 
         if (selectedHomeMode == 1) {
             TownsquarePeepsView(modifier = Modifier.fillMaxSize())
+        } else if (selectedHomeMode == 2) {
+            com.example.ui.plus.pocket.TownsquarePocketApp(
+                onBack = { selectedHomeMode = 0 },
+                modifier = Modifier.fillMaxSize()
+            )
+        } else if (selectedHomeMode == 3) {
+            com.example.ui.components.TeletextScreenContent(
+                isDeviceOffline = isDeviceOffline,
+                onClose = { selectedHomeMode = 0 }
+            )
         } else {
             // Curation Feed Toggles
             androidx.compose.material3.TabRow(

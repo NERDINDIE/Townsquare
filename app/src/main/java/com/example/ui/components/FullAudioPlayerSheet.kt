@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,8 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FastForward
@@ -60,7 +63,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.audio.AudioState
+import com.example.audio.EqContentCategory
 import com.example.data.model.MediaType
+import com.example.ui.components.player.SimultaneousEqCallbacks
+import com.example.ui.components.player.SimultaneousEqCompactBadge
+import com.example.ui.components.player.SimultaneousEqStudioCard
 import com.example.ui.theme.CoralRed
 import com.example.ui.theme.DarkBorder
 import com.example.ui.theme.NeonCyan
@@ -76,11 +83,13 @@ fun FullAudioPlayerSheet(
     onSpeedChange: (Float) -> Unit,
     onSkipForward: () -> Unit,
     onSkipBackward: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    eqCallbacks: SimultaneousEqCallbacks = SimultaneousEqCallbacks()
 ) {
     val current = audioState.currentItem ?: return
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val isRadio = current.type == MediaType.RADIO_STATION.name
+    var isEqExpanded by remember { androidx.compose.runtime.mutableStateOf(true) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -91,6 +100,7 @@ fun FullAudioPlayerSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -100,15 +110,32 @@ fun FullAudioPlayerSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (isRadio) CoralRed.copy(alpha = 0.2f) else RadiantPurple.copy(alpha = 0.2f)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        text = if (isRadio) "LIVE BROADCAST RADIO" else "ON-DEMAND PODCAST",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = if (isRadio) CoralRed else RadiantPurple,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    val eqCat = audioState.simultaneousEq.effectiveCategory
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (isRadio) CoralRed.copy(alpha = 0.2f) else RadiantPurple.copy(alpha = 0.2f)
+                    ) {
+                        Text(
+                            text = when {
+                                isRadio -> "LIVE BROADCAST RADIO"
+                                eqCat == EqContentCategory.AUDIOBOOK -> "AUDIOBOOK"
+                                eqCat == EqContentCategory.MUSIC -> "MUSIC MASTER"
+                                else -> "ON-DEMAND PODCAST"
+                            },
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = if (isRadio) CoralRed else RadiantPurple,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+
+                    SimultaneousEqCompactBadge(
+                        eqState = audioState.simultaneousEq,
+                        onClick = { isEqExpanded = !isEqExpanded }
                     )
                 }
 
@@ -418,6 +445,16 @@ fun FullAudioPlayerSheet(
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AnimatedVisibility(visible = isEqExpanded) {
+                SimultaneousEqStudioCard(
+                    eqState = audioState.simultaneousEq,
+                    callbacks = eqCallbacks,
+                    initiallyExpandTrim = false
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))

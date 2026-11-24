@@ -35,6 +35,7 @@ fun RadioDialPlayerSkin(
     onPlayStation: (MediaItemEntity) -> Unit,
     onTogglePlayPause: () -> Unit,
     onClose: () -> Unit,
+    onOpenEq: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedFrequency by remember { mutableFloatStateOf(101.4f) }
@@ -76,8 +77,14 @@ fun RadioDialPlayerSkin(
                 }
             }
 
-            IconButton(onClick = onClose) {
-                Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                SimultaneousEqCompactBadge(
+                    eqState = audioState.simultaneousEq,
+                    onClick = onOpenEq
+                )
+                IconButton(onClick = onClose) {
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+                }
             }
         }
 

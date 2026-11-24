@@ -98,87 +98,46 @@ fun WavesGridCatalog(
             else -> {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     podcasts.forEach { podcast ->
-                        val detectedSongs = SongDetectionEngine.getPodcastDetectedSongs(podcast.id.toString())
                         Card(
                             shape = RoundedCornerShape(14.dp),
                             colors = CardDefaults.cardColors(containerColor = Color(0xFF131D30)),
                             border = BorderStroke(1.dp, Color(0xFF1E293B)),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onPlayAudio(podcast) }
                         ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                                        Text("🎙️", fontSize = 24.sp)
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                        Column {
-                                            Text(
-                                                text = podcast.title,
-                                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                                color = Color.White,
-                                                maxLines = 1
-                                            )
-                                            Text(
-                                                text = "Host: ${podcast.authorName} • ${podcast.durationSeconds / 60} mins",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = Color(0xFF94A3B8)
-                                            )
-                                        }
-                                    }
-
-                                    FilledTonalButton(
-                                        onClick = { onPlayAudio(podcast) },
-                                        colors = ButtonDefaults.filledTonalButtonColors(containerColor = WarmAmber, contentColor = Color(0xFF261800)),
-                                        shape = RoundedCornerShape(10.dp),
-                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
-                                    ) {
-                                        Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(2.dp))
-                                        Text("Play", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Row(
+                                modifier = Modifier.padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                    Text("🎙️", fontSize = 24.sp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = podcast.title,
+                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = Color.White,
+                                            maxLines = 1
+                                        )
+                                        Text(
+                                            text = "Host: ${podcast.authorName} • ${podcast.durationSeconds / 60} mins",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF94A3B8)
+                                        )
                                     }
                                 }
 
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "AUTOMATICALLY DETECTED SONGS IN EPISODE (TIMESTAMPS):",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, fontSize = 9.sp),
-                                    color = NeonCyan
-                                )
-                                Spacer(modifier = Modifier.height(6.dp))
-
-                                detectedSongs.forEach { ds ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 3.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Surface(
-                                                shape = RoundedCornerShape(4.dp),
-                                                color = NeonCyan.copy(alpha = 0.2f)
-                                            ) {
-                                                Text(
-                                                    text = ds.timestampText,
-                                                    fontSize = 10.sp,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = NeonCyan,
-                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(
-                                                text = "${ds.title} — ${ds.artist}",
-                                                fontSize = 12.sp,
-                                                color = Color.White
-                                            )
-                                        }
-                                        Text(ds.albumArtEmoji, fontSize = 14.sp)
-                                    }
+                                FilledTonalButton(
+                                    onClick = { onPlayAudio(podcast) },
+                                    colors = ButtonDefaults.filledTonalButtonColors(containerColor = WarmAmber, contentColor = Color(0xFF261800)),
+                                    shape = RoundedCornerShape(10.dp),
+                                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text("Play in Player", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }

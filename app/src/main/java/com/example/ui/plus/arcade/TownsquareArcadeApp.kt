@@ -43,7 +43,7 @@ import kotlin.math.sqrt
 
 // Game Enums
 enum class ArcadeGame {
-    NONE, SPACE_INVADERS, BLOCK_BREAKER, DEBUGGER, EXTRA_NEWSPAPER
+    NONE, SPACE_INVADERS, BLOCK_BREAKER, DEBUGGER, EXTRA_NEWSPAPER, HORIZON_3D
 }
 
 // Data Classes for Game States
@@ -303,6 +303,21 @@ fun TownsquareArcadeApp(
                         )
                     }
 
+                    // GAME 5: Townsquare Horizon 3D (Open World Engine)
+                    item {
+                        GameCabinetCard(
+                            title = "TOWNSQUARE HORIZON 3D",
+                            description = "Next-generation 3D open world engine! Explore procedural civic landscapes, interact with neighborhood districts, and drive physics-based rovers.",
+                            imageEmoji = "🌐",
+                            neonColor = NeonCyan,
+                            highScore = 0,
+                            onPlay = {
+                                activeGame = ArcadeGame.HORIZON_3D
+                                triggerUnlock("cadet")
+                            }
+                        )
+                    }
+
                     // Scheduled Interactive Tournaments & Dubbing Studio
                     item {
                         ArcadeScheduledGamesSection()
@@ -536,6 +551,11 @@ fun TownsquareArcadeApp(
                                     activeGame = ArcadeGame.NONE
                                 },
                                 onExit = { activeGame = ArcadeGame.NONE }
+                            )
+                        }
+                        ArcadeGame.HORIZON_3D -> {
+                            com.example.ui.plus.game3d.TownsquareHorizonGameApp(
+                                onBack = { activeGame = ArcadeGame.NONE }
                             )
                         }
                         else -> {}

@@ -39,10 +39,12 @@ enum class IotDeviceEnvironment(
     BLUETOOTH_MANAGER("Bluetooth Hub", "📱", "Manage connected devices of any type", Color(0xFF00D2FF)),
     SMARTWATCH("Smartwatch OS", "⌚", "Titanium bezel, AMOLED watch faces & complications", Color(0xFF10B981)),
     CAR_DASHBOARD("Car Dashboard", "🚗", "Speedometer, engine gauges & car media", Color(0xFFEF4444)),
+    DRIVING_MODE("Car & Driving Mode", "📻", "Android Auto distraction-free high-contrast media tuner", Color(0xFFFF9500)),
     AUTOMOTIVE_CLUSTER("In-Car Cluster", "🚘", "Heads-up speed & turn-by-turn guidance", Color(0xFF00D2FF)),
     MP3_PLAYER("Vintage MP3", "🎵", "Retro monochrome LCD & tactile click wheel", Color(0xFFFFB300)),
     EINK_HOME_DISPLAY("E-Ink Bedside", "🏡", "High-contrast daily civic bulletin & climate", Color(0xFF4A463B)),
-    REMOTE_COMPUTER("Workstation", "🖥️", "Remote Linux terminal & server telemetry", Color(0xFFA855F7))
+    REMOTE_COMPUTER("Workstation", "🖥️", "Remote Linux terminal & server telemetry", Color(0xFFA855F7)),
+    WATCHFACE_MAKER("Watchface Maker", "🎨", "Design custom dials, hands & complications", Color(0xFFFFB300))
 }
 
 /**
@@ -210,10 +212,32 @@ fun TownsquareIotCompanionApp(
                         IotBluetoothManagerView()
                     }
                     IotDeviceEnvironment.SMARTWATCH -> {
-                        IotSmartwatchView(liveTime = liveTime)
+                        IotSmartwatchView(
+                            liveTime = liveTime,
+                            onOpenWatchfaceMaker = { activeEnvironment = IotDeviceEnvironment.WATCHFACE_MAKER }
+                        )
                     }
                     IotDeviceEnvironment.CAR_DASHBOARD -> {
                         IotCarDashboardView(liveTime = liveTime)
+                    }
+                    IotDeviceEnvironment.DRIVING_MODE -> {
+                        // Embedded Android Auto High-Contrast Driving Media Tuner
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            com.example.ui.components.AndroidAutoDrivingDialog(
+                                stations = emptyList(),
+                                audioState = com.example.audio.AudioState(),
+                                onPlayStation = {},
+                                onTogglePlayPause = {},
+                                onSeekNext = {},
+                                onSeekPrev = {},
+                                onDismiss = { activeEnvironment = IotDeviceEnvironment.CAR_DASHBOARD }
+                            )
+                        }
                     }
                     IotDeviceEnvironment.AUTOMOTIVE_CLUSTER -> {
                         IotAutomotiveClusterView(liveTime = liveTime)
@@ -226,6 +250,11 @@ fun TownsquareIotCompanionApp(
                     }
                     IotDeviceEnvironment.REMOTE_COMPUTER -> {
                         IotRemoteComputerView()
+                    }
+                    IotDeviceEnvironment.WATCHFACE_MAKER -> {
+                        com.example.ui.plus.watchface.TownsquareWatchfaceMaker(
+                            onBack = { activeEnvironment = IotDeviceEnvironment.SMARTWATCH }
+                        )
                     }
                 }
             }

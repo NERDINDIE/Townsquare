@@ -119,20 +119,11 @@ fun TownsquareWidgetsDrawerDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Surface(
-                                shape = CircleShape,
-                                color = NeonCyan.copy(alpha = 0.15f),
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        imageVector = Icons.Default.Widgets,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                            }
+                            AirwavesBrandIcon(
+                                iconType = AirwavesBrandIconType.WIDGETS,
+                                size = 40.dp,
+                                onOpenSidebar = onDismiss
+                            )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(

@@ -66,6 +66,7 @@ fun GlobalPlayerSandwichMenu(
         DropdownMenu(
             expanded = isMenuOpen,
             onDismissRequest = { isMenuOpen = false },
+            properties = androidx.compose.ui.window.PopupProperties(focusable = true, dismissOnClickOutside = true),
             modifier = Modifier
                 .background(Color(0xFF0F172A))
                 .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))

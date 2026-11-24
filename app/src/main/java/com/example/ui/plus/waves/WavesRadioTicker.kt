@@ -33,7 +33,6 @@ fun WavesRadioTicker(
 ) {
     var activeStationIndex by remember { mutableIntStateOf(0) }
     val currentStation = radioStations.getOrNull(activeStationIndex) ?: radioStations.firstOrNull()
-    val recognizedSong = currentStation?.let { SongDetectionEngine.getRadioLiveDetectedSong(it.stationFrequency) }
     val haptic = LocalHapticFeedback.current
 
     Surface(
@@ -49,38 +48,7 @@ fun WavesRadioTicker(
             .testTag("waves_radio_ticker")
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            // TV News Graphics Inspired Header Banner
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFDC2626), shape = RoundedCornerShape(4.dp))
-                    .padding(horizontal = 8.dp, vertical = 3.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(Color.White)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "LIVE FM BROADCAST • AUTOMATIC SONG RECOGNITION",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black, fontSize = 9.sp),
-                        color = Color.White
-                    )
-                }
-                Text(
-                    text = currentStation?.stationFrequency ?: "88.5 FM",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 10.sp),
-                    color = Color.Yellow
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
+            // Live FM Broadcast Channel Ticker
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -93,19 +61,19 @@ fun WavesRadioTicker(
                         modifier = Modifier.size(44.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text(recognizedSong?.albumArtEmoji ?: "📻", fontSize = 22.sp)
+                            Text("📻", fontSize = 22.sp)
                         }
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = recognizedSong?.title ?: "Detecting broadcast track...",
+                            text = currentStation?.title ?: "Townsquare Central Radio",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = Color.White,
                             maxLines = 1
                         )
                         Text(
-                            text = "Artist: ${recognizedSong?.artist ?: "Unknown"} • Station: ${currentStation?.title ?: "Townsquare Radio"}",
+                            text = "Frequency: ${currentStation?.stationFrequency ?: "88.5 MHz"} • Tap to tune on Global Player",
                             style = MaterialTheme.typography.bodySmall,
                             color = NeonCyan,
                             maxLines = 1
@@ -121,9 +89,9 @@ fun WavesRadioTicker(
                     shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text("Tune", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.Radio, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Tune Radio", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }

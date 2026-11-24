@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Refresh
@@ -220,9 +221,6 @@ fun TownsquareSidebarDrawer(
             kotlinx.coroutines.delay(1000L)
         }
     }
-    // Sidebar Tab State
-    var selectedSidebarTab by remember(initialTab) { androidx.compose.runtime.mutableIntStateOf(initialTab) }
-    val sidebarTabs = listOf("Navigation", "Tools", "Settings")
 
     AnimatedVisibility(
         visible = isOpen,
@@ -278,20 +276,11 @@ fun TownsquareSidebarDrawer(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Surface(
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = NeonCyan,
-                                    modifier = Modifier.size(42.dp)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text(
-                                            text = "T",
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF003544)
-                                        )
-                                    }
-                                }
+                                AirwavesBrandIcon(
+                                    iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                                    size = 42.dp,
+                                    onOpenSidebar = onClose
+                                )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
@@ -342,20 +331,13 @@ fun TownsquareSidebarDrawer(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = com.example.ui.theme.WarmAmber,
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Text(
-                                                text = "T",
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 14.sp,
-                                                color = Color(0xFF261800)
-                                            )
-                                        }
-                                    }
+                                    AirwavesBrandIcon(
+                                        iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                                        size = 28.dp,
+                                        iconColor = Color(0xFF261800),
+                                        circleColor = com.example.ui.theme.WarmAmber,
+                                        borderColor = com.example.ui.theme.WarmAmber
+                                    )
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
@@ -559,11 +541,12 @@ fun TownsquareSidebarDrawer(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Mail,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(20.dp)
+                                    AirwavesBrandIcon(
+                                        iconType = AirwavesBrandIconType.UNIFIED_INBOX,
+                                        size = 30.dp,
+                                        iconColor = NeonCyan,
+                                        circleColor = NeonCyan.copy(alpha = 0.15f),
+                                        borderColor = NeonCyan.copy(alpha = 0.4f)
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
@@ -619,7 +602,13 @@ fun TownsquareSidebarDrawer(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = "⛅", fontSize = 18.sp)
+                                    AirwavesBrandIcon(
+                                        iconType = AirwavesBrandIconType.FORECAST,
+                                        size = 30.dp,
+                                        iconColor = Color(0xFF00D2FF),
+                                        circleColor = Color(0xFF00D2FF).copy(alpha = 0.15f),
+                                        borderColor = Color(0xFF00D2FF).copy(alpha = 0.4f)
+                                    )
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
@@ -731,11 +720,12 @@ fun TownsquareSidebarDrawer(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Widgets,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(20.dp)
+                                    AirwavesBrandIcon(
+                                        iconType = AirwavesBrandIconType.WIDGETS,
+                                        size = 30.dp,
+                                        iconColor = NeonCyan,
+                                        circleColor = NeonCyan.copy(alpha = 0.15f),
+                                        borderColor = NeonCyan.copy(alpha = 0.4f)
                                     )
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
@@ -782,11 +772,12 @@ fun TownsquareSidebarDrawer(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            imageVector = Icons.Default.CloudOff,
-                                            contentDescription = null,
-                                            tint = if (isOfflineMode) com.example.ui.theme.CoralRed else NeonCyan,
-                                            modifier = Modifier.size(20.dp)
+                                        AirwavesBrandIcon(
+                                            iconType = AirwavesBrandIconType.OFFLINE,
+                                            size = 30.dp,
+                                            iconColor = if (isOfflineMode) com.example.ui.theme.CoralRed else NeonCyan,
+                                            circleColor = (if (isOfflineMode) com.example.ui.theme.CoralRed else NeonCyan).copy(alpha = 0.15f),
+                                            borderColor = (if (isOfflineMode) com.example.ui.theme.CoralRed else NeonCyan).copy(alpha = 0.4f)
                                         )
                                         Spacer(modifier = Modifier.width(10.dp))
                                         Column {
@@ -846,7 +837,7 @@ fun TownsquareSidebarDrawer(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "STANDALONE CIVIC APPS (${14})",
+                                text = "STANDALONE CIVIC APPS (${9})",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
                                 color = NeonCyan
                             )
@@ -862,21 +853,15 @@ fun TownsquareSidebarDrawer(
                             isOpen = isStandaloneAppsMenuOpen,
                             title = "Civic Apps & Utilities Suite",
                             items = listOf(
-                                SandwichMenuItem("marketplace", "Marketplace", "Buy & sell", "🛍️"),
-                                SandwichMenuItem("maps", "Maps & Travel", "Guides & routes", "🗺️"),
-                                SandwichMenuItem("arcade", "Arcade Games", "Retro games", "🎮"),
-                                SandwichMenuItem("lingo", "Lingo Lab", "Phrasebook", "🗣️"),
-                                SandwichMenuItem("bookworm", "Bookworm", "Library & archives", "📚"),
-                                SandwichMenuItem("phone", "Phone Link", "Satellite & dialer", "📞"),
-                                SandwichMenuItem("iot", "IoT Companion", "Remote & devices", "⌚"),
-                                SandwichMenuItem("ar", "AR Vision & HUD", "Civic AR scanner", "📷"),
-                                SandwichMenuItem("files", "File Explorer", "Storage & vault", "📁"),
-                                SandwichMenuItem("watchface", "Watchface Maker", "Smartwatch dials", "⌚"),
-                                SandwichMenuItem("pocket", "Pocket Reader", "Offline RSS vault", "📖"),
-                                SandwichMenuItem("server", "Server Console", "Embedded HTTP", "🖧"),
-                                SandwichMenuItem("auth", "Account & SSO", "Passkeys & login", "🔐"),
-                                SandwichMenuItem("fomo", "FOMO Digest", "Catch-up recap", "⚡"),
-                                SandwichMenuItem("horizon3d", "Townsquare Horizon 3D", "Open world 3D engine & game", "🎮")
+                                SandwichMenuItem("marketplace", "Marketplace", "Buy & sell", brandIconType = AirwavesBrandIconType.MARKETPLACE),
+                                SandwichMenuItem("maps", "Maps & Travel", "Guides & routes", brandIconType = AirwavesBrandIconType.MAPS),
+                                SandwichMenuItem("arcade", "Arcade Games", "Retro games", brandIconType = AirwavesBrandIconType.ARCADE),
+                                SandwichMenuItem("lingo", "Lingo Lab", "Phrasebook", brandIconType = AirwavesBrandIconType.LINGO_LAB),
+                                SandwichMenuItem("bookworm", "Bookworm", "Library & archives", brandIconType = AirwavesBrandIconType.BOOKWORM),
+                                SandwichMenuItem("phone", "Phone Link", "Satellite & dialer", brandIconType = AirwavesBrandIconType.PHONE),
+                                SandwichMenuItem("iot", "IoT Companion", "Remote & devices", brandIconType = AirwavesBrandIconType.IOT_COMPANION),
+                                SandwichMenuItem("ar", "AR Vision & HUD", "Civic AR scanner", brandIconType = AirwavesBrandIconType.CAMERA_HUD),
+                                SandwichMenuItem("files", "File Explorer", "Storage & vault", brandIconType = AirwavesBrandIconType.FILE_EXPLORER)
                             ),
                             onSelectItem = { menuItem ->
                                 onClose()
@@ -890,12 +875,6 @@ fun TownsquareSidebarDrawer(
                                     "iot" -> onOpenIotCompanion()
                                     "ar" -> onOpenArCamera()
                                     "files" -> onOpenFiles()
-                                    "watchface" -> onOpenWatchfaceMaker()
-                                    "pocket" -> onOpenPocket()
-                                    "server" -> onOpenServerConsole()
-                                    "auth" -> onOpenLoginSignup()
-                                    "fomo" -> onOpenFomoDigest()
-                                    "horizon3d" -> onOpenHorizon3D()
                                 }
                             }
                         )
@@ -925,39 +904,7 @@ fun TownsquareSidebarDrawer(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Sidebar Tabs
-                        TabRow(
-                            selectedTabIndex = selectedSidebarTab,
-                            containerColor = Color.Transparent,
-                            contentColor = NeonCyan,
-                            indicator = { tabPositions ->
-                                TabRowDefaults.SecondaryIndicator(
-                                    Modifier.tabIndicatorOffset(tabPositions[selectedSidebarTab]),
-                                    color = NeonCyan
-                                )
-                            },
-                            divider = { HorizontalDivider(color = DarkBorder) }
-                        ) {
-                            sidebarTabs.forEachIndexed { index, title ->
-                                Tab(
-                                    selected = selectedSidebarTab == index,
-                                    onClick = { selectedSidebarTab = index },
-                                    text = {
-                                        Text(
-                                            text = title,
-                                            fontSize = 13.sp,
-                                            fontWeight = if (selectedSidebarTab == index) FontWeight.Bold else FontWeight.Medium
-                                        )
-                                    }
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        when (selectedSidebarTab) {
-                            0 -> {
-                                Text(
+                        Text(
                                     text = "PRIMARY SECTIONS",
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
@@ -1022,9 +969,10 @@ fun TownsquareSidebarDrawer(
                             ),
                             SidebarNavItem(
                                 index = NavDestination.SPACES,
-                                title = "Spaces & Guilds",
-                                subtitle = "Discussion & community rooms",
-                                icon = Icons.Default.Hub,
+                                title = "Profile & Settings",
+                                subtitle = "Personal spaces, works & preferences",
+                                icon = Icons.Default.AccountCircle,
+                                badge = "YOU",
                                 testTag = "sidebar_nav_spaces"
                             ),
                             SidebarNavItem(
@@ -1074,14 +1022,6 @@ fun TownsquareSidebarDrawer(
                                 testTag = "sidebar_nav_dashboard"
                             ),
                             SidebarNavItem(
-                                index = NavDestination.BROWSER,
-                                title = "Multitasking Browser",
-                                subtitle = "Open press wires & web tabs",
-                                icon = Icons.Default.Public,
-                                badge = "WEB",
-                                testTag = "sidebar_nav_browser"
-                            ),
-                            SidebarNavItem(
                                 index = NavDestination.TOWNSQUARE_PLUS,
                                 title = "Townsquare Plus",
                                 subtitle = "Prototypes: Townsquares, Weatherman & Lab",
@@ -1105,812 +1045,6 @@ fun TownsquareSidebarDrawer(
                         }
 
                         Spacer(modifier = Modifier.height(14.dp))
-                            }
-                            1 -> {
-                                Text(
-                                    text = "AIRWAVE & WIRE TOOLS",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
-                                )
-
-                                // 1. Teletext Airwave Decoder Button
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF001F1F),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenTeletext()
-                                }
-                                .testTag("sidebar_open_teletext_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Sensors,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Teletext Airwave Decoder",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Satellite & VBI airwave reception",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = NeonCyan.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = NeonCyan
-                                ) {
-                                    Text(
-                                        text = "CEEFAX",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color(0xFF003544),
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 2. Hourly Facsimile Broadsheet Button
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF1E1810),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, com.example.ui.theme.WarmAmber.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenFacsimile()
-                                }
-                                .testTag("sidebar_open_facsimile_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Print,
-                                        contentDescription = null,
-                                        tint = com.example.ui.theme.WarmAmber,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Hourly Facsimile Wire",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Retro thermal broadsheet slip",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = com.example.ui.theme.WarmAmber.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = com.example.ui.theme.WarmAmber
-                                ) {
-                                    Text(
-                                        text = "120 RPM",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color(0xFF261800),
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 3. Broadsheet Edition Cover Page
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF131C2E),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, com.example.ui.theme.WarmAmber.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenBroadsheetCover()
-                                }
-                                .testTag("sidebar_open_broadsheet_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Newspaper,
-                                        contentDescription = null,
-                                        tint = com.example.ui.theme.WarmAmber,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Today's Broadsheet Edition",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Front page masthead & lead story",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = com.example.ui.theme.WarmAmber.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = com.example.ui.theme.WarmAmber
-                                ) {
-                                    Text(
-                                        text = "FRONT PAGE",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color.Black,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 4. Emergency Alerts Hub
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF2C0A0A),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFF3B30).copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenEmergencyHub()
-                                }
-                                .testTag("sidebar_open_emergency_hub_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = "🚨", fontSize = 18.sp)
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Emergency Alert Hub",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Live severe weather & civic advisories",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = Color(0xFFFF8080)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = Color(0xFFFF3B30)
-                                ) {
-                                    Text(
-                                        text = "ALERTS",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color.White,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 5. Weather Forecast & Radar
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF0F1B2B),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenWeather()
-                                }
-                                .testTag("sidebar_open_weather_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = "⛅", fontSize = 18.sp)
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Weather Forecast & Radar",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Live hourly pulse & satellite radar",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = NeonCyan.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = NeonCyan
-                                ) {
-                                    Text(
-                                        text = "72°F",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color.Black,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 6. Moderation Dashboard
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF2C1E0A),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, com.example.ui.theme.WarmAmber.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenModeration()
-                                }
-                                .testTag("sidebar_open_moderation_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Sensors, // Reusing icon or whatever looks good
-                                        contentDescription = null,
-                                        tint = com.example.ui.theme.WarmAmber,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Moderation Dashboard",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Review reported content and users",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = com.example.ui.theme.WarmAmber.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 7. Creator Monetization
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF0A2C1A),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF4CAF50).copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenMonetization()
-                                }
-                                .testTag("sidebar_open_monetization_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Radio, // Reusing icon
-                                        contentDescription = null,
-                                        tint = Color(0xFF4CAF50),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Creator Monetization",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Manage subscriptions & earnings",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = Color(0xFF4CAF50).copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 8. Multitasking Web Browser Tabs
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF0F2236),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenMultitaskingBrowser()
-                                }
-                                .testTag("sidebar_open_multitasking_browser_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Public,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Multitasking Browser Tabs",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Open multiple press wires & web tabs",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = NeonCyan.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = NeonCyan
-                                ) {
-                                    Text(
-                                        text = "TABS",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color.Black,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 9. Broadcast Station Schedule & Timetable
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF001F2B),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenBroadcastSchedule()
-                                }
-                                .testTag("sidebar_open_broadcast_schedule_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Schedule,
-                                        contentDescription = null,
-                                        tint = NeonCyan,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Station Master Schedule",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "24-Hour live TV & radio program guide",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = NeonCyan.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = NeonCyan
-                                ) {
-                                    Text(
-                                        text = "GUIDE",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color(0xFF003544),
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 10. AI Fact-Checking Center
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF14241B),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF30D158).copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenFactCheckHub()
-                                }
-                                .testTag("sidebar_open_fact_check_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.FactCheck,
-                                        contentDescription = null,
-                                        tint = Color(0xFF30D158),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "AI Fact-Checking Center",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Claim verifier & editorial evidence audit",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = Color(0xFF30D158).copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = Color(0xFF30D158)
-                                ) {
-                                    Text(
-                                        text = "AI AUDIT",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color.Black,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 11. AI Voice Builder Studio
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF1B162C),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBF5AF2).copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenVoiceBuilder()
-                                }
-                                .testTag("sidebar_open_voice_studio_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Mic,
-                                        contentDescription = null,
-                                        tint = Color(0xFFBF5AF2),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "AI Voice Builder Studio",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "Custom narrator training & synthesis",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = Color(0xFFBF5AF2).copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = Color(0xFFBF5AF2)
-                                ) {
-                                    Text(
-                                        text = "VOICE",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color.Black,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 12. Car & Driving Mode (Android Auto)
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF261D0F),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, com.example.ui.theme.WarmAmber.copy(alpha = 0.5f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onClose()
-                                    onOpenDrivingMode()
-                                }
-                                .testTag("sidebar_open_driving_mode_button")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.DirectionsCar,
-                                        contentDescription = null,
-                                        tint = com.example.ui.theme.WarmAmber,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Car & Driving Mode",
-                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.White
-                                        )
-                                        Text(
-                                            text = "High-contrast distraction-free radio tuner",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = com.example.ui.theme.WarmAmber.copy(alpha = 0.8f)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = com.example.ui.theme.WarmAmber
-                                ) {
-                                    Text(
-                                        text = "AUTO",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                        color = Color(0xFF261800),
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                            }
-                            2 -> {
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "⚙️ SETTINGS & PREFERENCES",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-                                            color = NeonCyan
-                                        )
-                                        IconButton(onClick = onResetToDefaults) {
-                                            Icon(
-                                                imageVector = Icons.Default.RestartAlt,
-                                                contentDescription = "Reset Defaults",
-                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                        }
-                                    }
-
-                                    // 1. Skin Extensions & Overrides (Preinstalled & Custom)
-                                    SkinExtensionsSettings(
-                                        settings = settings,
-                                        customExtensions = customExtensions,
-                                        onUpdateActiveAppSkin = onUpdateActiveAppSkin,
-                                        onUpdateActiveWelcomeSkin = onUpdateActiveWelcomeSkin,
-                                        onUpdateOverrideBaseAppInterface = onUpdateOverrideBaseAppInterface,
-                                        onUpdateRetroTerminalMode = onUpdateRetroTerminalMode,
-                                        onUpdateKeitai3GOverlay = onUpdateKeitai3GOverlay,
-                                        onUpdateManuscriptParchmentTheme = onUpdateManuscriptParchmentTheme,
-                                        onUpdateMetroTilesView = onUpdateMetroTilesView,
-                                        onUpdateGeekLiveTickerHeader = onUpdateGeekLiveTickerHeader,
-                                        onOpenExtensionBuilderInPlus = {
-                                            onSelectIndex(NavDestination.TOWNSQUARE_PLUS)
-                                            onClose()
-                                        }
-                                    )
-
-                                    // 2. Appearance & Themes (Modular)
-                                    AppearanceSettings(
-                                        currentTheme = currentTheme,
-                                        isDynamicTheme = isDynamicTheme,
-                                        highContrastEnabled = settings?.highContrastDisplay ?: false,
-                                        onSelectTheme = onSelectTheme,
-                                        onSetDynamicThemeEnabled = onSetDynamicThemeEnabled,
-                                        onUpdateHighContrast = onUpdateHighContrast
-                                    )
-
-                                    // 2. Reading & Typography (Modular)
-                                    ReadingSettings(
-                                        selectedFontSize = settings?.readingFontSize ?: ReadingFontSize.STANDARD,
-                                        onUpdateFontSize = onUpdateFontSize
-                                    )
-
-                                    // 3. Audio & Broadcast Tuning (Modular)
-                                    AudioSettings(
-                                        selectedQuality = settings?.audioStreamingQuality ?: AudioStreamingQuality.BALANCED,
-                                        dialHapticEnabled = settings?.dialHapticFeedback ?: true,
-                                        autoTuneEnabled = settings?.autoTuneLastStation ?: true,
-                                        onUpdateAudioQuality = onUpdateAudioQuality,
-                                        onUpdateDialHaptic = onUpdateDialHaptic,
-                                        onUpdateAutoTune = onUpdateAutoTune
-                                    )
-
-                                    // 4. AI & Smart Features (Modular)
-                                    AISmartSettings(
-                                        enableAiFeatures = settings?.enableAiFeatures ?: true,
-                                        enableFactChecking = settings?.enableAiFactChecking ?: true,
-                                        enableVoiceNarration = settings?.enableAiVoiceNarration ?: true,
-                                        enableSmartSummaries = settings?.enableAiSmartSummaries ?: true,
-                                        onUpdateEnableAiFeatures = onUpdateEnableAiFeatures,
-                                        onUpdateEnableFactChecking = onUpdateEnableAiFactChecking,
-                                        onUpdateEnableVoiceNarration = onUpdateEnableAiVoiceNarration,
-                                        onUpdateEnableSmartSummaries = onUpdateEnableAiSmartSummaries
-                                    )
-
-                                    // 5. Legal Notice & Guidelines
-                                    OutlinedButton(
-                                        onClick = {
-                                            onClose()
-                                            onOpenLegalNotice()
-                                        },
-                                        shape = RoundedCornerShape(10.dp),
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, NeonCyan.copy(alpha = 0.5f)),
-                                        modifier = Modifier.fillMaxWidth().testTag("sidebar_legal_notice_btn")
-                                    ) {
-                                        Icon(imageVector = Icons.Default.Gavel, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Legal Notice & Editorial Charter", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                    }
-
-                                    // 5. Voice Narration TTS (Modular)
-                                    VoiceSettings(
-                                        selectedPreset = settings?.defaultVoiceNarrationPreset ?: VoiceNarrationPreset.NEWS_ANCHOR,
-                                        speechSpeed = settings?.voiceNarrationSpeed ?: 1.0f,
-                                        onUpdateVoicePreset = onUpdateVoicePreset,
-                                        onUpdateVoiceSpeed = onUpdateVoiceSpeed
-                                    )
-
-                                    // 6. Identity & ID Management (Modular & NEW!)
-                                    IdentitySettings()
-
-                                    // 7. Activity History & Downloads Vault (NEW!)
-                                    com.example.ui.components.settings.HistoryDownloadsSettings()
-
-                                    // 8. Offline, Storage & Alerts (Modular)
-                                    StorageAlertsSettings(
-                                        isOfflineMode = isOfflineMode,
-                                        autoCacheEnabled = settings?.autoCacheMorningEdition ?: true,
-                                        breakingNewsEnabled = settings?.breakingNewsAlerts ?: true,
-                                        printKioskEnabled = settings?.printKioskArrivalAlerts ?: true,
-                                        onToggleOfflineMode = onToggleOfflineMode,
-                                        onUpdateAutoCache = onUpdateAutoCache,
-                                        onUpdateBreakingNewsAlerts = onUpdateBreakingNewsAlerts,
-                                        onUpdatePrintKioskAlerts = onUpdatePrintKioskAlerts,
-                                        onClearMediaCache = onClearMediaCache
-                                    )
-
-                                    // 9. Connectivity, VPN & System Diagnostics (Moved into Settings)
-                                    com.example.ui.components.settings.ConnectivityAndDiagnosticsSettings(
-                                        onOpenAdBlockVpn = {
-                                            onClose()
-                                            onOpenAdBlockVpn()
-                                        },
-                                        onOpenMeshNetwork = {
-                                            onClose()
-                                            onOpenMeshNetwork()
-                                        },
-                                        onOpenDiagnostics = {
-                                            onClose()
-                                            onOpenDiagnostics()
-                                        }
-                                    )
-
-                                    Spacer(modifier = Modifier.height(24.dp))
-                                }
-                            }
-                        }
-                        
                         Spacer(modifier = Modifier.height(24.dp))
                     }
                 }

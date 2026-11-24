@@ -34,20 +34,11 @@ fun TownsquareTopBar(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable { onOpenSidebar() }
         ) {
-            Surface(
-                shape = RoundedCornerShape(10.dp),
-                color = NeonCyan,
-                modifier = Modifier.size(34.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "T",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF003544)
-                    )
-                }
-            }
+            AirwavesBrandIcon(
+                iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                size = 36.dp,
+                onOpenSidebar = onOpenSidebar
+            )
             Spacer(modifier = Modifier.width(10.dp))
             Column {
                 Text(

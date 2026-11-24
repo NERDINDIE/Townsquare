@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.components.AirwavesBrandIcon
+import com.example.ui.components.AirwavesBrandIconType
 import com.example.ui.components.CommunityCommentsDialog
 import com.example.ui.components.CreateCommunityPostDialog
 import com.example.ui.theme.DarkBorder
@@ -66,7 +68,8 @@ data class CommunityPost(
 fun CommunityScreen(
     onOpenSidebar: () -> Unit,
     onBack: () -> Unit = {},
-    initialTab: Int = 0
+    initialTab: Int = 0,
+    onPlayAudio: ((com.example.data.model.MediaItemEntity) -> Unit)? = null
 ) {
     var selectedCommunityTab by remember(initialTab) { mutableIntStateOf(initialTab) }
 
@@ -154,9 +157,14 @@ fun CommunityScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onOpenSidebar, modifier = Modifier.testTag("community_sidebar_btn")) {
-                        Icon(Icons.Default.Menu, contentDescription = "Open Sidebar")
-                    }
+                    AirwavesBrandIcon(
+                        iconType = AirwavesBrandIconType.TOWNSQUARE_T,
+                        size = 32.dp,
+                        onOpenSidebar = onOpenSidebar,
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .testTag("community_sidebar_btn")
+                    )
                 },
                 actions = {
                     if (selectedCommunityTab == 0) {
@@ -252,6 +260,23 @@ fun CommunityScreen(
                                 fontWeight = if (selectedCommunityTab == 2) FontWeight.Bold else FontWeight.Normal,
                                 fontSize = 12.sp,
                                 color = if (selectedCommunityTab == 2) NeonCyan else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                )
+                Tab(
+                    selected = selectedCommunityTab == 3,
+                    onClick = { selectedCommunityTab = 3 },
+                    modifier = Modifier.testTag("community_tab_public_library"),
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("📚", fontSize = 13.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                "Public Library",
+                                fontWeight = if (selectedCommunityTab == 3) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 12.sp,
+                                color = if (selectedCommunityTab == 3) NeonCyan else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -437,6 +462,27 @@ fun CommunityScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         TownsquareYellowPagesApp(
                             onBack = { selectedCommunityTab = 0 },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+                3 -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        com.example.ui.components.media.CommunityPublicLibrarySection(
+                            onPlayInPlayer = { item ->
+                                val entity = com.example.data.model.MediaItemEntity(
+                                    id = (1000..9999).random().toLong(),
+                                    title = item.title,
+                                    subtitle = item.description,
+                                    authorName = item.creatorOrArtist,
+                                    type = com.example.data.model.MediaType.SONG.name,
+                                    channelId = "public_library",
+                                    channelName = "Community Public Library",
+                                    bodyText = item.description,
+                                    mediaUrl = item.audioSampleUrl
+                                )
+                                onPlayAudio?.invoke(entity)
+                            },
                             modifier = Modifier.fillMaxSize()
                         )
                     }

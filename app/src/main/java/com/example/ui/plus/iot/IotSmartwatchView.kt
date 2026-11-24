@@ -48,6 +48,7 @@ enum class WatchTileApp {
 @Composable
 fun IotSmartwatchView(
     liveTime: LocalDateTime,
+    onOpenWatchfaceMaker: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var watchFaceStyle by remember { mutableStateOf(WatchFaceStyle.CLASSIC_CHRONO) }
@@ -219,6 +220,20 @@ fun IotSmartwatchView(
                                     textAlign = TextAlign.Center
                                 )
                             }
+                        }
+                    }
+
+                    if (onOpenWatchfaceMaker != null) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            onClick = onOpenWatchfaceMaker,
+                            colors = ButtonDefaults.buttonColors(containerColor = NeonCyan, contentColor = Color(0xFF003544)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth().height(36.dp)
+                        ) {
+                            Icon(Icons.Default.Palette, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Open Watchface Maker Studio 🎨", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
